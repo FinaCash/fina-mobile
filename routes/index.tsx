@@ -4,10 +4,7 @@ import { Feather as Icon } from '@expo/vector-icons'
 import useStyles from '../theme/useStyles'
 import getStyles from './styles'
 import Home from '../screens/Home'
-import { TouchableOpacity, View } from 'react-native'
-import styles from './styles'
-import { useAssetsContext } from '../contexts/AssetsContext'
-import Login from '../screens/Login'
+import { TouchableOpacity } from 'react-native'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -32,14 +29,12 @@ export const TabIcon: React.FC<{
 
 const Routes: React.FC = () => {
   const { styles } = useStyles(getStyles)
-  const { address } = useAssetsContext()
   return (
     <>
       <Router sceneStyle={styles.scene}>
         <Scene key="root">
           <Modal hideNavBar>
             <Stack hideNavBar>
-              {/* <Scene initial={!address} key="Login" hideNavBar component={Login} /> */}
               <Tabs
                 key="Tabs"
                 tabBarPosition="bottom"
@@ -47,7 +42,6 @@ const Routes: React.FC = () => {
                 tabBarStyle={styles.tabBar}
                 hideNavBar
                 lazy
-                // initial={!!address}
               >
                 <Scene key="Home" hideNavBar iconName="home" icon={TabIcon} component={Home} />
                 <Scene
