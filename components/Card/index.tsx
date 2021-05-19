@@ -1,16 +1,16 @@
 import React from 'react'
-import { View, ViewProps } from 'react-native'
+import { TouchableOpacity, TouchableOpacityProps } from 'react-native'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 
-interface CardProps extends ViewProps {}
+interface CardProps extends TouchableOpacityProps {}
 
 const Card: React.FC<CardProps> = ({ children, style, ...props }) => {
   const { styles } = useStyles(getStyles)
   return (
-    <View style={[styles.card, style]} {...props}>
+    <TouchableOpacity style={[styles.card, style]} {...props}>
       {children}
-    </View>
+    </TouchableOpacity>
   )
 }
 

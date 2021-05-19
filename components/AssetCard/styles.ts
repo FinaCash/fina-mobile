@@ -1,3 +1,5 @@
+import { Theme } from '../../types/misc'
+
 export default (theme: Theme) => ({
   container: {
     flexDirection: 'row',
@@ -23,5 +25,8 @@ export default (theme: Theme) => ({
     position: 'absolute',
     top: -2 * theme.baseSpace,
     left: theme.baseSpace * 5,
+  },
+  rightAligned: {
+    alignItems: 'flex-end',
   },
 })

@@ -15,7 +15,7 @@ const useTranslation = () => {
   )
 
   const t = React.useCallback(
-    (scope: i18n.Scope, options: i18n.TranslateOptions) => i18n.t(scope, options),
+    (scope: i18n.Scope, options?: i18n.TranslateOptions) => i18n.t(scope, options),
     [locale]
   )
 

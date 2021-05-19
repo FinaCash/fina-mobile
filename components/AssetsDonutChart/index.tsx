@@ -2,6 +2,7 @@ import React from 'react'
 import { View } from 'react-native'
 import { PieChart } from 'react-native-svg-charts'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
@@ -16,6 +17,7 @@ interface AssetsDonutChartProps {
 const AssetsDonutChart: React.FC<AssetsDonutChartProps> = ({ assets }) => {
   const { styles } = useStyles(getStyles)
   const { currency } = useSettingsContext()
+  const { t } = useTranslation()
 
   const total = React.useMemo(() => assets.map((a) => a.value).reduce((a, b) => a + b, 0), [assets])
   return (
@@ -27,7 +29,7 @@ const AssetsDonutChart: React.FC<AssetsDonutChartProps> = ({ assets }) => {
         padAngle={5 / 360}
       />
       <Typography style={styles.title} type="H2">
-        Total
+        {t('total')}
       </Typography>
       <Typography type="H4">{formatCurrency(total, currency)}</Typography>
       <View style={styles.legends}>
@@ -35,7 +37,7 @@ const AssetsDonutChart: React.FC<AssetsDonutChartProps> = ({ assets }) => {
           <View style={styles.legend} key={a.type}>
             <View style={[styles.colorPad, { backgroundColor: colors[i] }]} />
             <Typography type="Base">
-              {a.type} {formatCurrency(a.value, currency)} ({formatPercentage(a.value / total)})
+              {t(a.type)} {formatCurrency(a.value, currency)} ({formatPercentage(a.value / total)})
             </Typography>
           </View>
         ))}

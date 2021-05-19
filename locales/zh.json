@@ -1,1 +1,26 @@
-{}
+{
+  "total": "總資產",
+  "currents": "往來帳戶",
+  "savings": "儲蓄賬戶",
+  "stocks": "股票資產",
+  "cryptos": "加密貨幣",
+  "uusd name": "USD",
+  "uusd description": "Terra USD (UST)",
+  "uusd image": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/1600px-Flag_of_the_United_States.svg.png",
+  "ujpy name": "JPY",
+  "ujpy description": "Terra JPY (JPT)",
+  "ujpy image": "https://flagpedia.net/data/flags/w1160/jp.png",
+  "ueur name": "EUR",
+  "ueur description": "Terra EUR (EUT)",
+  "ueur image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/800px-Flag_of_Europe.svg.png",
+  "uhkd name": "HKD",
+  "uhkd description": "Terra HKD (HKT)",
+  "uhkd image": "https://flagpedia.net/data/flags/w1160/hk.png",
+  "no assets": "沒有資產",
+  "send": "發款",
+  "receive": "收款",
+  "exchange": "貨幣轉換",
+  "deposit to savings": "存入到儲蓄賬戶",
+  "withdraw to currenct": "提取到往來帳戶",
+  "cancel": "取消"
+}

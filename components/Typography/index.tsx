@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, TextProps, TextStyle } from 'react-native'
 import useStyles from '../../theme/useStyles'
+import { FontType } from '../../types/misc'
 
 interface TypographyProps extends TextProps {
   type?: FontType

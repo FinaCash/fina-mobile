@@ -1,5 +1,6 @@
 import React from 'react'
 import * as Font from 'expo-font'
+import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
 import { AssetsProvider } from './contexts/AssetsContext'
@@ -26,8 +27,10 @@ export default function App() {
   }, [])
 
   return (
-    <SettingsProvider>
-      <AssetsProvider>{fontLoaded ? <Routes /> : null}</AssetsProvider>
-    </SettingsProvider>
+    <ActionSheetProvider>
+      <SettingsProvider>
+        <AssetsProvider>{fontLoaded ? <Routes /> : null}</AssetsProvider>
+      </SettingsProvider>
+    </ActionSheetProvider>
   )
 }

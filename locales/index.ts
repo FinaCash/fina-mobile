@@ -6,3 +6,4 @@ import zh from './zh.json'
 i18n.translations = { en, zh }
 // Set the locale once at the beginning of your app.
 i18n.locale = Localization.locale
+i18n.fallbacks = 'en'

@@ -3,7 +3,6 @@ import terra from './terraClient'
 import { Coin } from '@terra-money/terra.js'
 import { Asset, AssetTypes } from '../types/assets'
 import { Currencies } from '../types/misc'
-import { formatCurrency } from './formatNumbers'
 
 export const transformCoinsToAssets = (
   coins: Array<{ amount: string; denom: string }>
@@ -12,12 +11,11 @@ export const transformCoinsToAssets = (
     .map((coin) => {
       switch (coin.denom) {
         case 'uusd':
+        case 'ujpy':
+        case 'ueur':
+        case 'uhkd':
           return {
-            type: 'currents',
-            name: 'USD',
-            description: 'Terra USD (UST)',
-            symbol: '$',
-            image: 'https://www.worldometers.info/img/flags/small/tn_us-flag.gif',
+            type: AssetTypes.Currents,
             coin,
           }
         default:
@@ -29,12 +27,7 @@ export const transformCoinsToAssets = (
 
 export const transformAssetsToDistributions = async (assets: Asset[], currency: Currencies) => {
   const groupedAssets = groupBy(assets, 'type')
-  const result: { [type in AssetTypes]: number } = {
-    [AssetTypes.Currents]: 0,
-    [AssetTypes.Savings]: 0,
-    [AssetTypes.Stocks]: 0,
-    [AssetTypes.Cryptos]: 0,
-  }
+  const result: { [type: string]: number } = {}
   for (let type in AssetTypes) {
     const assetType = (AssetTypes as any)[type]
     for (let i in groupedAssets[assetType]) {
@@ -44,7 +37,7 @@ export const transformAssetsToDistributions = async (assets: Asset[], currency: 
         denom === currency
           ? new Coin(denom, amount)
           : await terra.market.swapRate(new Coin(denom, amount), currency)
-      result[assetType as AssetTypes] += Number(rate.amount)
+      result[assetType as AssetTypes] = (result[assetType as AssetTypes] || 0) + Number(rate.amount)
     }
   }
   return Object.keys(result).map((type) => ({
@@ -53,15 +46,8 @@ export const transformAssetsToDistributions = async (assets: Asset[], currency: 
   }))
 }
 
-export const transformAssetsToSections = (assets: Asset[]) =>
+export const transformAssetsToSections = (assets: Asset[], t: any) =>
   Object.values(AssetTypes).map((type) => ({
     title: type,
-    data: assets
-      .filter((a) => a.type === type)
-      .map((a) => ({
-        title: a.name,
-        subtitle: a.description,
-        image: a.image,
-        value: formatCurrency(a.coin.amount, a.coin.denom),
-      })),
+    data: assets.filter((a) => a.type === type),
   }))

@@ -1,3 +1,5 @@
+import { Theme } from '../../types/misc'
+
 export default (theme: Theme) => ({
   card: {
     borderRadius: theme.borderRadius[1],
