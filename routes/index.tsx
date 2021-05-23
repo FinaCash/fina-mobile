@@ -5,6 +5,7 @@ import useStyles from '../theme/useStyles'
 import getStyles from './styles'
 import Home from '../screens/Home'
 import { TouchableOpacity } from 'react-native'
+import Swap from '../screens/Swap'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -77,6 +78,7 @@ const Routes: React.FC = () => {
               </Tabs>
             </Stack>
           </Modal>
+          <Scene key="Swap" hideNavBar component={Swap} />
         </Scene>
       </Router>
     </>

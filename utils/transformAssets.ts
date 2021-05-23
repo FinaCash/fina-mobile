@@ -14,6 +14,7 @@ export const transformCoinsToAssets = (
         case 'ujpy':
         case 'ueur':
         case 'uhkd':
+        case 'ukrw':
           return {
             type: AssetTypes.Currents,
             coin,
@@ -47,7 +48,22 @@ export const transformAssetsToDistributions = async (assets: Asset[], currency: 
 }
 
 export const transformAssetsToSections = (assets: Asset[], t: any) =>
-  Object.values(AssetTypes).map((type) => ({
-    title: type,
-    data: assets.filter((a) => a.type === type),
-  }))
+  Object.values(AssetTypes).map((type) => {
+    const assetsForThisType = assets.filter((a) => a.type === type)
+    return {
+      title: type,
+      data:
+        type === AssetTypes.Savings && assetsForThisType.length === 0
+          ? [
+              {
+                type: AssetTypes.Savings,
+                coin: {
+                  denom: Currencies.USD,
+                  amount: '0',
+                },
+                apy: 0.2,
+              },
+            ]
+          : assetsForThisType,
+    }
+  })

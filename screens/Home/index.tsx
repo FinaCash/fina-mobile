@@ -14,6 +14,7 @@ import {
 } from '../../utils/transformAssets'
 import getStyles from './styles'
 import { Asset, AssetTypes } from '../../types/assets'
+import { Actions } from 'react-native-router-flux'
 
 const Home: React.FC = () => {
   const { styles } = useStyles(getStyles)
@@ -45,13 +46,32 @@ const Home: React.FC = () => {
       const options =
         asset.type === AssetTypes.Currents
           ? [t('send'), t('receive'), t('deposit to savings'), t('exchange'), t('cancel')]
-          : [t('send'), t('receive'), t('withdraw to currents'), t('cancel')]
+          : [t('withdraw to currents'), t('cancel')]
       showActionSheetWithOptions(
         {
           options,
           cancelButtonIndex: options.length - 1,
         },
-        (index) => {}
+        (index) => {
+          if (index === options.length - 1) {
+            return
+          }
+          if (asset.type === AssetTypes.Savings && index === 0) {
+            return Actions.push('Swap', { to: asset.coin.denom, type: AssetTypes.Savings })
+          }
+          if (asset.type === AssetTypes.Currents && index === 0) {
+            // Send
+          }
+          if (asset.type === AssetTypes.Currents && index === 1) {
+            // Receive
+          }
+          if (asset.type === AssetTypes.Currents && index === 2) {
+            return Actions.push('Swap', { from: asset.coin.denom, type: AssetTypes.Savings })
+          }
+          if (asset.type === AssetTypes.Currents && index === 3) {
+            return Actions.push('Swap', { from: asset.coin.denom, type: AssetTypes.Currents })
+          }
+        }
       )
     },
     [t]

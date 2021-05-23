@@ -10,6 +10,9 @@
   "ujpy name": "JPY",
   "ujpy description": "Terra JPY (JPT)",
   "ujpy image": "https://flagpedia.net/data/flags/w1160/jp.png",
+  "ukrw name": "KRW",
+  "ukrw description": "Terra KRW (KRT)",
+  "ukrw image": "https://flagpedia.net/data/flags/w1160/kr.png",
   "ueur name": "EUR",
   "ueur description": "Terra EUR (EUT)",
   "ueur image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/800px-Flag_of_Europe.svg.png",
@@ -21,6 +24,7 @@
   "receive": "Receive",
   "exchange": "Exchange",
   "deposit to savings": "Deposit to Savings",
-  "withdraw to currenct": "Withdraw to Currents",
-  "cancel": "Cancel"
+  "withdraw to currents": "Withdraw to Currents",
+  "cancel": "Cancel",
+  "select asset": "Select asset"
 }
