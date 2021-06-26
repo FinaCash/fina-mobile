@@ -10,7 +10,7 @@ import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Asset, AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
-import AssetCard from '../../components/AssetCard'
+import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
@@ -122,7 +122,7 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo, type }) =
           <Icon name="x" size={theme.fonts.H3.fontSize} color={theme.palette.grey[10]} />
         </TouchableOpacity>
       </View>
-      <AssetCard
+      <AssetItem
         style={styles.from}
         asset={
           from
@@ -150,7 +150,7 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo, type }) =
         </Typography>
         <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
       </View>
-      <AssetCard
+      <AssetItem
         style={styles.to}
         asset={
           to

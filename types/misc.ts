@@ -1,12 +1,12 @@
 export type Locales = 'en' | 'zh'
 
 export type ThemeType = 'light' | 'dark'
-export type FontType = 'H1' | 'H2' | 'H3' | 'H4' | 'H5' | 'H6' | 'Large' | 'Base' | 'Small'
+export type FontType = 'H1' | 'H2' | 'H3' | 'H4' | 'H5' | 'H6' | 'Large' | 'Base' | 'Small' | 'Mini'
 
 export interface Font {
   color: string
   fontFamily: string
-  fontSize: string
+  fontSize: number
 }
 
 export interface Theme {
@@ -19,6 +19,9 @@ export interface Theme {
     overlay: string
     facebook: string
     google: string
+  }
+  gradients: {
+    primary: string[]
   }
   baseSpace: number
   tabBarHeight: number

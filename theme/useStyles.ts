@@ -1,9 +1,10 @@
-import lightTheme from './light.json'
-import darkTheme from './dark.json'
+import lightTheme from './light'
+import darkTheme from './dark'
 import { useSettingsContext } from '../contexts/SettingsContext'
 import { StyleSheet, Dimensions } from 'react-native'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 import Constants from 'expo-constants'
+import { Theme } from '../types/misc'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 

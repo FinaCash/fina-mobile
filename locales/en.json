@@ -1,5 +1,7 @@
 {
-  "total": "Total",
+  "total balance": "Total Balance",
+  "transfer": "Transfer",
+  "receive": "Receive",
   "currents": "Currents",
   "savings": "Savings",
   "stocks": "Stocks",
@@ -20,8 +22,6 @@
   "uhkd description": "Terra HKD (HKT)",
   "uhkd image": "https://flagpedia.net/data/flags/w1160/hk.png",
   "no assets": "No Assets",
-  "send": "Send",
-  "receive": "Receive",
   "exchange": "Exchange",
   "deposit to savings": "Deposit to Savings",
   "withdraw to currents": "Withdraw to Currents",

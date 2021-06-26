@@ -1,12 +1,15 @@
 import React from 'react'
 import { Coin, MsgSwap, RawKey } from '@terra-money/terra.js'
-import get from 'lodash/get'
+// import get from 'lodash/get'
 import terra from '../utils/terraClient'
-import openlogin from '../utils/torusClient'
+// import openlogin from '../utils/torusClient'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset } from '../types/assets'
 import { AnchorEarn, CHAINS, NETWORKS, DENOMS } from '@anchor-protocol/anchor-earn'
 
+const TEST_KEY = '0c7cd054d28673339fa7fce364bc0d3830a03891bd3015fb10c947dcf41cd691'
+
+// eslint-disable-next-line no-undef
 const getPrivKey = (privKey: string) => Buffer.from(privKey.slice(0, 32), 'utf8')
 
 interface AssetsState {
@@ -33,29 +36,34 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [assets, setAssets] = React.useState<Asset[]>(initialState.assets)
 
   const fetchAssets = React.useCallback(async () => {
-    const key = new RawKey(getPrivKey(openlogin.privKey))
+    const key = new RawKey(
+      getPrivKey(
+        TEST_KEY
+        // openlogin.privKey
+      )
+    )
     const balances = await terra.bank.balance(key.accAddress)
     setAddress(key.accAddress)
     setAssets(transformCoinsToAssets(JSON.parse(balances.toJSON())))
   }, [])
 
   const initialize = React.useCallback(async () => {
-    await openlogin.init()
-    const store = get(openlogin, 'state.store.storage.openlogin_store', {})
-    const loginProvider = JSON.parse(store).typeOfLogin
-    if (openlogin.privKey) {
-      fetchAssets()
-    } else if (loginProvider) {
-      // Logged in previously
-      await openlogin.login({
-        loginProvider,
-        fastLogin: true,
-        // relogin: true,
-      })
-    } else {
-      // Not logged in
-      await openlogin.login()
-    }
+    // await openlogin.init()
+    // const store = get(openlogin, 'state.store.storage.openlogin_store', {})
+    // const loginProvider = JSON.parse(store).typeOfLogin
+    // if (openlogin.privKey) {
+    fetchAssets()
+    // } else if (loginProvider) {
+    //   // Logged in previously
+    //   await openlogin.login({
+    //     loginProvider,
+    //     fastLogin: true,
+    //     // relogin: true,
+    //   })
+    // } else {
+    //   // Not logged in
+    //   await openlogin.login()
+    // }
   }, [fetchAssets])
 
   React.useEffect(() => {
@@ -64,7 +72,12 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const swap = React.useCallback(
     async (from: Coin, to: Coin) => {
-      const key = new RawKey(getPrivKey(openlogin.privKey))
+      const key = new RawKey(
+        getPrivKey(
+          TEST_KEY
+          // openlogin.privKey
+        )
+      )
       const wallet = terra.wallet(key)
       const msg = new MsgSwap(key.accAddress, from, to.denom)
       // const rate = await terra.market.swapRate(new Coin('uluna', '1'), from.denom)
@@ -88,7 +101,10 @@ const AssetsProvider: React.FC = ({ children }) => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TEQUILA_0004,
-      privateKey: getPrivKey(openlogin.privKey),
+      privateKey: getPrivKey(
+        TEST_KEY
+        // openlogin.privKey
+      ),
     })
     const deposit = await anchorEarn.deposit({
       amount: amount.toString(),
@@ -101,7 +117,10 @@ const AssetsProvider: React.FC = ({ children }) => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TEQUILA_0004,
-      privateKey: getPrivKey(openlogin.privKey),
+      privateKey: getPrivKey(
+        TEST_KEY
+        // openlogin.privKey
+      ),
     })
     const withdraw = await anchorEarn.withdraw({
       amount: amount.toString(),

@@ -12,8 +12,8 @@ interface ButtonProps extends TouchableOpacityProps {
 
 const paddings = {
   Small: 1,
-  Base: 2,
-  Large: 3,
+  Base: 3,
+  Large: 4,
 }
 
 const Button: React.FC<ButtonProps> = ({

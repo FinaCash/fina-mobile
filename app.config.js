@@ -30,4 +30,20 @@ export default {
   extra: {
     torusProjectId: process.env.TORUS_PROJECT_ID,
   },
+  packagerOpts: {
+    config: 'metro.config.js',
+    sourceExts: [
+      'expo.ts',
+      'expo.tsx',
+      'expo.js',
+      'expo.jsx',
+      'ts',
+      'tsx',
+      'js',
+      'jsx',
+      'json',
+      'wasm',
+      'svg',
+    ],
+  },
 }

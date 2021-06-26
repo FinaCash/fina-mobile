@@ -2,23 +2,36 @@ import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
   parentContainer: {
-    height: theme.screenHeight - theme.tabBarHeight - theme.bottomSpace,
-  },
-  container: {
-    padding: theme.baseSpace * 6,
-  },
-  title: {
-    marginTop: theme.baseSpace * 4,
-    marginBottom: theme.baseSpace * 4,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
     flex: 1,
   },
-  emptyImage: {
-    width: 40 * theme.baseSpace,
-    height: 40 * theme.baseSpace,
-    marginBottom: 5 * theme.baseSpace,
+  swipeIndicator: {
+    width: '30%',
+    alignSelf: 'center',
+    height: theme.baseSpace,
+    backgroundColor: theme.palette.grey[2],
+    borderRadius: theme.borderRadius[1],
+    marginVertical: 3 * theme.baseSpace,
+  },
+  searchBarContainer: {
+    paddingHorizontal: 4 * theme.baseSpace,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    width: 64 * theme.baseSpace,
+    justifyContent: 'space-between',
+    marginTop: theme.baseSpace * 6,
+  },
+  button: {
+    backgroundColor: theme.palette.primary + '88',
+    width: 30 * theme.baseSpace,
+  },
+  notiButton: {
+    position: 'absolute',
+    top: theme.baseSpace * 6 + theme.statusBarHeight,
+    right: theme.baseSpace * 6,
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: theme.baseSpace * 25 + theme.statusBarHeight,
   },
 })

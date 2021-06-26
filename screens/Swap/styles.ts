@@ -26,7 +26,7 @@ export default (theme: Theme) => ({
   avatar: {
     width: theme.baseSpace * 10,
     height: theme.baseSpace * 10,
-    borderRadius: '50%',
+    borderRadius: 4 * theme.baseSpace,
     marginRight: theme.baseSpace * 6,
   },
   button: {

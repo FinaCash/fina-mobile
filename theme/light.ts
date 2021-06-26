@@ -1,0 +1,94 @@
+import { Platform } from 'react-native'
+
+export default {
+  palette: {
+    primary: '#0E1E59',
+    secondary: '#12da6d',
+    red: '#fb5063',
+    grey: [
+      '#f4f5fa',
+      '#eaebf1',
+      '#dfe1eb',
+      '#d0d2df',
+      '#c2c6d4',
+      '#afb2c3',
+      '#9b9eb1',
+      '#6f7289',
+      '#484c63',
+      '#2c314b',
+      '#1b203b',
+    ],
+    overlay: '#1b203be6',
+    white: '#ffffff',
+    facebook: '#3c5898',
+    google: '#DB4437',
+  },
+  gradients: {
+    primary: ['#432DD9', '#2FC3FF'],
+  },
+  baseSpace: 4,
+  tabBarHeight: Platform.OS === 'web' ? 64 : 32,
+  shadow: {
+    shadowColor: '#1b203b',
+    shadowOffset: {
+      width: 0,
+      height: -10,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 30,
+    elevation: 1,
+  },
+  borderRadius: [4, 8, 24],
+  fonts: {
+    H1: {
+      color: '#1b203b',
+      fontFamily: 'MontserratBold',
+      fontSize: 48,
+    },
+    H2: {
+      color: '#1b203b',
+      fontFamily: 'MontserratBold',
+      fontSize: 36,
+    },
+    H3: {
+      color: '#1b203b',
+      fontFamily: 'MontserratBold',
+      fontSize: 28,
+    },
+    H4: {
+      color: '#1b203b',
+      fontFamily: 'MontserratBold',
+      fontSize: 24,
+    },
+    H5: {
+      color: '#1b203b',
+      fontFamily: 'MontserratBold',
+      fontSize: 20,
+    },
+    H6: {
+      color: '#1b203b',
+      fontFamily: 'MontserratBold',
+      fontSize: 18,
+    },
+    Large: {
+      color: '#2c314b',
+      fontFamily: 'MontserratRegular',
+      fontSize: 16,
+    },
+    Base: {
+      color: '#2c314b',
+      fontFamily: 'MontserratRegular',
+      fontSize: 14,
+    },
+    Small: {
+      color: '#2c314b',
+      fontFamily: 'MontserratRegular',
+      fontSize: 12,
+    },
+    Mini: {
+      color: '#2c314b',
+      fontFamily: 'MontserratRegular',
+      fontSize: 10,
+    },
+  },
+}

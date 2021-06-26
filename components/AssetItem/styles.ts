@@ -5,7 +5,10 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.baseSpace * 3,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.palette.grey[1],
+    backgroundColor: theme.palette.white,
+    padding: theme.baseSpace * 4,
   },
   row: {
     flexDirection: 'row',
@@ -14,7 +17,7 @@ export default (theme: Theme) => ({
   avatar: {
     width: theme.baseSpace * 10,
     height: theme.baseSpace * 10,
-    borderRadius: '50%',
+    borderRadius: theme.baseSpace * 4,
     marginRight: theme.baseSpace * 6,
   },
   badge: {

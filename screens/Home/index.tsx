@@ -1,8 +1,12 @@
 import React from 'react'
-import { Image, SectionList, View } from 'react-native'
+import { Animated, TouchableOpacity, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import AssetCard from '../../components/AssetCard'
-import AssetDonutChart from '../../components/AssetsDonutChart'
+import { Modalize } from 'react-native-modalize'
+import TransferIcon from '../../assets/images/icons/transfer.svg'
+import ReceiveIcon from '../../assets/images/icons/receive.svg'
+import NotificationsIcon from '../../assets/images/icons/notifications.svg'
+import AssetItem from '../../components/AssetItem'
+import { LinearGradient } from 'expo-linear-gradient'
 import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -15,9 +19,14 @@ import {
 import getStyles from './styles'
 import { Asset, AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
+import { formatCurrency } from '../../utils/formatNumbers'
+import Button from '../../components/Button'
+import SearchBar from '../../components/SearchBar'
 
 const Home: React.FC = () => {
-  const { styles } = useStyles(getStyles)
+  const scrollY = React.useRef(new Animated.Value(0)).current
+  const modalizeRef = React.useRef<Modalize>(null)
+  const { styles, theme } = useStyles(getStyles)
   const { assets } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
@@ -25,6 +34,10 @@ const Home: React.FC = () => {
   const [assetsDistribution, setAssetsDistribution] = React.useState<
     Array<{ type: string; value: number }>
   >([])
+  const total = React.useMemo(
+    () => assetsDistribution.map((a) => a.value).reduce((a, b) => a + b, 0),
+    [assetsDistribution]
+  )
 
   const calculateAssetsDistribution = React.useCallback(async () => {
     try {
@@ -45,7 +58,7 @@ const Home: React.FC = () => {
     (asset: Asset) => {
       const options =
         asset.type === AssetTypes.Currents
-          ? [t('send'), t('receive'), t('deposit to savings'), t('exchange'), t('cancel')]
+          ? [t('transfer'), t('receive'), t('deposit to savings'), t('exchange'), t('cancel')]
           : [t('withdraw to currents'), t('cancel')]
       showActionSheetWithOptions(
         {
@@ -78,27 +91,65 @@ const Home: React.FC = () => {
   )
 
   return (
-    <View style={styles.parentContainer}>
-      {assets.length ? (
-        <SectionList
-          keyExtractor={(item, i) => item.coin.denom + i}
-          contentContainerStyle={styles.container}
-          sections={sections}
-          ListHeaderComponent={<AssetDonutChart assets={assetsDistribution} />}
-          renderSectionHeader={({ section }) => (
-            <Typography style={styles.title} type="H3">
-              {t(section.title)}
-            </Typography>
-          )}
-          renderItem={({ item }) => <AssetCard asset={item} onPress={() => selectAsset(item)} />}
-        />
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Image style={styles.emptyImage} source={require('../../assets/images/empty.png')} />
-          <Typography type="H3">{t('no assets')}</Typography>
+    <LinearGradient
+      start={[0, 0]}
+      end={[1, 1]}
+      colors={theme.gradients.primary}
+      style={styles.parentContainer}
+    >
+      <View style={styles.header}>
+        <Typography color={theme.palette.white}>{t('total balance')}</Typography>
+        <Typography color={theme.palette.white} type="H2">
+          {formatCurrency(total, currency)}
+        </Typography>
+        <View style={styles.buttonRow}>
+          <Button style={styles.button} icon={<TransferIcon />}>
+            {t('transfer')}
+          </Button>
+          <Button style={styles.button} icon={<ReceiveIcon />}>
+            {t('receive')}
+          </Button>
         </View>
-      )}
-    </View>
+      </View>
+      <TouchableOpacity style={styles.notiButton}>
+        <NotificationsIcon />
+      </TouchableOpacity>
+      <Modalize
+        ref={modalizeRef}
+        alwaysOpen={
+          theme.screenHeight -
+          64 * theme.baseSpace -
+          theme.bottomSpace -
+          theme.tabBarHeight -
+          theme.statusBarHeight
+        }
+        modalStyle={{ borderRadius: theme.borderRadius[1] }}
+        withHandle={false}
+        panGestureAnimatedValue={scrollY}
+        useNativeDriver={false}
+        HeaderComponent={
+          <Animated.View
+            style={[
+              styles.searchBarContainer,
+              {
+                opacity: scrollY,
+                height: Animated.multiply(scrollY, 18 * theme.baseSpace),
+              },
+            ]}
+          >
+            <View style={styles.swipeIndicator} />
+            <SearchBar />
+          </Animated.View>
+        }
+        sectionListProps={{
+          sections,
+          renderItem: ({ item }) => <AssetItem asset={item} />,
+          keyExtractor: (item, i) => item.denom + '_' + i,
+          showsVerticalScrollIndicator: false,
+          style: { borderRadius: theme.borderRadius[1] },
+        }}
+      />
+    </LinearGradient>
   )
 }
 
