@@ -34,6 +34,7 @@ const Home: React.FC = () => {
   const [assetsDistribution, setAssetsDistribution] = React.useState<
     Array<{ type: string; value: number }>
   >([])
+  const [search, setSearch] = React.useState('')
   const total = React.useMemo(
     () => assetsDistribution.map((a) => a.value).reduce((a, b) => a + b, 0),
     [assetsDistribution]
@@ -52,7 +53,7 @@ const Home: React.FC = () => {
     calculateAssetsDistribution()
   }, [calculateAssetsDistribution])
 
-  const sections = React.useMemo(() => transformAssetsToSections(assets, t), [assets, t])
+  const sections = React.useMemo(() => transformAssetsToSections(assets), [assets])
 
   const selectAsset = React.useCallback(
     (asset: Asset) => {
@@ -123,7 +124,10 @@ const Home: React.FC = () => {
           theme.tabBarHeight -
           theme.statusBarHeight
         }
-        modalStyle={{ borderRadius: theme.borderRadius[1] }}
+        modalStyle={{
+          borderTopLeftRadius: theme.borderRadius[2],
+          borderTopRightRadius: theme.borderRadius[2],
+        }}
         withHandle={false}
         panGestureAnimatedValue={scrollY}
         useNativeDriver={false}
@@ -138,15 +142,20 @@ const Home: React.FC = () => {
             ]}
           >
             <View style={styles.swipeIndicator} />
-            <SearchBar />
+            <SearchBar value={search} onChangeText={setSearch} />
           </Animated.View>
         }
         sectionListProps={{
           sections,
-          renderItem: ({ item }) => <AssetItem asset={item} />,
+          renderItem: ({ item }) =>
+            (t(`${item.coin.denom} name`) + t(`${item.coin.denom} description`))
+              .toLowerCase()
+              .includes(search.toLowerCase()) ? (
+              <AssetItem asset={item} onPress={() => selectAsset(item)} />
+            ) : null,
           keyExtractor: (item, i) => item.denom + '_' + i,
           showsVerticalScrollIndicator: false,
-          style: { borderRadius: theme.borderRadius[1] },
+          style: { borderRadius: theme.borderRadius[2] },
         }}
       />
     </LinearGradient>

@@ -47,7 +47,7 @@ export const transformAssetsToDistributions = async (assets: Asset[], currency: 
   }))
 }
 
-export const transformAssetsToSections = (assets: Asset[], t: any) =>
+export const transformAssetsToSections = (assets: Asset[]) =>
   Object.values(AssetTypes).map((type) => {
     const assetsForThisType = assets.filter((a) => a.type === type)
     return {
