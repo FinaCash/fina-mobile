@@ -10,6 +10,9 @@ import useStyles from '../theme/useStyles'
 import getStyles from './styles'
 import Home from '../screens/Home'
 import Swap from '../screens/Swap'
+import Login from '../screens/Login'
+import useTranslation from '../locales/useTranslation'
+import Passcode from '../screens/Passcode'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -32,11 +35,13 @@ export const TabIcon: React.FC<{
 
 const Routes: React.FC = () => {
   const { styles } = useStyles(getStyles)
+  const { t } = useTranslation()
   return (
     <>
       <Router sceneStyle={styles.scene}>
         <Scene key="root">
           <Modal hideNavBar>
+            <Scene key="Login" hideNavBar component={Login} />
             <Stack hideNavBar>
               <Tabs
                 key="Tabs"
@@ -50,7 +55,7 @@ const Routes: React.FC = () => {
                   key="Home"
                   hideNavBar
                   iconSvg={<HomeIcon />}
-                  tabTitle="Home"
+                  tabTitle={t('home')}
                   icon={TabIcon}
                   component={Home}
                 />
@@ -58,7 +63,7 @@ const Routes: React.FC = () => {
                   key="Contacts"
                   hideNavBar
                   iconSvg={<RecipientsIcon />}
-                  tabTitle="Recipients"
+                  tabTitle={t('recipients')}
                   icon={TabIcon}
                   component={() => null}
                 />
@@ -66,7 +71,7 @@ const Routes: React.FC = () => {
                   key="Swap"
                   hideNavBar
                   iconSvg={<SwapIcon />}
-                  tabTitle="Swap"
+                  tabTitle={t('swap')}
                   icon={TabIcon}
                   component={() => null}
                 />
@@ -74,14 +79,15 @@ const Routes: React.FC = () => {
                   key="Settings"
                   hideNavBar
                   iconSvg={<SettingsIcon />}
-                  tabTitle="Settings"
+                  tabTitle={t('settings')}
                   icon={TabIcon}
                   component={() => null}
                 />
               </Tabs>
             </Stack>
+            <Scene key="Swap" hideNavBar component={Swap} />
+            <Scene key="Passcode" hideNavBar component={Passcode} />
           </Modal>
-          <Scene key="Swap" hideNavBar component={Swap} />
         </Scene>
       </Router>
     </>

@@ -1,4 +1,13 @@
 {
+  "import wallet": "Import Wallet",
+  "create wallet": "Create Wallet",
+  "slogan": "Powered by Terra",
+  "back": "Back",
+  "confirm": "Confirm",
+  "search": "Search",
+  "enter secret recovery phrase": "Enter your Secret Recovery Phrase",
+  "store phrase securely": "Please store your Secret Recovery Phrase securely. We would not be able to recover your wallet if you lose it.",
+  "please enter passcode": "Please enter a passcode",
   "total balance": "Total Balance",
   "transfer": "Transfer",
   "receive": "Receive",

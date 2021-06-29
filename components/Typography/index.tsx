@@ -25,7 +25,7 @@ const Typography: React.FC<TypographyProps> = ({
       style={[
         theme.fonts[type],
         color ? { color } : {},
-        bold ? { fontFamily: 'MontserratBold' } : {},
+        bold ? { fontFamily: 'RobotoBold' } : {},
         style,
       ]}
       {...props}

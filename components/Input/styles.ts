@@ -9,8 +9,10 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
+  icon: {
+    marginRight: theme.baseSpace * 3,
+  },
   input: {
     flex: 1,
-    marginLeft: theme.baseSpace * 3,
   },
 })

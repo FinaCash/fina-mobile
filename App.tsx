@@ -21,8 +21,9 @@ export default function App() {
         }
       }
       await Font.loadAsync({
-        MontserratBold: require('./assets/fonts/Montserrat-SemiBold.ttf'),
-        MontserratRegular: require('./assets/fonts/Montserrat-Regular.ttf'),
+        PoppinsBold: require('./assets/fonts/Poppins-Bold.ttf'),
+        RobotoBold: require('./assets/fonts/Roboto-Bold.ttf'),
+        RobotoRegular: require('./assets/fonts/Roboto-Regular.ttf'),
       })
       setFontLoaded(true)
     } catch (err) {

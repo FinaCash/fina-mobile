@@ -40,52 +40,52 @@ export default {
   fonts: {
     H1: {
       color: '#f4f5fa',
-      fontFamily: 'MontserratBold',
+      fontFamily: 'PoppinsBold',
       fontSize: 48,
     },
     H2: {
       color: '#f4f5fa',
-      fontFamily: 'MontserratBold',
+      fontFamily: 'PoppinsBold',
       fontSize: 36,
     },
     H3: {
       color: '#f4f5fa',
-      fontFamily: 'MontserratBold',
+      fontFamily: 'PoppinsBold',
       fontSize: 28,
     },
     H4: {
       color: '#f4f5fa',
-      fontFamily: 'MontserratBold',
+      fontFamily: 'RobotoBold',
       fontSize: 24,
     },
     H5: {
       color: '#f4f5fa',
-      fontFamily: 'MontserratBold',
+      fontFamily: 'RobotoBold',
       fontSize: 20,
     },
     H6: {
       color: '#f4f5fa',
-      fontFamily: 'MontserratBold',
+      fontFamily: 'RobotoBold',
       fontSize: 18,
     },
     Large: {
       color: '#eaebf1',
-      fontFamily: 'MontserratRegular',
+      fontFamily: 'RobotoRegular',
       fontSize: 16,
     },
     Base: {
       color: '#eaebf1',
-      fontFamily: 'MontserratRegular',
+      fontFamily: 'RobotoRegular',
       fontSize: 14,
     },
     Small: {
       color: '#eaebf1',
-      fontFamily: 'MontserratRegular',
+      fontFamily: 'RobotoRegular',
       fontSize: 12,
     },
     Mini: {
       color: '#eaebf1',
-      fontFamily: 'MontserratRegular',
+      fontFamily: 'RobotoRegular',
       fontSize: 10,
     },
   },

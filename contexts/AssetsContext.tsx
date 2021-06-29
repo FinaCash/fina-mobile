@@ -1,29 +1,25 @@
 import React from 'react'
-import { Coin, MsgSwap, RawKey } from '@terra-money/terra.js'
-// import get from 'lodash/get'
+import { Coin, MsgSwap, MnemonicKey } from '@terra-money/terra.js'
+import CryptoJS from 'crypto-js'
 import terra from '../utils/terraClient'
-// import openlogin from '../utils/torusClient'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset } from '../types/assets'
 import { AnchorEarn, CHAINS, NETWORKS, DENOMS } from '@anchor-protocol/anchor-earn'
-
-const TEST_KEY = '0c7cd054d28673339fa7fce364bc0d3830a03891bd3015fb10c947dcf41cd691'
-
-// eslint-disable-next-line no-undef
-const getPrivKey = (privKey: string) => Buffer.from(privKey.slice(0, 32), 'utf8')
+import usePersistedState from '../utils/usePersistedState'
 
 interface AssetsState {
   address: string
   assets: Asset[]
-  swap(from: Coin, to: Coin): void
-  depositSavings(amount: number): void
-  withdrawSavings(amount: number): void
+  login(secretPhrase: string, password: string): void
+  swap(from: Coin, to: Coin, password: string): void
+  depositSavings(amount: number, password: string): void
+  withdrawSavings(amount: number, password: string): void
 }
 
 const initialState: AssetsState = {
   address: '',
   assets: [],
-
+  login: () => null,
   swap: () => null,
   depositSavings: () => null,
   withdrawSavings: () => null,
@@ -32,52 +28,41 @@ const initialState: AssetsState = {
 const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
-  const [address, setAddress] = React.useState(initialState.address)
-  const [assets, setAssets] = React.useState<Asset[]>(initialState.assets)
+  const [address, setAddress] = usePersistedState('address', initialState.address, { secure: true })
+  const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets, {
+    secure: true,
+  })
+  const [encryptedSecretPhrase, setEncryptedSecretPhrase] = usePersistedState(
+    'encryptedSecretPhrase',
+    '',
+    {
+      secure: true,
+    }
+  )
 
-  const fetchAssets = React.useCallback(async () => {
-    const key = new RawKey(
-      getPrivKey(
-        TEST_KEY
-        // openlogin.privKey
-      )
-    )
-    const balances = await terra.bank.balance(key.accAddress)
-    setAddress(key.accAddress)
-    setAssets(transformCoinsToAssets(JSON.parse(balances.toJSON())))
-  }, [])
+  const fetchAssets = React.useCallback(
+    async (defaultAddress?: string) => {
+      const balances = await terra.bank.balance(defaultAddress || address)
+      setAssets(transformCoinsToAssets(JSON.parse(balances.toJSON())))
+    },
+    [address, setAssets]
+  )
 
-  const initialize = React.useCallback(async () => {
-    // await openlogin.init()
-    // const store = get(openlogin, 'state.store.storage.openlogin_store', {})
-    // const loginProvider = JSON.parse(store).typeOfLogin
-    // if (openlogin.privKey) {
-    fetchAssets()
-    // } else if (loginProvider) {
-    //   // Logged in previously
-    //   await openlogin.login({
-    //     loginProvider,
-    //     fastLogin: true,
-    //     // relogin: true,
-    //   })
-    // } else {
-    //   // Not logged in
-    //   await openlogin.login()
-    // }
-  }, [fetchAssets])
-
-  React.useEffect(() => {
-    initialize()
-  }, [initialize])
+  const login = React.useCallback(
+    async (secretPhrase: string, password: string) => {
+      const key = new MnemonicKey({ mnemonic: secretPhrase })
+      setAddress(key.accAddress)
+      setEncryptedSecretPhrase(CryptoJS.AES.decrypt(secretPhrase, password).toString())
+      await fetchAssets(key.accAddress)
+    },
+    [setAddress, setEncryptedSecretPhrase, fetchAssets]
+  )
 
   const swap = React.useCallback(
-    async (from: Coin, to: Coin) => {
-      const key = new RawKey(
-        getPrivKey(
-          TEST_KEY
-          // openlogin.privKey
-        )
-      )
+    async (from: Coin, to: Coin, password: string) => {
+      const key = new MnemonicKey({
+        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+      })
       const wallet = terra.wallet(key)
       const msg = new MsgSwap(key.accAddress, from, to.denom)
       // const rate = await terra.market.swapRate(new Coin('uluna', '1'), from.denom)
@@ -94,46 +79,47 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [fetchAssets]
+    [fetchAssets, encryptedSecretPhrase]
   )
 
-  const depositSavings = React.useCallback(async (amount: number) => {
-    const anchorEarn = new AnchorEarn({
-      chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
-      privateKey: getPrivKey(
-        TEST_KEY
-        // openlogin.privKey
-      ),
-    })
-    const deposit = await anchorEarn.deposit({
-      amount: amount.toString(),
-      currency: DENOMS.UST,
-    })
-    return deposit
-  }, [])
+  const depositSavings = React.useCallback(
+    async (amount: number, password: string) => {
+      const anchorEarn = new AnchorEarn({
+        chain: CHAINS.TERRA,
+        network: NETWORKS.TEQUILA_0004,
+        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+      })
+      const deposit = await anchorEarn.deposit({
+        amount: amount.toString(),
+        currency: DENOMS.UST,
+      })
+      return deposit
+    },
+    [encryptedSecretPhrase]
+  )
 
-  const withdrawSavings = React.useCallback(async (amount: number) => {
-    const anchorEarn = new AnchorEarn({
-      chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
-      privateKey: getPrivKey(
-        TEST_KEY
-        // openlogin.privKey
-      ),
-    })
-    const withdraw = await anchorEarn.withdraw({
-      amount: amount.toString(),
-      currency: DENOMS.UST,
-    })
-    return withdraw
-  }, [])
+  const withdrawSavings = React.useCallback(
+    async (amount: number, password: string) => {
+      const anchorEarn = new AnchorEarn({
+        chain: CHAINS.TERRA,
+        network: NETWORKS.TEQUILA_0004,
+        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+      })
+      const withdraw = await anchorEarn.withdraw({
+        amount: amount.toString(),
+        currency: DENOMS.UST,
+      })
+      return withdraw
+    },
+    [encryptedSecretPhrase]
+  )
 
   return (
     <AssetsContext.Provider
       value={{
         address,
         assets,
+        login,
         swap,
         depositSavings,
         withdrawSavings,

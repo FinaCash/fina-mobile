@@ -2,6 +2,7 @@ import React from 'react'
 import { Animated, TouchableOpacity, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
+import SearchIcon from '../../assets/images/icons/search.svg'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
 import ReceiveIcon from '../../assets/images/icons/receive.svg'
 import NotificationsIcon from '../../assets/images/icons/notifications.svg'
@@ -21,7 +22,7 @@ import { Asset, AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import { formatCurrency } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
-import SearchBar from '../../components/SearchBar'
+import Input from '../../components/Input'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
@@ -142,7 +143,12 @@ const Home: React.FC = () => {
             ]}
           >
             <View style={styles.swipeIndicator} />
-            <SearchBar value={search} onChangeText={setSearch} />
+            <Input
+              placeholder={t('search')}
+              icon={SearchIcon}
+              value={search}
+              onChangeText={setSearch}
+            />
           </Animated.View>
         }
         sectionListProps={{
