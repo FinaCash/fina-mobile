@@ -29,7 +29,7 @@ const usePersistedState = <P>(
 
   React.useEffect(() => {
     retrievePersistedValue()
-  }, [retrievePersistedValue])
+  }, [])
 
   React.useEffect(() => {
     ;(get(options, 'secure', false) ? SecureStore.setItemAsync : AsyncStorage.setItem)(

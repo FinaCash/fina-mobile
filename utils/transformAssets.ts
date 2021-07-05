@@ -5,7 +5,7 @@ import { Asset, AssetTypes } from '../types/assets'
 import { Currencies } from '../types/misc'
 
 export const transformCoinsToAssets = (
-  coins: Array<{ amount: string; denom: string }>
+  coins: Array<{ amount: string; denom: string; apy?: number }>
 ): Asset[] => {
   return coins
     .map((coin) => {
@@ -18,6 +18,15 @@ export const transformCoinsToAssets = (
           return {
             type: AssetTypes.Currents,
             coin,
+          }
+        case 'ausd':
+          return {
+            type: AssetTypes.Savings,
+            coin: {
+              amount: coin.amount,
+              denom: 'uusd',
+            },
+            apy: coin.apy,
           }
         default:
           return null
@@ -52,18 +61,6 @@ export const transformAssetsToSections = (assets: Asset[]) =>
     const assetsForThisType = assets.filter((a) => a.type === type)
     return {
       title: type,
-      data:
-        type === AssetTypes.Savings && assetsForThisType.length === 0
-          ? [
-              {
-                type: AssetTypes.Savings,
-                coin: {
-                  denom: Currencies.USD,
-                  amount: '0',
-                },
-                apy: 0.2,
-              },
-            ]
-          : assetsForThisType,
+      data: assetsForThisType,
     }
   })

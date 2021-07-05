@@ -8,6 +8,9 @@ import Button from '../../components/Button'
 import useStateHistory from '../../utils/useStateHistory'
 import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
+import { MnemonicKey } from '@terra-money/terra.js'
+import { useAssetsContext } from '../../contexts/AssetsContext'
+import { ScrollView } from 'react-native'
 
 enum ContentStage {
   Start = 'start',
@@ -20,11 +23,20 @@ interface LoginProps {}
 const Login: React.FC<LoginProps> = () => {
   const { styles } = useStyles(getStyles)
   const { t } = useTranslation()
+  const { login } = useAssetsContext()
   const [stage, setStage, back] = useStateHistory(ContentStage.Start)
   const [phraseInput, setPhraseInput] = React.useState('')
 
+  const onSubmit = React.useCallback(
+    async (passcode: string) => {
+      await login(phraseInput, passcode)
+      Actions.replace('Main')
+    },
+    [phraseInput, login]
+  )
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
       <View>
         <Image style={styles.logo} source={require('../../assets/images/logo.png')} />
         <Typography type="Large" style={styles.slogan}>
@@ -42,7 +54,11 @@ const Login: React.FC<LoginProps> = () => {
               {t('import wallet')}
             </Button>
             <Button
-              onPress={() => setStage(ContentStage.CreateWallet)}
+              onPress={() => {
+                setStage(ContentStage.CreateWallet)
+                const { mnemonic } = new MnemonicKey()
+                setPhraseInput(mnemonic)
+              }}
               size="Large"
               style={styles.button}
             >
@@ -59,6 +75,7 @@ const Login: React.FC<LoginProps> = () => {
               autoCapitalize="none"
               value={phraseInput}
               onChangeText={setPhraseInput}
+              editable={stage === ContentStage.ImportWallet}
             />
             {stage === ContentStage.CreateWallet ? (
               <Typography type="Small" style={styles.securityReminder}>
@@ -70,7 +87,13 @@ const Login: React.FC<LoginProps> = () => {
                 {t('back')}
               </Button>
               <Button
-                onPress={() => Actions.Passcode({ title: t('please enter passcode') })}
+                onPress={() =>
+                  Actions.Passcode({
+                    title: t('please enter passcode'),
+                    onSubmit,
+                    confirmationRequired: true,
+                  })
+                }
                 size="Large"
                 style={styles.rowButton}
               >
@@ -80,7 +103,7 @@ const Login: React.FC<LoginProps> = () => {
           </>
         ) : null}
       </View>
-    </View>
+    </ScrollView>
   )
 }
 

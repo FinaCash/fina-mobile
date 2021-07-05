@@ -1,6 +1,5 @@
 import React from 'react'
-import { Image, TextInput, TouchableOpacity, View } from 'react-native'
-import { useActionSheet } from '@expo/react-native-action-sheet'
+import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
@@ -8,7 +7,7 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import { Asset, AssetTypes } from '../../types/assets'
+import { AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
@@ -17,16 +16,15 @@ import { Coin } from '@terra-money/terra.js'
 import terra from '../../utils/terraClient'
 import Button from '../../components/Button'
 
-interface SwapProps {
+interface SavingsProps {
   type: 'deposit' | 'withdraw'
 }
 
-const Swap: React.FC<SwapProps> = ({ type }) => {
+const Savings: React.FC<SavingsProps> = ({ type }) => {
   const { styles, theme } = useStyles(getStyles)
   const { depositSavings, withdrawSavings } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
-  const { showActionSheetWithOptions } = useActionSheet()
   const [amount, setAmount] = React.useState('')
 
   const [baseCurrencyCoin, setBaseCurrencyCoin] = React.useState(new Coin(currency, '0'))
@@ -50,19 +48,22 @@ const Swap: React.FC<SwapProps> = ({ type }) => {
     [currency]
   )
 
-  const submit = React.useCallback(async () => {
-    try {
-      setLoading(true)
-      await (type === 'deposit' ? depositSavings : withdrawSavings)(Number(amount))
-      Actions.pop()
-    } catch (err) {
-      console.log(err)
-      setLoading(false)
-    }
-  }, [type, depositSavings, withdrawSavings, amount])
+  const onSubmit = React.useCallback(
+    async (passcode: string) => {
+      try {
+        setLoading(true)
+        await (type === 'deposit' ? depositSavings : withdrawSavings)(Number(amount), passcode)
+        Actions.pop()
+      } catch (err) {
+        console.log(err)
+        setLoading(false)
+      }
+    },
+    [type, depositSavings, withdrawSavings, amount]
+  )
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
       <View style={styles.header}>
         <Typography type="H3">{t('savings')}</Typography>
         <TouchableOpacity onPress={() => Actions.pop()}>
@@ -108,11 +109,16 @@ const Swap: React.FC<SwapProps> = ({ type }) => {
         placeholderTextColor={theme.palette.grey[3]}
         value={amount}
       />
-      <Button style={styles.button} size="Large" onPress={submit} loading={loading}>
+      <Button
+        style={styles.button}
+        size="Large"
+        onPress={() => Actions.Passcode({ title: t('please enter your passcode'), onSubmit })}
+        loading={loading}
+      >
         Confirm
       </Button>
-    </View>
+    </ScrollView>
   )
 }
 
-export default Swap
+export default Savings

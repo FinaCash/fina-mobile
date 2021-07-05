@@ -1,10 +1,9 @@
 import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import PinCodeInput from 'react-native-smooth-pincode-input'
 import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 
@@ -17,8 +16,36 @@ interface PasscodeProps {
 const Passcode: React.FC<PasscodeProps> = ({ title, onSubmit, confirmationRequired }) => {
   const inputRef = React.useRef(null)
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const [isConfirming, setIsConfirming] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
   const [code, setCode] = React.useState('')
+  const [confirmCode, setConfirmCode] = React.useState('')
+
+  const submit = React.useCallback(
+    async (input: string) => {
+      setLoading(true)
+      try {
+        if (confirmationRequired && !isConfirming) {
+          setIsConfirming(true)
+          return
+        }
+        if (confirmationRequired && isConfirming && code !== input) {
+          throw new Error('incorrect confirm code')
+        }
+        await onSubmit(input)
+      } catch (err) {
+        console.log(err)
+        ;(inputRef.current as any).shake()
+        setLoading(false)
+        if (isConfirming) {
+          setConfirmCode('')
+        } else {
+          setCode('')
+        }
+      }
+    },
+    [onSubmit, code, inputRef, isConfirming, setIsConfirming, confirmationRequired]
+  )
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.closeButton} onPress={() => Actions.pop()}>
@@ -35,12 +62,15 @@ const Passcode: React.FC<PasscodeProps> = ({ title, onSubmit, confirmationRequir
         password={true}
         cellStyle={null}
         cellStyleFocused={null}
-        value={code}
-        onTextChange={setCode}
-        onFulfill={() => console.log('done')}
+        value={isConfirming ? confirmCode : code}
+        onTextChange={isConfirming ? setConfirmCode : setCode}
+        onFulfill={submit}
         codeLength={6}
         autoFocus
       />
+      {loading ? (
+        <ActivityIndicator style={{ marginTop: theme.baseSpace * 12 }} size="large" />
+      ) : null}
     </View>
   )
 }

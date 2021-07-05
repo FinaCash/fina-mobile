@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, TextInput, TouchableOpacity, View } from 'react-native'
+import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
@@ -8,7 +8,7 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import { Asset, AssetTypes } from '../../types/assets'
+import { AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
@@ -37,8 +37,6 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo, type }) =
   const [toAmount, setToAmount] = React.useState('')
 
   const [baseCurrencyCoin, setBaseCurrencyCoin] = React.useState(new Coin(currency, '0'))
-
-  const [loading, setLoading] = React.useState(false)
 
   const changeAmount = React.useCallback(
     async (a: string, which: 'from' | 'to', defaultObj?: Currencies) => {
@@ -98,24 +96,22 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo, type }) =
     [t, fromAmount, toAmount, changeAmount]
   )
 
-  const submit = React.useCallback(async () => {
-    try {
-      setLoading(true)
+  const onSubmit = React.useCallback(
+    async (passcode: string) => {
       if (from && to) {
         await swap(
           new Coin(from, (Number(fromAmount) * 10 ** 6).toString()),
-          new Coin(to, (Number(toAmount) * 10 ** 6).toString())
+          new Coin(to, (Number(toAmount) * 10 ** 6).toString()),
+          passcode
         )
       }
       Actions.pop()
-    } catch (err) {
-      console.log(err)
-      setLoading(false)
-    }
-  }, [from, to, fromAmount, toAmount])
+    },
+    [from, to, fromAmount, toAmount]
+  )
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Typography type="H3">{t('exchange')}</Typography>
         <TouchableOpacity onPress={() => Actions.pop()}>
@@ -170,10 +166,14 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo, type }) =
         onChangeText={(a) => changeAmount(a, 'to')}
         value={toAmount}
       />
-      <Button style={styles.button} size="Large" onPress={submit} loading={loading}>
+      <Button
+        style={styles.button}
+        size="Large"
+        onPress={() => Actions.Passcode({ onSubmit, title: t('please enter your passcode') })}
+      >
         Confirm
       </Button>
-    </View>
+    </ScrollView>
   )
 }
 

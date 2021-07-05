@@ -13,6 +13,7 @@ import Swap from '../screens/Swap'
 import Login from '../screens/Login'
 import useTranslation from '../locales/useTranslation'
 import Passcode from '../screens/Passcode'
+import Savings from '../screens/Savings'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -26,14 +27,18 @@ export const TabIcon: React.FC<{
       {React.cloneElement(iconSvg, {
         fill: focused ? theme.palette.primary : theme.palette.grey[6],
       })}
-      <Typography type="Mini" color={focused ? theme.palette.primary : theme.palette.grey[6]}>
+      <Typography
+        style={styles.tabText}
+        type="Mini"
+        color={focused ? theme.palette.primary : theme.palette.grey[6]}
+      >
         {tabTitle}
       </Typography>
     </View>
   )
 }
 
-const Routes: React.FC = () => {
+const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
   const { styles } = useStyles(getStyles)
   const { t } = useTranslation()
   return (
@@ -42,9 +47,8 @@ const Routes: React.FC = () => {
         <Scene key="root">
           <Modal hideNavBar>
             <Scene key="Login" hideNavBar component={Login} />
-            <Stack hideNavBar>
+            <Stack hideNavBar key="Main" initial={isLoggedIn}>
               <Tabs
-                key="Tabs"
                 tabBarPosition="bottom"
                 showLabel={false}
                 tabBarStyle={styles.tabBar}
@@ -86,6 +90,7 @@ const Routes: React.FC = () => {
               </Tabs>
             </Stack>
             <Scene key="Swap" hideNavBar component={Swap} />
+            <Scene key="Savings" hideNavBar component={Savings} />
             <Scene key="Passcode" hideNavBar component={Passcode} />
           </Modal>
         </Scene>

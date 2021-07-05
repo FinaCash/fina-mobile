@@ -16,6 +16,9 @@ export default (theme: Theme) => ({
   tab: {
     alignItems: 'center',
   },
+  tabText: {
+    marginTop: theme.baseSpace,
+  },
   // raisedTab: {
   //   backgroundColor: theme.palette.primary,
   //   height: theme.tabBarHeight + 2 * theme.baseSpace,

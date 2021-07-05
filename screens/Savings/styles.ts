@@ -3,6 +3,7 @@ import { Theme } from '../../types/misc'
 export default (theme: Theme) => ({
   container: {
     padding: theme.baseSpace * 6,
+    marginTop: theme.statusBarHeight,
   },
   header: {
     flexDirection: 'row',
@@ -26,7 +27,7 @@ export default (theme: Theme) => ({
   avatar: {
     width: theme.baseSpace * 10,
     height: theme.baseSpace * 10,
-    borderRadius: '50%',
+    borderRadius: 4 * theme.baseSpace,
     marginRight: theme.baseSpace * 6,
   },
   button: {

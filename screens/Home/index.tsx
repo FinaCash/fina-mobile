@@ -81,7 +81,7 @@ const Home: React.FC = () => {
             // Receive
           }
           if (asset.type === AssetTypes.Currents && index === 2) {
-            return Actions.push('Swap', { from: asset.coin.denom, type: AssetTypes.Savings })
+            return Actions.push('Savings', { from: asset.coin.denom, type: 'deposit' })
           }
           if (asset.type === AssetTypes.Currents && index === 3) {
             return Actions.push('Swap', { from: asset.coin.denom, type: AssetTypes.Currents })
@@ -145,7 +145,7 @@ const Home: React.FC = () => {
             <View style={styles.swipeIndicator} />
             <Input
               placeholder={t('search')}
-              icon={SearchIcon}
+              icon={<SearchIcon />}
               value={search}
               onChangeText={setSearch}
             />
