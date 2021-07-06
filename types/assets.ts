@@ -3,7 +3,7 @@ import { Currencies } from './misc'
 export enum AssetTypes {
   Currents = 'currents',
   Savings = 'savings',
-  // Stocks = 'stocks',
+  Investments = 'investments',
   // Cryptos = 'cryptos',
 }
 
@@ -14,4 +14,18 @@ export interface Asset {
     amount: string
   }
   apy?: number
+}
+
+export interface MirrorAsset {
+  type: AssetTypes.Investments
+  name: string
+  symbol: string
+  description: string
+  contract: string
+  price: number
+  prevPrice: number
+  priceHistories: Array<{
+    timestamp: number
+    price: number
+  }>
 }

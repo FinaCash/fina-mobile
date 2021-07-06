@@ -120,15 +120,12 @@ const Home: React.FC = () => {
         ref={modalizeRef}
         alwaysOpen={
           theme.screenHeight -
-          64 * theme.baseSpace -
+          72 * theme.baseSpace -
           theme.bottomSpace -
           theme.tabBarHeight -
           theme.statusBarHeight
         }
-        modalStyle={{
-          borderTopLeftRadius: theme.borderRadius[2],
-          borderTopRightRadius: theme.borderRadius[2],
-        }}
+        modalStyle={styles.modal}
         withHandle={false}
         panGestureAnimatedValue={scrollY}
         useNativeDriver={false}

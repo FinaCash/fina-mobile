@@ -2,17 +2,19 @@ import React from 'react'
 import { Coin, MsgSwap, MnemonicKey } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import get from 'lodash/get'
-import terra from '../utils/terraClient'
+import { terraLCDClient as terra, anchorConfig } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset } from '../types/assets'
-import { AnchorEarn, CHAINS, NETWORKS, DENOMS } from '@anchor-protocol/anchor-earn'
+import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
 import usePersistedState from '../utils/usePersistedState'
+import { Actions } from 'react-native-router-flux'
 
 interface AssetsState {
   address: string
   assets: Asset[]
   loaded: boolean
   login(secretPhrase: string, password: string): void
+  logout(): void
   swap(from: Coin, to: Coin, password: string): void
   depositSavings(amount: number, password: string): void
   withdrawSavings(amount: number, password: string): void
@@ -23,6 +25,7 @@ const initialState: AssetsState = {
   assets: [],
   loaded: false,
   login: () => null,
+  logout: () => null,
   swap: () => null,
   depositSavings: () => null,
   withdrawSavings: () => null,
@@ -48,8 +51,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const fetchAssets = React.useCallback(async () => {
     const balances = await terra.bank.balance(address)
     const anchorEarn = new AnchorEarn({
-      chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      ...anchorConfig,
       address,
     })
     const userBalance = await anchorEarn.balance({
@@ -88,6 +90,13 @@ const AssetsProvider: React.FC = ({ children }) => {
     [setAddress, setEncryptedSecretPhrase]
   )
 
+  const logout = React.useCallback(() => {
+    setAddress(initialState.address)
+    setAssets(initialState.assets)
+    setEncryptedSecretPhrase('')
+    Actions.reset('Login')
+  }, [])
+
   const swap = React.useCallback(
     async (from: Coin, to: Coin, password: string) => {
       const key = new MnemonicKey({
@@ -116,8 +125,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const depositSavings = React.useCallback(
     async (amount: number, password: string) => {
       const anchorEarn = new AnchorEarn({
-        chain: CHAINS.TERRA,
-        network: NETWORKS.TEQUILA_0004,
+        ...anchorConfig,
         mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
       })
       const deposit = await anchorEarn.deposit({
@@ -132,8 +140,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const withdrawSavings = React.useCallback(
     async (amount: number, password: string) => {
       const anchorEarn = new AnchorEarn({
-        chain: CHAINS.TERRA,
-        network: NETWORKS.TEQUILA_0004,
+        ...anchorConfig,
         mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
       })
       const withdraw = await anchorEarn.withdraw({
@@ -152,6 +159,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         assets,
         loaded,
         login,
+        logout,
         swap,
         depositSavings,
         withdrawSavings,

@@ -1,5 +1,5 @@
 import { Coin } from '@terra-money/terra.js'
-import terra from '../../utils/terraClient'
+import { terraLCDClient as terra } from '../../utils/terraConfig'
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'

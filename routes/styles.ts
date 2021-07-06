@@ -10,7 +10,7 @@ export default (theme: Theme) => ({
     paddingTop: 4 * theme.baseSpace,
     paddingBottom: 4 * theme.baseSpace + theme.bottomSpace,
     height: theme.tabBarHeight + theme.bottomSpace,
-    position: 'absolute',
+    // position: 'absolute',
     // ...theme.shadow,
   },
   tab: {

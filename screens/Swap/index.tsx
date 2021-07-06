@@ -14,7 +14,7 @@ import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
-import terra from '../../utils/terraClient'
+import { terraLCDClient as terra } from '../../utils/terraConfig'
 import Button from '../../components/Button'
 
 interface SwapProps {

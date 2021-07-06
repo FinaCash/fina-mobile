@@ -14,6 +14,8 @@ import Login from '../screens/Login'
 import useTranslation from '../locales/useTranslation'
 import Passcode from '../screens/Passcode'
 import Savings from '../screens/Savings'
+import Settings from '../screens/Settings'
+import Invest from '../screens/Invest'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -22,16 +24,13 @@ export const TabIcon: React.FC<{
   navigation: { state: { key: string } }
 }> = ({ focused, iconSvg, tabTitle }) => {
   const { theme, styles } = useStyles(getStyles)
+  const color = focused ? theme.palette.primary : theme.palette.grey[6]
   return (
     <View style={styles.tab}>
       {React.cloneElement(iconSvg, {
-        fill: focused ? theme.palette.primary : theme.palette.grey[6],
+        fill: color,
       })}
-      <Typography
-        style={styles.tabText}
-        type="Mini"
-        color={focused ? theme.palette.primary : theme.palette.grey[6]}
-      >
+      <Typography style={styles.tabText} type="Mini" color={color}>
         {tabTitle}
       </Typography>
     </View>
@@ -72,12 +71,12 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
                   component={() => null}
                 />
                 <Scene
-                  key="Swap"
+                  key="Invest"
                   hideNavBar
                   iconSvg={<SwapIcon />}
-                  tabTitle={t('swap')}
+                  tabTitle={t('invest')}
                   icon={TabIcon}
-                  component={() => null}
+                  component={Invest}
                 />
                 <Scene
                   key="Settings"
@@ -85,7 +84,7 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
                   iconSvg={<SettingsIcon />}
                   tabTitle={t('settings')}
                   icon={TabIcon}
-                  component={() => null}
+                  component={Settings}
                 />
               </Tabs>
             </Stack>

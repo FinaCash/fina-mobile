@@ -23,7 +23,6 @@ const Passcode: React.FC<PasscodeProps> = ({ title, onSubmit, confirmationRequir
 
   const submit = React.useCallback(
     async (input: string) => {
-      setLoading(true)
       try {
         if (confirmationRequired && !isConfirming) {
           setIsConfirming(true)
@@ -32,6 +31,7 @@ const Passcode: React.FC<PasscodeProps> = ({ title, onSubmit, confirmationRequir
         if (confirmationRequired && isConfirming && code !== input) {
           throw new Error('incorrect confirm code')
         }
+        setLoading(true)
         await onSubmit(input)
       } catch (err) {
         console.log(err)

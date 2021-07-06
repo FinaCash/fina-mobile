@@ -5,8 +5,8 @@ export const formatCurrency = (amount: string | number, denom: Currencies) =>
     (Number(amount) || 0) / 10 ** 6
   )}`
 
-export const formatPercentage = (percent: number): string =>
+export const formatPercentage = (percent: number, digits?: number): string =>
   new Intl.NumberFormat('en', {
     style: 'percent',
-    maximumFractionDigits: 0,
+    maximumFractionDigits: digits || 0,
   }).format(percent || 0)

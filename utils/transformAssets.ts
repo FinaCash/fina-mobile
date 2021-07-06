@@ -1,5 +1,5 @@
 import groupBy from 'lodash/groupBy'
-import terra from './terraClient'
+import { terraLCDClient as terra } from './terraConfig'
 import { Coin } from '@terra-money/terra.js'
 import { Asset, AssetTypes } from '../types/assets'
 import { Currencies } from '../types/misc'

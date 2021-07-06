@@ -1,6 +1,7 @@
 import React from 'react'
 import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
+import get from 'lodash/get'
 import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -13,8 +14,9 @@ import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
-import terra from '../../utils/terraClient'
+import { terraLCDClient as terra, anchorConfig } from '../../utils/terraConfig'
 import Button from '../../components/Button'
+import { AnchorEarn, CHAINS, DENOMS, NETWORKS } from '@anchor-protocol/anchor-earn'
 
 interface SavingsProps {
   type: 'deposit' | 'withdraw'
@@ -22,10 +24,11 @@ interface SavingsProps {
 
 const Savings: React.FC<SavingsProps> = ({ type }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { depositSavings, withdrawSavings } = useAssetsContext()
+  const { address, depositSavings, withdrawSavings } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const [amount, setAmount] = React.useState('')
+  const [apy, setApy] = React.useState(0)
 
   const [baseCurrencyCoin, setBaseCurrencyCoin] = React.useState(new Coin(currency, '0'))
 
@@ -62,6 +65,25 @@ const Savings: React.FC<SavingsProps> = ({ type }) => {
     [type, depositSavings, withdrawSavings, amount]
   )
 
+  const fetchApy = React.useCallback(async () => {
+    try {
+      const anchorEarn = new AnchorEarn({
+        ...anchorConfig,
+        address,
+      })
+      const market = await anchorEarn.market({
+        currencies: [DENOMS.UST],
+      })
+      setApy(Number(get(market, 'markets[0].APY', 0)))
+    } catch (err) {
+      console.log(err)
+    }
+  }, [setApy])
+
+  React.useEffect(() => {
+    fetchApy()
+  }, [])
+
   return (
     <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
       <View style={styles.header}>
@@ -75,6 +97,7 @@ const Savings: React.FC<SavingsProps> = ({ type }) => {
         asset={{
           type: type === 'deposit' ? AssetTypes.Currents : AssetTypes.Savings,
           coin: { denom: Currencies.USD, amount: (Number(amount) * 10 ** 6).toString() },
+          apy: type === 'deposit' ? undefined : apy,
         }}
         dropdown
         onPress={() => null}
@@ -99,6 +122,7 @@ const Savings: React.FC<SavingsProps> = ({ type }) => {
         asset={{
           type: type === 'withdraw' ? AssetTypes.Currents : AssetTypes.Savings,
           coin: { denom: Currencies.USD, amount: (Number(amount) * 10 ** 6).toString() },
+          apy: type === 'withdraw' ? undefined : apy,
         }}
         dropdown
         onPress={() => null}
