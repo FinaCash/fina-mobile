@@ -16,6 +16,7 @@ import Passcode from '../screens/Passcode'
 import Savings from '../screens/Savings'
 import Settings from '../screens/Settings'
 import Invest from '../screens/Invest'
+import MirrorSwap from '../screens/MirrorSwap'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -90,6 +91,7 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
             </Stack>
             <Scene key="Swap" hideNavBar component={Swap} />
             <Scene key="Savings" hideNavBar component={Savings} />
+            <Scene key="MirrorSwap" hideNavBar component={MirrorSwap} />
             <Scene key="Passcode" hideNavBar component={Passcode} />
           </Modal>
         </Scene>

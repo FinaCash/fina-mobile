@@ -20,10 +20,9 @@ import Button from '../../components/Button'
 interface SwapProps {
   from?: Currencies
   to?: Currencies
-  type: AssetTypes
 }
 
-const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo, type }) => {
+const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
   const { styles, theme } = useStyles(getStyles)
   const { assets, swap } = useAssetsContext()
   const { currency } = useSettingsContext()

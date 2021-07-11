@@ -21,7 +21,6 @@ export interface MirrorAsset {
   name: string
   symbol: string
   description: string
-  contract: string
   price: number
   prevPrice: number
   priceHistories: Array<{

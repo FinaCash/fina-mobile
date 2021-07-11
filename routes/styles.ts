@@ -2,7 +2,7 @@ import { Theme } from '../types/misc'
 
 export default (theme: Theme) => ({
   scene: {
-    backgroundColor: theme.palette.grey[0],
+    backgroundColor: theme.palette.white,
   },
   tabBar: {
     backgroundColor: theme.palette.white,

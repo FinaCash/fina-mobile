@@ -47,13 +47,17 @@ const MirrorAssetItem: React.FC<MirrorAssetItemProps> = ({ mAsset, style, ...pro
         <Image source={{ uri: getMirrorAssetImage(mAsset.symbol) }} style={styles.avatar} />
         <View>
           <Typography type="H6">{mAsset.symbol}</Typography>
-          <Typography numberOfLines={2}>{mAsset.name}</Typography>
+          <Typography type="Small" numberOfLines={2}>
+            {mAsset.name}
+          </Typography>
         </View>
       </View>
 
       <View style={styles.rightAligned}>
         <Typography type="H6">{formatCurrency(mAsset.price, Currencies.USD)}</Typography>
-        <Typography>{formatPercentage(deltaPercent, 2)}</Typography>
+        <Typography bold color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}>
+          {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
+        </Typography>
       </View>
     </TouchableOpacity>
   )

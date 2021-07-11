@@ -72,7 +72,7 @@ const Home: React.FC = () => {
             return
           }
           if (asset.type === AssetTypes.Savings && index === 0) {
-            return Actions.push('Swap', { to: asset.coin.denom, type: AssetTypes.Savings })
+            return Actions.Savings({ from: asset.coin.denom, mode: 'withdraw' })
           }
           if (asset.type === AssetTypes.Currents && index === 0) {
             // Send
@@ -81,10 +81,10 @@ const Home: React.FC = () => {
             // Receive
           }
           if (asset.type === AssetTypes.Currents && index === 2) {
-            return Actions.push('Savings', { from: asset.coin.denom, type: 'deposit' })
+            return Actions.Savings({ from: asset.coin.denom, mode: 'deposit' })
           }
           if (asset.type === AssetTypes.Currents && index === 3) {
-            return Actions.push('Swap', { from: asset.coin.denom, type: AssetTypes.Currents })
+            return Actions.Swap({ from: asset.coin.denom })
           }
         }
       )

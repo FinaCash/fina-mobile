@@ -1,7 +1,7 @@
 export default {
   palette: {
     primary: '#0060f8',
-    secondary: '#12da6d',
+    green: '#12da6d',
     red: '#fb5063',
     grey: [
       '#1b203b',

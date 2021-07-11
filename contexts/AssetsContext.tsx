@@ -1,6 +1,7 @@
 import React from 'react'
 import { Coin, MsgSwap, MnemonicKey } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
+import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import get from 'lodash/get'
 import { terraLCDClient as terra, anchorConfig } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
@@ -115,7 +116,6 @@ const AssetsProvider: React.FC = ({ children }) => {
         // },
       })
       const result = await terra.tx.broadcast(tx)
-      console.log(result)
       fetchAssets()
       return result
     },
@@ -132,9 +132,10 @@ const AssetsProvider: React.FC = ({ children }) => {
         amount: amount.toString(),
         currency: DENOMS.UST,
       })
+      fetchAssets()
       return deposit
     },
-    [encryptedSecretPhrase]
+    [encryptedSecretPhrase, fetchAssets()]
   )
 
   const withdrawSavings = React.useCallback(
@@ -147,9 +148,42 @@ const AssetsProvider: React.FC = ({ children }) => {
         amount: amount.toString(),
         currency: DENOMS.UST,
       })
+      fetchAssets()
       return withdraw
     },
-    [encryptedSecretPhrase]
+    [encryptedSecretPhrase, fetchAssets()]
+  )
+
+  const swapMAsset = React.useCallback(
+    async (symbol: string, amount: number, mode: 'buy' | 'sell', password: string) => {
+      const key = new MnemonicKey({
+        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+      })
+      const wallet = terra.wallet(key)
+      const mirror = new Mirror()
+      const tx = await wallet.createAndSignTx({
+        msgs: [
+          mirror.assets[symbol].pair.swap(
+            {
+              amount: (Number(amount) * 10 ** 6).toString(),
+              info:
+                mode === 'buy'
+                  ? UST
+                  : {
+                      token: {
+                        contract_addr: mirror.assets[symbol].token.contractAddress as string,
+                      },
+                    },
+            },
+            {}
+          ),
+        ],
+      })
+      const result = await terra.tx.broadcast(tx)
+      fetchAssets()
+      return result
+    },
+    [encryptedSecretPhrase, fetchAssets()]
   )
 
   return (

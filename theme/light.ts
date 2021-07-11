@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 export default {
   palette: {
     primary: '#0E1E59',
-    secondary: '#12da6d',
+    green: '#12da6d',
     red: '#fb5063',
     grey: [
       '#f4f5fa',

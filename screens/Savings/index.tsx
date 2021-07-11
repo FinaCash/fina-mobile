@@ -16,13 +16,13 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
 import { terraLCDClient as terra, anchorConfig } from '../../utils/terraConfig'
 import Button from '../../components/Button'
-import { AnchorEarn, CHAINS, DENOMS, NETWORKS } from '@anchor-protocol/anchor-earn'
+import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
 
 interface SavingsProps {
-  type: 'deposit' | 'withdraw'
+  mode: 'deposit' | 'withdraw'
 }
 
-const Savings: React.FC<SavingsProps> = ({ type }) => {
+const Savings: React.FC<SavingsProps> = ({ mode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { address, depositSavings, withdrawSavings } = useAssetsContext()
   const { currency } = useSettingsContext()
@@ -55,14 +55,14 @@ const Savings: React.FC<SavingsProps> = ({ type }) => {
     async (passcode: string) => {
       try {
         setLoading(true)
-        await (type === 'deposit' ? depositSavings : withdrawSavings)(Number(amount), passcode)
+        await (mode === 'deposit' ? depositSavings : withdrawSavings)(Number(amount), passcode)
         Actions.pop()
       } catch (err) {
         console.log(err)
         setLoading(false)
       }
     },
-    [type, depositSavings, withdrawSavings, amount]
+    [mode, depositSavings, withdrawSavings, amount]
   )
 
   const fetchApy = React.useCallback(async () => {
@@ -95,9 +95,9 @@ const Savings: React.FC<SavingsProps> = ({ type }) => {
       <AssetItem
         style={styles.from}
         asset={{
-          type: type === 'deposit' ? AssetTypes.Currents : AssetTypes.Savings,
+          type: mode === 'deposit' ? AssetTypes.Currents : AssetTypes.Savings,
           coin: { denom: Currencies.USD, amount: (Number(amount) * 10 ** 6).toString() },
-          apy: type === 'deposit' ? undefined : apy,
+          apy: mode === 'deposit' ? undefined : apy,
         }}
         dropdown
         onPress={() => null}
@@ -120,9 +120,9 @@ const Savings: React.FC<SavingsProps> = ({ type }) => {
       <AssetItem
         style={styles.to}
         asset={{
-          type: type === 'withdraw' ? AssetTypes.Currents : AssetTypes.Savings,
+          type: mode === 'withdraw' ? AssetTypes.Currents : AssetTypes.Savings,
           coin: { denom: Currencies.USD, amount: (Number(amount) * 10 ** 6).toString() },
-          apy: type === 'withdraw' ? undefined : apy,
+          apy: mode === 'withdraw' ? undefined : apy,
         }}
         dropdown
         onPress={() => null}
