@@ -1,4 +1,5 @@
 import { CHAINS, NETWORKS } from '@anchor-protocol/anchor-earn'
+import { DEFAULT_TEQUILA_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
 
 export const terraLCDClient = new LCDClient({
@@ -12,5 +13,5 @@ export const anchorConfig = {
 }
 
 export const mirrorGraphqlUrl = 'https://tequila-graph.mirror.finance/graphql'
-export const getMirrorAssetImage = (symbol: string) =>
-  `https://whitelist.mirror.finance/images/${symbol.replace(/^m/, '')}.png`
+
+export const mirrorOptions = DEFAULT_TEQUILA_MIRROR_OPTIONS

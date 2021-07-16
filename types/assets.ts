@@ -1,4 +1,4 @@
-import { Currencies } from './misc'
+import { Coin } from '@terra-money/terra.js'
 
 export enum AssetTypes {
   Currents = 'currents',
@@ -9,17 +9,25 @@ export enum AssetTypes {
 
 export interface Asset {
   type: AssetTypes
+  name: string
+  symbol: string
+  image: string
   coin: {
-    denom: Currencies
+    denom: string
     amount: string
   }
-  apy?: number
+  worth: {
+    denom: string
+    amount: string
+  }
+  apy: number
 }
 
 export interface MirrorAsset {
   type: AssetTypes.Investments
   name: string
   symbol: string
+  image: string
   description: string
   price: number
   prevPrice: number

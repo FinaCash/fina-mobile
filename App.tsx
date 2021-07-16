@@ -37,11 +37,11 @@ export default function App() {
   return (
     <ActionSheetProvider>
       <SettingsProvider>
-        <AssetsProvider>
-          <MirrorAssetsProvider>
+        <MirrorAssetsProvider>
+          <AssetsProvider>
             <InnerApp />
-          </MirrorAssetsProvider>
-        </AssetsProvider>
+          </AssetsProvider>
+        </MirrorAssetsProvider>
       </SettingsProvider>
     </ActionSheetProvider>
   )

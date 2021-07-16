@@ -4,7 +4,6 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
-import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -12,14 +11,12 @@ import { AssetTypes, MirrorAsset } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
-import { formatCurrency } from '../../utils/formatNumbers'
-import { Coin } from '@terra-money/terra.js'
-import { terraLCDClient as terra } from '../../utils/terraConfig'
 import Button from '../../components/Button'
-import { useMirrorAssetsContext } from '../../contexts/MirrorAssetsContext'
 import MirrorAssetItem from '../../components/MirrorAssetItem'
+import { useAssetsContext } from '../../contexts/AssetsContext'
+import { mirrorOptions } from '../../utils/terraConfig'
 
-const mirror = new Mirror()
+const mirror = new Mirror(mirrorOptions)
 
 interface MirrorSwapProps {
   asset: MirrorAsset
@@ -29,7 +26,7 @@ interface MirrorSwapProps {
 const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
-  const {} = useMirrorAssetsContext()
+  const { swapMAsset } = useAssetsContext()
 
   const [asset, setAsset] = React.useState(defaultAsset)
 
@@ -104,16 +101,12 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
 
   const onSubmit = React.useCallback(
     async (passcode: string) => {
-      // if (fromAmount && toAmount) {
-      //   await swap(
-      //     new Coin(from, (Number(fromAmount) * 10 ** 6).toString()),
-      //     new Coin(to, (Number(toAmount) * 10 ** 6).toString()),
-      //     passcode
-      //   )
-      // }
+      if (fromAmount) {
+        await swapMAsset(asset.symbol, Number(fromAmount), mode, passcode)
+      }
       Actions.pop()
     },
-    [asset, fromAmount, toAmount, asset, mode]
+    [asset, fromAmount, mode]
   )
 
   return (

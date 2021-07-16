@@ -36,6 +36,8 @@ const Home: React.FC = () => {
     Array<{ type: string; value: number }>
   >([])
   const [search, setSearch] = React.useState('')
+  const [filterAsset, setFilterAsset] = React.useState(AssetTypes.Currents)
+
   const total = React.useMemo(
     () => assetsDistribution.map((a) => a.value).reduce((a, b) => a + b, 0),
     [assetsDistribution]
@@ -43,18 +45,16 @@ const Home: React.FC = () => {
 
   const calculateAssetsDistribution = React.useCallback(async () => {
     try {
-      const result = await transformAssetsToDistributions(assets, currency)
+      const result = await transformAssetsToDistributions(assets)
       setAssetsDistribution(result)
     } catch (err) {
       console.log(err)
     }
-  }, [assets, currency])
+  }, [assets])
 
   React.useEffect(() => {
     calculateAssetsDistribution()
   }, [calculateAssetsDistribution])
-
-  const sections = React.useMemo(() => transformAssetsToSections(assets), [assets])
 
   const selectAsset = React.useCallback(
     (asset: Asset) => {
@@ -148,14 +148,13 @@ const Home: React.FC = () => {
             />
           </Animated.View>
         }
-        sectionListProps={{
-          sections,
-          renderItem: ({ item }) =>
-            (t(`${item.coin.denom} name`) + t(`${item.coin.denom} description`))
-              .toLowerCase()
-              .includes(search.toLowerCase()) ? (
-              <AssetItem asset={item} onPress={() => selectAsset(item)} />
-            ) : null,
+        flatListProps={{
+          data: assets.filter(
+            (a) =>
+              a.type === filterAsset &&
+              (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())
+          ),
+          renderItem: ({ item }) => <AssetItem asset={item} onPress={() => selectAsset(item)} />,
           keyExtractor: (item, i) => item.denom + '_' + i,
           showsVerticalScrollIndicator: false,
           style: { borderRadius: theme.borderRadius[2] },

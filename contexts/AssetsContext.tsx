@@ -3,12 +3,14 @@ import { Coin, MsgSwap, MnemonicKey } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import get from 'lodash/get'
-import { terraLCDClient as terra, anchorConfig } from '../utils/terraConfig'
+import { terraLCDClient as terra, anchorConfig, mirrorOptions } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset } from '../types/assets'
 import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
+import { useMirrorAssetsContext } from './MirrorAssetsContext'
+import { useSettingsContext } from './SettingsContext'
 
 interface AssetsState {
   address: string
@@ -19,6 +21,7 @@ interface AssetsState {
   swap(from: Coin, to: Coin, password: string): void
   depositSavings(amount: number, password: string): void
   withdrawSavings(amount: number, password: string): void
+  swapMAsset(symbol: string, amount: number, mode: 'buy' | 'sell', password: string): void
 }
 
 const initialState: AssetsState = {
@@ -30,6 +33,7 @@ const initialState: AssetsState = {
   swap: () => null,
   depositSavings: () => null,
   withdrawSavings: () => null,
+  swapMAsset: () => null,
 }
 
 const AssetsContext = React.createContext<AssetsState>(initialState)
@@ -48,6 +52,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       secure: true,
     }
   )
+  const { fetchMirrorBalance, availableMirrorAssets } = useMirrorAssetsContext()
+  const { currency } = useSettingsContext()
 
   const fetchAssets = React.useCallback(async () => {
     const balances = await terra.bank.balance(address)
@@ -61,8 +67,16 @@ const AssetsProvider: React.FC = ({ children }) => {
     const market = await anchorEarn.market({
       currencies: [DENOMS.UST],
     })
-    setAssets(
-      transformCoinsToAssets([
+    const mBalance = await fetchMirrorBalance(address)
+    const mirror = new Mirror(mirrorOptions)
+    const mAssets = mBalance
+      .map((b) => {
+        const asset = Object.values(mirror.assets).find((a) => a.token.contractAddress === b.token)
+        return asset ? { denom: asset.symbol, amount: b.balance } : null
+      })
+      .filter((a) => a)
+    const result = await transformCoinsToAssets(
+      [
         ...JSON.parse(balances.toJSON()),
         {
           denom: 'ausd',
@@ -72,15 +86,19 @@ const AssetsProvider: React.FC = ({ children }) => {
           ).toString(),
           apy: Number(get(market, 'markets[0].APY', 0)),
         },
-      ])
+        ...mAssets,
+      ],
+      availableMirrorAssets,
+      currency
     )
-  }, [address, setAssets])
+    setAssets(result)
+  }, [address, setAssets, fetchMirrorBalance, availableMirrorAssets, currency])
 
   React.useEffect(() => {
-    if (address) {
+    if (address && availableMirrorAssets) {
       fetchAssets()
     }
-  }, [address])
+  }, [address, availableMirrorAssets])
 
   const login = React.useCallback(
     async (secretPhrase: string, password: string) => {
@@ -135,7 +153,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return deposit
     },
-    [encryptedSecretPhrase, fetchAssets()]
+    [encryptedSecretPhrase, fetchAssets]
   )
 
   const withdrawSavings = React.useCallback(
@@ -151,7 +169,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return withdraw
     },
-    [encryptedSecretPhrase, fetchAssets()]
+    [encryptedSecretPhrase, fetchAssets]
   )
 
   const swapMAsset = React.useCallback(
@@ -160,30 +178,29 @@ const AssetsProvider: React.FC = ({ children }) => {
         mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
       })
       const wallet = terra.wallet(key)
-      const mirror = new Mirror()
+      const mirror = new Mirror({ ...mirrorOptions, key })
+      const msg = mirror.assets[symbol].pair.swap(
+        {
+          amount: (Number(amount) * 10 ** 6).toString(),
+          info:
+            mode === 'buy'
+              ? UST
+              : {
+                  token: {
+                    contract_addr: mirror.assets[symbol].token.contractAddress as string,
+                  },
+                },
+        },
+        {}
+      )
       const tx = await wallet.createAndSignTx({
-        msgs: [
-          mirror.assets[symbol].pair.swap(
-            {
-              amount: (Number(amount) * 10 ** 6).toString(),
-              info:
-                mode === 'buy'
-                  ? UST
-                  : {
-                      token: {
-                        contract_addr: mirror.assets[symbol].token.contractAddress as string,
-                      },
-                    },
-            },
-            {}
-          ),
-        ],
+        msgs: [msg],
       })
       const result = await terra.tx.broadcast(tx)
       fetchAssets()
       return result
     },
-    [encryptedSecretPhrase, fetchAssets()]
+    [encryptedSecretPhrase, fetchAssets]
   )
 
   return (
@@ -197,6 +214,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         swap,
         depositSavings,
         withdrawSavings,
+        swapMAsset,
       }}
     >
       {children}
