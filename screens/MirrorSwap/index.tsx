@@ -15,6 +15,7 @@ import Button from '../../components/Button'
 import MirrorAssetItem from '../../components/MirrorAssetItem'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { mirrorOptions } from '../../utils/terraConfig'
+import { getCurrentAssetDetail } from '../../utils/transformAssets'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -60,7 +61,6 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         const result = await mirror.assets[asset.symbol].pair[
           which === 'from' ? 'getSimulation' : 'getReverseSimulation'
         ](simulation as any)
-        console.log(mirror.assets, { result })
         ;(which === 'from' ? setToAmount : setFromAmount)(
           (
             Number((result as any).offer_amount || (result as any).return_amount) /
@@ -69,7 +69,6 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         )
       } catch (err) {
         ;(which === 'from' ? setToAmount : setFromAmount)('')
-        console.log(mirror.assets, err)
       }
     },
     [asset, mode]
@@ -118,7 +117,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         </TouchableOpacity>
       </View>
       {mode === 'buy' ? (
-        <AssetItem style={styles.from} asset={currentAsset} dropdown />
+        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} dropdown />
       ) : (
         <MirrorAssetItem mAsset={asset} />
       )}
@@ -133,7 +132,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
       </View>
       {mode === 'sell' ? (
-        <AssetItem style={styles.from} asset={currentAsset} dropdown />
+        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} dropdown />
       ) : (
         <MirrorAssetItem mAsset={asset} />
       )}

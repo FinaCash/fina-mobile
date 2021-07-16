@@ -16,6 +16,7 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
 import { terraLCDClient as terra } from '../../utils/terraConfig'
 import Button from '../../components/Button'
+import { getCurrencyFromDenom, getCurrentAssetDetail } from '../../utils/transformAssets'
 
 interface SwapProps {
   from?: Currencies
@@ -24,7 +25,7 @@ interface SwapProps {
 
 const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { assets, swap } = useAssetsContext()
+  const { swap } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()
@@ -121,10 +122,10 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
         style={styles.from}
         asset={
           from
-            ? {
-                type: AssetTypes.Currents,
-                coin: { denom: from, amount: (Number(fromAmount) * 10 ** 6).toString() },
-              }
+            ? getCurrentAssetDetail({
+                denom: from,
+                amount: (Number(fromAmount) * 10 ** 6).toString(),
+              })
             : undefined
         }
         dropdown
@@ -141,7 +142,7 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
         <Typography>
           =
           {formatCurrency(baseCurrencyCoin.amount.toString(), baseCurrencyCoin.denom as Currencies)}{' '}
-          {t(`${baseCurrencyCoin.denom} name`)}
+          {getCurrencyFromDenom(baseCurrencyCoin.denom)}
         </Typography>
         <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
       </View>
@@ -149,10 +150,10 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
         style={styles.to}
         asset={
           to
-            ? {
-                type: AssetTypes.Currents,
-                coin: { denom: to, amount: (Number(toAmount) * 10 ** 6).toString() },
-              }
+            ? getCurrentAssetDetail({
+                denom: to,
+                amount: (Number(toAmount) * 10 ** 6).toString(),
+              })
             : undefined
         }
         dropdown

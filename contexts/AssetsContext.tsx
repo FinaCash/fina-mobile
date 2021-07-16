@@ -79,7 +79,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       [
         ...JSON.parse(balances.toJSON()),
         {
-          denom: 'ausd',
+          denom: 'aust',
           amount: (
             Number(get(userBalance, 'total_deposit_balance_in_ust', '0')) *
             10 ** 6

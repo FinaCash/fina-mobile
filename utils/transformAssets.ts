@@ -5,6 +5,33 @@ import get from 'lodash/get'
 import { Asset, AssetTypes, MirrorAsset } from '../types/assets'
 import { Currencies } from '../types/misc'
 
+export const getCurrencyFromDenom = (denom: string) => denom.replace(/^u/, '').toUpperCase()
+
+export const getCurrentAssetDetail = (coin: { denom: string; amount: string }) => {
+  const symbol = coin.denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
+  return {
+    type: AssetTypes.Currents,
+    coin,
+    name: 'Terra ' + getCurrencyFromDenom(coin.denom),
+    symbol,
+    image: `https://assets.terra.money/icon/60/${symbol}.png`,
+  }
+}
+
+export const getMAssetDetail = (
+  coin: { denom: string; amount: string },
+  availableMirrorAssets: MirrorAsset[]
+) => {
+  const mAsset = availableMirrorAssets.find((a) => a.symbol === coin.denom)
+  return {
+    type: AssetTypes.Investments,
+    coin,
+    name: get(mAsset, 'name', ''),
+    symbol: get(mAsset, 'symbol', ''),
+    image: get(mAsset, 'image', ''),
+  }
+}
+
 export const transformCoinsToAssets = async (
   coins: Array<{ amount: string; denom: string; apy?: number }>,
   availableMirrorAssets: MirrorAsset[],
@@ -18,15 +45,8 @@ export const transformCoinsToAssets = async (
         case 'ueur':
         case 'uhkd':
         case 'ukrw':
-          const symbol = coin.denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
-          return {
-            type: AssetTypes.Currents,
-            coin,
-            name: 'Terra ' + coin.denom.replace(/^u/, '').toUpperCase(),
-            symbol,
-            image: `https://assets.terra.money/icon/60/${symbol}.png`,
-          }
-        case 'ausd':
+          return getCurrentAssetDetail(coin)
+        case 'aust':
           return {
             type: AssetTypes.Savings,
             coin: {
@@ -42,14 +62,7 @@ export const transformCoinsToAssets = async (
           // TODO
           return null
         default:
-          const mAsset = availableMirrorAssets.find((a) => a.symbol === coin.denom)
-          return {
-            type: AssetTypes.Investments,
-            coin,
-            name: get(mAsset, 'name', ''),
-            symbol: get(mAsset, 'symbol', ''),
-            image: get(mAsset, 'image', ''),
-          }
+          return getMAssetDetail(coin, availableMirrorAssets)
       }
     })
     .filter((a) => a) as Asset[]
@@ -86,7 +99,7 @@ export const transformAssetsToDistributions = (assets: Asset[]) => {
     for (let i in groupedAssets[assetType]) {
       const asset = groupedAssets[assetType][i]
       result[assetType as AssetTypes] =
-        (result[assetType as AssetTypes] || 0) + Number(asset.worth.amount)
+        (result[assetType as AssetTypes] || 0) + Number(get(asset, 'worth.amount', 0))
     }
   }
   return Object.keys(result).map((type) => ({

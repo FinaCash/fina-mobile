@@ -2,12 +2,16 @@ import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
   container: {
+    backgroundColor: theme.palette.white,
+  },
+  innerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: theme.palette.grey[1],
-    padding: theme.baseSpace * 4,
+    paddingVertical: theme.baseSpace * 4,
+    marginHorizontal: theme.baseSpace * 4,
   },
   row: {
     flexDirection: 'row',
@@ -19,6 +23,8 @@ export default (theme: Theme) => ({
     height: theme.baseSpace * 10,
     borderRadius: theme.baseSpace * 4,
     marginRight: theme.baseSpace * 6,
+  },
+  darkBackground: {
     backgroundColor: theme.palette.grey[9],
   },
   badge: {

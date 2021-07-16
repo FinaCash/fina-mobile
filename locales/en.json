@@ -28,5 +28,7 @@
   "cancel": "Cancel",
   "select asset": "Select asset",
   "logout": "Logout",
-  "invest": "Invest"
+  "invest": "Invest",
+  "investments": "Mirror Assets",
+  "tokens": "Tokens"
 }

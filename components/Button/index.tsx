@@ -8,10 +8,12 @@ interface ButtonProps extends TouchableOpacityProps {
   icon?: React.ReactElement
   size?: 'Small' | 'Base' | 'Large'
   loading?: boolean
+  bgColor?: string
+  color?: string
 }
 
 const paddings = {
-  Small: 1,
+  Small: 2,
   Base: 3,
   Large: 4,
 }
@@ -23,6 +25,8 @@ const Button: React.FC<ButtonProps> = ({
   size = 'Base',
   loading,
   disabled,
+  bgColor,
+  color,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -30,8 +34,11 @@ const Button: React.FC<ButtonProps> = ({
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: !loading ? theme.palette.primary : theme.palette.grey[3] },
-        { padding: theme.baseSpace * paddings[size] },
+        { backgroundColor: !loading ? bgColor || theme.palette.primary : theme.palette.grey[3] },
+        {
+          paddingHorizontal: theme.baseSpace * paddings[size],
+          paddingVertical: theme.baseSpace * (paddings[size] - 1),
+        },
         style,
       ]}
       disabled={disabled || loading}
@@ -41,13 +48,13 @@ const Button: React.FC<ButtonProps> = ({
       {icon && !loading ? (
         <View style={styles.iconContainer}>
           {React.cloneElement(icon, {
-            color: theme.palette.white,
+            color: color || theme.palette.white,
             size: theme.fonts[size].fontSize,
           })}
         </View>
       ) : null}
       {loading ? null : typeof children === 'string' ? (
-        <Typography type={size} color={theme.palette.white} bold>
+        <Typography type={size} color={color || theme.palette.white}>
           {children}
         </Typography>
       ) : (

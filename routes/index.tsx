@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { Router, Scene, Tabs, Modal, Stack } from 'react-native-router-flux'
 import HomeIcon from '../assets/images/icons/home.svg'
 import RecipientsIcon from '../assets/images/icons/recipients.svg'
-import SwapIcon from '../assets/images/icons/swap.svg'
+import InvestIcon from '../assets/images/icons/invest.svg'
 import SettingsIcon from '../assets/images/icons/settings.svg'
 import Typography from '../components/Typography'
 import useStyles from '../theme/useStyles'
@@ -64,20 +64,20 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
                   component={Home}
                 />
                 <Scene
+                  key="Invest"
+                  hideNavBar
+                  iconSvg={<InvestIcon />}
+                  tabTitle={t('invest')}
+                  icon={TabIcon}
+                  component={Invest}
+                />
+                <Scene
                   key="Contacts"
                   hideNavBar
                   iconSvg={<RecipientsIcon />}
                   tabTitle={t('recipients')}
                   icon={TabIcon}
                   component={() => null}
-                />
-                <Scene
-                  key="Invest"
-                  hideNavBar
-                  iconSvg={<SwapIcon />}
-                  tabTitle={t('invest')}
-                  icon={TabIcon}
-                  component={Invest}
                 />
                 <Scene
                   key="Settings"

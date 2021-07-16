@@ -4,7 +4,7 @@ export enum AssetTypes {
   Currents = 'currents',
   Savings = 'savings',
   Investments = 'investments',
-  // Cryptos = 'cryptos',
+  Tokens = 'tokens',
 }
 
 export interface Asset {
@@ -16,11 +16,11 @@ export interface Asset {
     denom: string
     amount: string
   }
-  worth: {
+  worth?: {
     denom: string
     amount: string
   }
-  apy: number
+  apy?: number
 }
 
 export interface MirrorAsset {

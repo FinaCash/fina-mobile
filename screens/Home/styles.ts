@@ -15,6 +15,13 @@ export default (theme: Theme) => ({
   searchBarContainer: {
     paddingHorizontal: 4 * theme.baseSpace,
   },
+  filterContainer: {
+    padding: 4 * theme.baseSpace,
+    paddingBottom: 0,
+  },
+  filterButton: {
+    marginRight: theme.baseSpace,
+  },
   buttonRow: {
     flexDirection: 'row',
     width: 64 * theme.baseSpace,

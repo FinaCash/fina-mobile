@@ -3,7 +3,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios",
+    "ios": "open -a Simulator && open 'rndebugger://set-debugger-loc?host=localhost&port=19000' && expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
     "prettier": "prettier --config .prettierrc --write '**/*.{ts,tsx,json,yaml}'",

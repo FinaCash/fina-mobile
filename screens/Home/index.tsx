@@ -1,5 +1,5 @@
 import React from 'react'
-import { Animated, TouchableOpacity, View } from 'react-native'
+import { Animated, ScrollView, TouchableOpacity, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
 import SearchIcon from '../../assets/images/icons/search.svg'
@@ -13,10 +13,7 @@ import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
-import {
-  transformAssetsToDistributions,
-  transformAssetsToSections,
-} from '../../utils/transformAssets'
+import { transformAssetsToDistributions } from '../../utils/transformAssets'
 import getStyles from './styles'
 import { Asset, AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
@@ -105,10 +102,10 @@ const Home: React.FC = () => {
           {formatCurrency(total, currency)}
         </Typography>
         <View style={styles.buttonRow}>
-          <Button style={styles.button} icon={<TransferIcon />}>
+          <Button style={styles.button} size="Large" icon={<TransferIcon />}>
             {t('transfer')}
           </Button>
-          <Button style={styles.button} icon={<ReceiveIcon />}>
+          <Button style={styles.button} size="Large" icon={<ReceiveIcon />}>
             {t('receive')}
           </Button>
         </View>
@@ -130,23 +127,42 @@ const Home: React.FC = () => {
         panGestureAnimatedValue={scrollY}
         useNativeDriver={false}
         HeaderComponent={
-          <Animated.View
-            style={[
-              styles.searchBarContainer,
-              {
-                opacity: scrollY,
-                height: Animated.multiply(scrollY, 18 * theme.baseSpace),
-              },
-            ]}
-          >
-            <View style={styles.swipeIndicator} />
-            <Input
-              placeholder={t('search')}
-              icon={<SearchIcon />}
-              value={search}
-              onChangeText={setSearch}
-            />
-          </Animated.View>
+          <View>
+            <Animated.View
+              style={[
+                styles.searchBarContainer,
+                {
+                  opacity: scrollY,
+                  height: Animated.multiply(scrollY, 16 * theme.baseSpace),
+                },
+              ]}
+            >
+              <View style={styles.swipeIndicator} />
+              <Input
+                placeholder={t('search')}
+                icon={<SearchIcon />}
+                value={search}
+                onChangeText={setSearch}
+              />
+            </Animated.View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filterContainer}
+            >
+              {Object.values(AssetTypes).map((v) => (
+                <Button
+                  key={v}
+                  style={styles.filterButton}
+                  bgColor={filterAsset === v ? theme.palette.grey[1] : 'transparent'}
+                  color={theme.palette.primary}
+                  onPress={() => setFilterAsset(v)}
+                >
+                  {t(v)}
+                </Button>
+              ))}
+            </ScrollView>
+          </View>
         }
         flatListProps={{
           data: assets.filter(
