@@ -14,7 +14,7 @@ export const getCurrentAssetDetail = (coin: { denom: string; amount: string }) =
     coin,
     name: 'Terra ' + getCurrencyFromDenom(coin.denom),
     symbol,
-    image: `https://assets.terra.money/icon/60/${symbol}.png`,
+    image: `https://assets.terra.money/icon/600/${symbol}.png`,
   }
 }
 
@@ -29,6 +29,21 @@ export const getMAssetDetail = (
     name: get(mAsset, 'name', ''),
     symbol: get(mAsset, 'symbol', ''),
     image: get(mAsset, 'image', ''),
+  }
+}
+
+export const getSavingAssetDetail = (coin: { denom: string; amount: string; apy?: number }) => {
+  return {
+    type: AssetTypes.Savings,
+    coin: {
+      amount: coin.amount,
+      denom: 'uusd',
+    },
+    name: 'Anchor USD',
+    symbol: 'aUST',
+    image: `https://whitelist.anchorprotocol.com/logo/aUST.png`,
+    apy: coin.apy,
+    autoCompound: true,
   }
 }
 
@@ -47,17 +62,7 @@ export const transformCoinsToAssets = async (
         case 'ukrw':
           return getCurrentAssetDetail(coin)
         case 'aust':
-          return {
-            type: AssetTypes.Savings,
-            coin: {
-              amount: coin.amount,
-              denom: 'uusd',
-            },
-            name: 'Anchor USD',
-            symbol: 'aUST',
-            image: `https://whitelist.anchorprotocol.com/logo/aUST.png`,
-            apy: coin.apy,
-          }
+          return getSavingAssetDetail(coin)
         case 'uluna':
           // TODO
           return null
@@ -102,8 +107,5 @@ export const transformAssetsToDistributions = (assets: Asset[]) => {
         (result[assetType as AssetTypes] || 0) + Number(get(asset, 'worth.amount', 0))
     }
   }
-  return Object.keys(result).map((type) => ({
-    type,
-    value: result[type as AssetTypes],
-  }))
+  return result
 }

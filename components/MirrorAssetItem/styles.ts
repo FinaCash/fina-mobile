@@ -24,9 +24,6 @@ export default (theme: Theme) => ({
     borderRadius: theme.baseSpace * 4,
     marginRight: theme.baseSpace * 6,
   },
-  darkBackground: {
-    backgroundColor: theme.palette.grey[9],
-  },
   badge: {
     paddingHorizontal: 1.5 * theme.baseSpace,
     paddingVertical: 1 * theme.baseSpace,

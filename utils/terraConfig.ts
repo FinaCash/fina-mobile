@@ -15,18 +15,3 @@ export const anchorConfig = {
 export const mirrorGraphqlUrl = 'https://tequila-graph.mirror.finance/graphql'
 
 export const mirrorOptions = DEFAULT_TEQUILA_MIRROR_OPTIONS
-
-// Some mAssets use white text as icon which needs to have a dark background
-export const darkBGIconMAssets = [
-  'mSPY',
-  'mIAU',
-  'mVIXY',
-  'MIR',
-  'mGME',
-  'mQQQ',
-  'mSLV',
-  'mUSO',
-  'mAMD',
-  'mDOT',
-  'mSQ',
-]

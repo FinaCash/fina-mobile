@@ -17,7 +17,11 @@ import { Coin } from '@terra-money/terra.js'
 import { terraLCDClient as terra, anchorConfig } from '../../utils/terraConfig'
 import Button from '../../components/Button'
 import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
-import { getCurrencyFromDenom, getCurrentAssetDetail } from '../../utils/transformAssets'
+import {
+  getCurrencyFromDenom,
+  getCurrentAssetDetail,
+  getSavingAssetDetail,
+} from '../../utils/transformAssets'
 
 interface SavingsProps {
   mode: 'deposit' | 'withdraw'
@@ -95,15 +99,11 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
       </View>
       <AssetItem
         style={styles.from}
-        asset={{
-          ...getCurrentAssetDetail({
-            denom: Currencies.USD,
-            amount: (Number(amount) * 10 ** 6).toString(),
-          }),
-          type: mode === 'deposit' ? AssetTypes.Currents : AssetTypes.Savings,
-          apy: mode === 'deposit' ? undefined : apy,
-        }}
-        dropdown
+        asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
+          denom: Currencies.USD,
+          amount: (Number(amount) * 10 ** 6).toString(),
+          apy,
+        })}
         onPress={() => null}
       />
       <View style={styles.centered}>
@@ -123,15 +123,11 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
       </View>
       <AssetItem
         style={styles.to}
-        asset={{
-          ...getCurrentAssetDetail({
-            denom: Currencies.USD,
-            amount: (Number(amount) * 10 ** 6).toString(),
-          }),
-          type: mode === 'withdraw' ? AssetTypes.Currents : AssetTypes.Savings,
-          apy: mode === 'withdraw' ? undefined : apy,
-        }}
-        dropdown
+        asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
+          denom: Currencies.USD,
+          amount: (Number(amount) * 10 ** 6).toString(),
+          apy,
+        })}
         onPress={() => null}
       />
       <TextInput

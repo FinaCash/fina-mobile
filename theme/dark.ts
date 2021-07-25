@@ -1,7 +1,8 @@
 export default {
   palette: {
     primary: '#0060f8',
-    green: '#12da6d',
+    secondary: '#432DD9',
+    green: '#26BD6B',
     red: '#fb5063',
     grey: [
       '#1b203b',
@@ -36,7 +37,7 @@ export default {
     shadowRadius: 30,
     elevation: 1,
   },
-  borderRadius: [4, 8, 24],
+  borderRadius: [8, 16, 24],
   fonts: {
     H1: {
       color: '#f4f5fa',

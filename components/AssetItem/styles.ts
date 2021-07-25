@@ -4,14 +4,19 @@ export default (theme: Theme) => ({
   container: {
     backgroundColor: theme.palette.white,
   },
+  gutterBottom: {
+    marginBottom: theme.baseSpace,
+  },
   innerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: theme.palette.grey[1],
     marginHorizontal: theme.baseSpace * 4,
     paddingVertical: theme.baseSpace * 4,
+  },
+  topContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',
@@ -33,6 +38,16 @@ export default (theme: Theme) => ({
     left: theme.baseSpace * 5,
   },
   rightAligned: {
+    alignItems: 'flex-end',
+  },
+  apyContainer: {
+    marginTop: 4 * theme.baseSpace,
+    marginLeft: 12 * theme.baseSpace,
+    paddingHorizontal: 4 * theme.baseSpace,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  alignRight: {
     alignItems: 'flex-end',
   },
 })

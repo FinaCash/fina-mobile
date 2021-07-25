@@ -3,7 +3,8 @@ import { Platform } from 'react-native'
 export default {
   palette: {
     primary: '#0E1E59',
-    green: '#12da6d',
+    secondary: '#432DD9',
+    green: '#26BD6B',
     red: '#fb5063',
     grey: [
       '#f4f5fa',
@@ -38,7 +39,7 @@ export default {
     shadowRadius: 30,
     elevation: 1,
   },
-  borderRadius: [4, 8, 24],
+  borderRadius: [8, 16, 24],
   fonts: {
     H1: {
       color: '#1b203b',

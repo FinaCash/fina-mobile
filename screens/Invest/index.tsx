@@ -3,7 +3,7 @@ import { FlatList } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import HeaderBar from '../../components/HeaderBar'
 import MirrorAssetItem from '../../components/MirrorAssetItem'
-import { useMirrorAssetsContext } from '../../contexts/MirrorAssetsContext'
+import { useAssetsContext } from '../../contexts/AssetsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -11,7 +11,7 @@ import getStyles from './styles'
 const Invest: React.FC = () => {
   const { t } = useTranslation()
   const { styles } = useStyles(getStyles)
-  const { availableMirrorAssets } = useMirrorAssetsContext()
+  const { availableMirrorAssets } = useAssetsContext()
 
   return (
     <>

@@ -11,10 +11,12 @@ export default (theme: Theme) => ({
   },
   leftButton: {
     position: 'absolute',
-    left: 0,
+    left: 6 * theme.baseSpace,
+    bottom: 4 * theme.baseSpace,
   },
   rightButton: {
     position: 'absolute',
-    right: 0,
+    right: 6 * theme.baseSpace,
+    bottom: 4 * theme.baseSpace,
   },
 })

@@ -20,7 +20,12 @@ export interface Asset {
     denom: string
     amount: string
   }
+  rewards?: {
+    denom: string
+    amount: string
+  }
   apy?: number
+  autoCompound?: boolean
 }
 
 export interface MirrorAsset {

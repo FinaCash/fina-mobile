@@ -4,6 +4,10 @@ export default (theme: Theme) => ({
   parentContainer: {
     flex: 1,
   },
+  filterScrollView: {
+    marginBottom: 12 * theme.baseSpace,
+    alignSelf: 'stretch',
+  },
   swipeIndicator: {
     width: '30%',
     alignSelf: 'center',
@@ -16,8 +20,7 @@ export default (theme: Theme) => ({
     paddingHorizontal: 4 * theme.baseSpace,
   },
   filterContainer: {
-    padding: 4 * theme.baseSpace,
-    paddingBottom: 0,
+    paddingHorizontal: 4 * theme.baseSpace,
   },
   filterButton: {
     marginRight: theme.baseSpace,
@@ -32,18 +35,23 @@ export default (theme: Theme) => ({
     backgroundColor: theme.palette.primary + '88',
     width: 30 * theme.baseSpace,
   },
-  notiButton: {
-    position: 'absolute',
-    top: theme.baseSpace * 6 + theme.statusBarHeight,
-    right: theme.baseSpace * 6,
-  },
   header: {
     alignItems: 'center',
-    marginTop: theme.baseSpace * 24 + theme.statusBarHeight,
+    marginTop: theme.statusBarHeight + 6 * theme.baseSpace,
   },
   modal: {
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
     marginTop: theme.statusBarHeight,
+  },
+  buttonContainer: {
+    padding: 4 * theme.baseSpace,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avgApy: {
+    marginLeft: theme.baseSpace * 2,
   },
 })

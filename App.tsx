@@ -7,7 +7,6 @@ import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
 import { AssetsProvider, useAssetsContext } from './contexts/AssetsContext'
 import './locales'
-import { MirrorAssetsProvider } from './contexts/MirrorAssetsContext'
 
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)
@@ -37,11 +36,9 @@ export default function App() {
   return (
     <ActionSheetProvider>
       <SettingsProvider>
-        <MirrorAssetsProvider>
-          <AssetsProvider>
-            <InnerApp />
-          </AssetsProvider>
-        </MirrorAssetsProvider>
+        <AssetsProvider>
+          <InnerApp />
+        </AssetsProvider>
       </SettingsProvider>
     </ActionSheetProvider>
   )

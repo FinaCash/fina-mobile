@@ -10,6 +10,7 @@ interface ButtonProps extends TouchableOpacityProps {
   loading?: boolean
   bgColor?: string
   color?: string
+  borderRadius?: number
 }
 
 const paddings = {
@@ -27,6 +28,8 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   bgColor,
   color,
+  borderRadius,
+  onPress,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -34,14 +37,19 @@ const Button: React.FC<ButtonProps> = ({
     <TouchableOpacity
       style={[
         styles.container,
-        { backgroundColor: !loading ? bgColor || theme.palette.primary : theme.palette.grey[3] },
+        {
+          backgroundColor:
+            !loading && !disabled ? bgColor || theme.palette.primary : theme.palette.grey[3],
+        },
         {
           paddingHorizontal: theme.baseSpace * paddings[size],
           paddingVertical: theme.baseSpace * (paddings[size] - 1),
+          borderRadius: theme.borderRadius[borderRadius || 0],
         },
         style,
       ]}
-      disabled={disabled || loading}
+      disabled={!onPress || disabled || loading}
+      onPress={onPress}
       {...props}
     >
       {loading ? <ActivityIndicator size={theme.fonts[size].fontSize} /> : null}

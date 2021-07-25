@@ -5,16 +5,17 @@ import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import get from 'lodash/get'
 import { terraLCDClient as terra, anchorConfig, mirrorOptions } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
-import { Asset } from '../types/assets'
+import { Asset, MirrorAsset } from '../types/assets'
 import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
-import { useMirrorAssetsContext } from './MirrorAssetsContext'
 import { useSettingsContext } from './SettingsContext'
+import { fetchAvailableMirrorAssets, fetchMirrorBalance } from '../utils/fetchMirrorGql'
 
 interface AssetsState {
   address: string
   assets: Asset[]
+  availableMirrorAssets: MirrorAsset[]
   loaded: boolean
   login(secretPhrase: string, password: string): void
   logout(): void
@@ -27,6 +28,7 @@ interface AssetsState {
 const initialState: AssetsState = {
   address: '',
   assets: [],
+  availableMirrorAssets: [],
   loaded: false,
   login: () => null,
   logout: () => null,
@@ -45,6 +47,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets, {
     secure: true,
   })
+  const [availableMirrorAssets, setAvailableMirrorAssets] = React.useState<MirrorAsset[]>([])
   const [encryptedSecretPhrase, setEncryptedSecretPhrase] = usePersistedState(
     'encryptedSecretPhrase',
     '',
@@ -52,7 +55,6 @@ const AssetsProvider: React.FC = ({ children }) => {
       secure: true,
     }
   )
-  const { fetchMirrorBalance, availableMirrorAssets } = useMirrorAssetsContext()
   const { currency } = useSettingsContext()
 
   const fetchAssets = React.useCallback(async () => {
@@ -67,14 +69,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     const market = await anchorEarn.market({
       currencies: [DENOMS.UST],
     })
-    const mBalance = await fetchMirrorBalance(address)
-    const mirror = new Mirror(mirrorOptions)
-    const mAssets = mBalance
-      .map((b) => {
-        const asset = Object.values(mirror.assets).find((a) => a.token.contractAddress === b.token)
-        return asset ? { denom: asset.symbol, amount: b.balance } : null
-      })
-      .filter((a) => a)
+    const mAssets = await fetchMirrorBalance(address)
     const result = await transformCoinsToAssets(
       [
         ...JSON.parse(balances.toJSON()),
@@ -99,6 +94,10 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
     }
   }, [address, availableMirrorAssets])
+
+  React.useEffect(() => {
+    fetchAvailableMirrorAssets().then(setAvailableMirrorAssets)
+  }, [setAvailableMirrorAssets])
 
   const login = React.useCallback(
     async (secretPhrase: string, password: string) => {
@@ -208,6 +207,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       value={{
         address,
         assets,
+        availableMirrorAssets,
         loaded,
         login,
         logout,
