@@ -138,8 +138,12 @@ const Home: React.FC = () => {
                             title: t('please enter your passcode'),
                             onSubmit: async (password: string) => {
                               await send({ denom: asset.coin.denom, amount }, address, password)
-                              Actions.jump('Home')
-                              // TODO: success page
+                              Actions.Success({
+                                asset,
+                                amount,
+                                address,
+                                onClose: () => Actions.jump('Home'),
+                              })
                             },
                           }),
                       }),

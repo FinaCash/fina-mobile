@@ -42,7 +42,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
           <View style={styles.centered}>
             <Image source={{ uri: asset.image }} style={styles.image} />
             <Typography type="H6" style={styles.amount}>
-              {formatCurrency(Number(amount) * 10 ** 6, asset.coin.denom, true)}{' '}
+              {formatCurrency(Number(amount) * 10 ** 6, asset.coin.denom)}{' '}
               {getCurrencyFromDenom(asset.coin.denom)}
             </Typography>
             <Typography color={theme.palette.grey[7]} type="Small">

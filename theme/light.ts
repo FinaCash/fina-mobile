@@ -7,7 +7,7 @@ export default {
     green: '#26BD6B',
     red: '#fb5063',
     grey: [
-      '#f4f5fa',
+      '#F2F3F8',
       '#eaebf1',
       '#dfe1eb',
       '#d0d2df',

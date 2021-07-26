@@ -48,5 +48,7 @@
   "to": "To",
   "new address": "New Address",
   "transaction fee": "Transaction Fee",
-  "total": "Total"
+  "total": "Total",
+  "transaction sent": "Transaction Sent",
+  "close": "Close"
 }

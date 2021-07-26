@@ -1,9 +1,6 @@
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
-  container: {
-    backgroundColor: theme.palette.white,
-  },
   gutterBottom: {
     marginBottom: theme.baseSpace,
   },

@@ -15,12 +15,12 @@ interface AssetItemProps extends TouchableOpacityProps {
   hideAmount?: boolean
 }
 
-const AssetItem: React.FC<AssetItemProps> = ({ asset, style, hideApy, hideAmount, ...props }) => {
+const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApy, hideAmount, ...props }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
 
   return (
-    <TouchableOpacity style={[styles.container, style]} {...props}>
+    <TouchableOpacity {...props}>
       <View style={styles.innerContainer}>
         <View style={styles.topContainer}>
           <View style={styles.row}>
@@ -59,8 +59,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, style, hideApy, hideAmount
               <Typography bold>
                 {formatCurrency(
                   get(asset, 'worth.amount', 0).toString(),
-                  get(asset, 'worth.denom', '') as Currencies,
-                  true
+                  get(asset, 'worth.denom', '') as Currencies
                 )}
               </Typography>
             </View>
@@ -81,8 +80,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, style, hideApy, hideAmount
                   ? t('auto compounded')
                   : formatCurrency(
                       get(asset, 'rewards.amount', 0).toString(),
-                      get(asset, 'rewards.denom', '') as Currencies,
-                      true
+                      get(asset, 'rewards.denom', '') as Currencies
                     )}
               </Typography>
             </View>

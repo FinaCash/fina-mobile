@@ -15,7 +15,7 @@ export default {
       '#d0d2df',
       '#dfe1eb',
       '#eaebf1',
-      '#f4f5fa',
+      '#F2F3F8',
     ],
     overlay: '#f4f5fae6',
     white: '#111111',
