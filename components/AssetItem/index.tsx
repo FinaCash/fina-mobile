@@ -12,9 +12,10 @@ import get from 'lodash/get'
 interface AssetItemProps extends TouchableOpacityProps {
   asset: Asset
   hideApy?: boolean
+  hideAmount?: boolean
 }
 
-const AssetItem: React.FC<AssetItemProps> = ({ asset, style, hideApy, ...props }) => {
+const AssetItem: React.FC<AssetItemProps> = ({ asset, style, hideApy, hideAmount, ...props }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
 
@@ -31,7 +32,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, style, hideApy, ...props }
               <Typography color={theme.palette.grey[7]}>{asset.name}</Typography>
             </View>
           </View>
-          {!asset.apy || hideApy ? (
+          {(!asset.apy || hideApy) && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
                 {formatCurrency(asset.coin.amount, asset.coin.denom)}

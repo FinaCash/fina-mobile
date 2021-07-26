@@ -4,7 +4,6 @@ export default (theme: Theme) => ({
   container: {
     backgroundColor: theme.palette.white,
     padding: 4 * theme.baseSpace,
-    paddingBottom: theme.bottomSpace,
     justifyContent: 'space-between',
     alignItems: 'stretch',
     flex: 1,
@@ -33,7 +32,7 @@ export default (theme: Theme) => ({
     marginTop: theme.baseSpace * 2,
   },
   button: {
-    marginBottom: 4 * theme.baseSpace,
+    marginBottom: 4 * theme.baseSpace + theme.bottomSpace,
   },
   splitRow: {
     flexDirection: 'row',
@@ -47,5 +46,35 @@ export default (theme: Theme) => ({
     width: theme.baseSpace * 5,
     height: theme.baseSpace * 5,
     marginLeft: theme.baseSpace * 4,
+  },
+  modal: {
+    borderTopLeftRadius: theme.borderRadius[2],
+    borderTopRightRadius: theme.borderRadius[2],
+    padding: theme.baseSpace,
+  },
+  confirmHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: theme.baseSpace * 4,
+  },
+  confirmMiodalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 3 * theme.baseSpace,
+    marginHorizontal: 4 * theme.baseSpace,
+  },
+  borderBottom: {
+    borderBottomWidth: 1,
+    borderBottomColor: theme.palette.grey[1],
+  },
+  alignRight: {
+    alignItems: 'flex-end',
+  },
+  marginBottom: {
+    marginBottom: theme.baseSpace,
+  },
+  modalButton: {
+    margin: 4 * theme.baseSpace,
   },
 })

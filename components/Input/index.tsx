@@ -29,7 +29,7 @@ const Input: React.FC<InputProps> = ({ style, icon, size = 'Base', endAdornment,
         placeholderTextColor={theme.palette.grey[6]}
         {...props}
       />
-      {endAdornment || null}
+      {endAdornment ? <View style={styles.marginLeft}>{endAdornment}</View> : null}
     </View>
   )
 }

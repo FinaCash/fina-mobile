@@ -1,5 +1,5 @@
 import React from 'react'
-import { Coin, MsgSwap, MnemonicKey } from '@terra-money/terra.js'
+import { Coin, MsgSwap, MnemonicKey, MsgSend } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import get from 'lodash/get'
@@ -20,6 +20,7 @@ interface AssetsState {
   login(secretPhrase: string, password: string): void
   logout(): void
   swap(from: Coin, to: Coin, password: string): void
+  send(coin: { denom: string; amount: number }, address: string, password: string): void
   depositSavings(amount: number, password: string): void
   withdrawSavings(amount: number, password: string): void
   swapMAsset(symbol: string, amount: number, mode: 'buy' | 'sell', password: string): void
@@ -33,6 +34,7 @@ const initialState: AssetsState = {
   login: () => null,
   logout: () => null,
   swap: () => null,
+  send: () => null,
   depositSavings: () => null,
   withdrawSavings: () => null,
   swapMAsset: () => null,
@@ -139,6 +141,25 @@ const AssetsProvider: React.FC = ({ children }) => {
     [fetchAssets, encryptedSecretPhrase]
   )
 
+  const send = React.useCallback(
+    async (coin: { denom: string; amount: number }, adr: string, password: string) => {
+      const key = new MnemonicKey({
+        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+      })
+      const wallet = terra.wallet(key)
+      const msg = new MsgSend(key.accAddress, adr, { [coin.denom]: coin.amount * 10 ** 6 })
+      const tx = await wallet.createAndSignTx({
+        msgs: [msg],
+        feeDenoms: ['uluna'],
+        gasAdjustment: 1.5,
+      })
+      const result = await terra.tx.broadcast(tx)
+      fetchAssets()
+      return result
+    },
+    [fetchAssets, encryptedSecretPhrase]
+  )
+
   const depositSavings = React.useCallback(
     async (amount: number, password: string) => {
       const anchorEarn = new AnchorEarn({
@@ -212,6 +233,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         login,
         logout,
         swap,
+        send,
         depositSavings,
         withdrawSavings,
         swapMAsset,

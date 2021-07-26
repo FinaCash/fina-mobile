@@ -43,5 +43,10 @@
   "recipient": "Recipient",
   "recipient address": "Recipient Address",
   "recipient address placeholder": "terra......",
-  "paste": "Paste"
+  "paste": "Paste",
+  "confirm transacrtion": "Confirm Transaction",
+  "to": "To",
+  "new address": "New Address",
+  "transaction fee": "Transaction Fee",
+  "total": "Total"
 }

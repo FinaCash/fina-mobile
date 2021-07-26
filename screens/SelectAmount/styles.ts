@@ -23,7 +23,6 @@ export default (theme: Theme) => ({
   },
   row: {
     flexDirection: 'row',
-    marginLeft: theme.baseSpace * 2,
   },
   verticalDivider: {
     height: theme.baseSpace * 4,
@@ -32,6 +31,6 @@ export default (theme: Theme) => ({
     marginHorizontal: theme.baseSpace * 4,
   },
   button: {
-    marginBottom: 4 * theme.baseSpace,
+    marginBottom: 4 * theme.baseSpace + theme.bottomSpace,
   },
 })

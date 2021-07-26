@@ -23,9 +23,8 @@ import Input from '../../components/Input'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
-  const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
-  const { assets } = useAssetsContext()
+  const { assets, send } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()
@@ -134,7 +133,15 @@ const Home: React.FC = () => {
                       Actions.SelectRecipient({
                         asset,
                         amount,
-                        onSubmit: (recipient: string) => null,
+                        onSubmit: (address: string) =>
+                          Actions.Passcode({
+                            title: t('please enter your passcode'),
+                            onSubmit: async (password: string) => {
+                              await send({ denom: asset.coin.denom, amount }, address, password)
+                              Actions.jump('Home')
+                              // TODO: success page
+                            },
+                          }),
                       }),
                   }),
                 assets,
@@ -153,7 +160,6 @@ const Home: React.FC = () => {
         </View>
       </View>
       <Modalize
-        ref={modalizeRef}
         alwaysOpen={
           theme.screenHeight -
           68 * theme.baseSpace -
