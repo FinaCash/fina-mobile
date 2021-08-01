@@ -24,7 +24,7 @@ const SelectAsset: React.FC<SelectAssetProps> = ({ onSelect, assets }) => {
         contentContainerStyle={styles.container}
         keyExtractor={(item) => item.symbol}
         data={assets}
-        renderItem={({ item }) => <AssetItem hideApy asset={item} onPress={() => onSelect(item)} />}
+        renderItem={({ item }) => <AssetItem hideApr asset={item} onPress={() => onSelect(item)} />}
       />
     </>
   )

@@ -24,7 +24,7 @@ export interface Asset {
     denom: string
     amount: string
   }
-  apy?: number
+  apr?: number
   autoCompound?: boolean
 }
 

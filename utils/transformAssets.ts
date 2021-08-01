@@ -32,7 +32,7 @@ export const getMAssetDetail = (
   }
 }
 
-export const getSavingAssetDetail = (coin: { denom: string; amount: string; apy?: number }) => {
+export const getSavingAssetDetail = (coin: { denom: string; amount: string; apr?: number }) => {
   return {
     type: AssetTypes.Savings,
     coin: {
@@ -42,13 +42,13 @@ export const getSavingAssetDetail = (coin: { denom: string; amount: string; apy?
     name: 'Anchor USD',
     symbol: 'aUST',
     image: `https://whitelist.anchorprotocol.com/logo/aUST.png`,
-    apy: coin.apy,
+    apr: coin.apr,
     autoCompound: true,
   }
 }
 
 export const transformCoinsToAssets = async (
-  coins: Array<{ amount: string; denom: string; apy?: number }>,
+  coins: Array<{ amount: string; denom: string; apr?: number }>,
   availableMirrorAssets: MirrorAsset[],
   currency: Currencies
 ): Promise<Asset[]> => {

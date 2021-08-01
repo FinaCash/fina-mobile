@@ -1,5 +1,11 @@
 import React from 'react'
-import { ActivityIndicator, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
+import {
+  ActivityIndicator,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+  ViewStyle,
+} from 'react-native'
 import useStyles from '../../theme/useStyles'
 import Typography from '../Typography'
 import getStyles from './styles'
@@ -10,6 +16,7 @@ interface ButtonProps extends TouchableOpacityProps {
   loading?: boolean
   bgColor?: string
   color?: string
+  iconStyle?: ViewStyle
   borderRadius?: number
 }
 
@@ -30,6 +37,7 @@ const Button: React.FC<ButtonProps> = ({
   color,
   borderRadius,
   onPress,
+  iconStyle,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -54,7 +62,7 @@ const Button: React.FC<ButtonProps> = ({
     >
       {loading ? <ActivityIndicator size={theme.fonts[size].fontSize} /> : null}
       {icon && !loading ? (
-        <View style={styles.iconContainer}>
+        <View style={[styles.iconContainer, iconStyle]}>
           {React.cloneElement(icon, {
             color: color || theme.palette.white,
             size: theme.fonts[size].fontSize,

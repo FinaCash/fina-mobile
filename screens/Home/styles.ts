@@ -5,7 +5,7 @@ export default (theme: Theme) => ({
     flex: 1,
   },
   filterScrollView: {
-    marginBottom: 12 * theme.baseSpace,
+    marginBottom: 9 * theme.baseSpace,
     alignSelf: 'stretch',
   },
   swipeIndicator: {
@@ -27,13 +27,17 @@ export default (theme: Theme) => ({
   },
   buttonRow: {
     flexDirection: 'row',
-    width: 64 * theme.baseSpace,
-    justifyContent: 'space-between',
-    marginTop: theme.baseSpace * 6,
+    justifyContent: 'center',
+    marginTop: theme.baseSpace * 4,
   },
   button: {
     backgroundColor: theme.palette.primary + '88',
-    width: 30 * theme.baseSpace,
+    flexDirection: 'column',
+    width: 20 * theme.baseSpace,
+    height: 16 * theme.baseSpace,
+    marginHorizontal: 2 * theme.baseSpace,
+    justifyContent: 'space-around',
+    paddingTop: theme.baseSpace * 3,
   },
   header: {
     alignItems: 'center',
@@ -50,8 +54,12 @@ export default (theme: Theme) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 3 * theme.baseSpace,
   },
-  avgApy: {
+  avgApr: {
     marginLeft: theme.baseSpace * 2,
+  },
+  buttonIcon: {
+    marginRight: 0,
   },
 })

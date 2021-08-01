@@ -37,7 +37,7 @@ export default (theme: Theme) => ({
   rightAligned: {
     alignItems: 'flex-end',
   },
-  apyContainer: {
+  aprContainer: {
     marginTop: 4 * theme.baseSpace,
     marginLeft: 12 * theme.baseSpace,
     paddingHorizontal: 4 * theme.baseSpace,

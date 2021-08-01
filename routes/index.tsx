@@ -12,7 +12,7 @@ import Home from '../screens/Home'
 import Swap from '../screens/Swap'
 import Login from '../screens/Login'
 import useTranslation from '../locales/useTranslation'
-import Passcode from '../screens/Passcode'
+import Password from '../screens/Password'
 import Savings from '../screens/Savings'
 import Settings from '../screens/Settings'
 import Invest from '../screens/Invest'
@@ -99,7 +99,7 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
             <Scene key="Swap" hideNavBar component={Swap} />
             <Scene key="Savings" hideNavBar component={Savings} />
             <Scene key="MirrorSwap" hideNavBar component={MirrorSwap} />
-            <Scene key="Passcode" hideNavBar component={Passcode} />
+            <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />
           </Modal>
         </Scene>

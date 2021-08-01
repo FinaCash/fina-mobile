@@ -40,6 +40,20 @@ const initialState: AssetsState = {
   swapMAsset: () => null,
 }
 
+const decryptMnemonic = (encryptedSecretPhrase: string, password: string) => {
+  try {
+    const mnemonic = CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(
+      CryptoJS.enc.Utf8
+    )
+    if (!mnemonic) {
+      throw new Error('incorrect password')
+    }
+    return mnemonic
+  } catch (err) {
+    throw new Error('incorrect password')
+  }
+}
+
 const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
@@ -81,7 +95,7 @@ const AssetsProvider: React.FC = ({ children }) => {
             Number(get(userBalance, 'total_deposit_balance_in_ust', '0')) *
             10 ** 6
           ).toString(),
-          apy: Number(get(market, 'markets[0].APY', 0)),
+          apr: Number(get(market, 'markets[0].APY', 0)),
         },
         ...mAssets,
       ],
@@ -120,7 +134,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const swap = React.useCallback(
     async (from: Coin, to: Coin, password: string) => {
       const key = new MnemonicKey({
-        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = terra.wallet(key)
       const msg = new MsgSwap(key.accAddress, from, to.denom)
@@ -144,7 +158,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const send = React.useCallback(
     async (coin: { denom: string; amount: number }, adr: string, password: string) => {
       const key = new MnemonicKey({
-        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = terra.wallet(key)
       const msg = new MsgSend(key.accAddress, adr, { [coin.denom]: coin.amount * 10 ** 6 })
@@ -164,7 +178,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     async (amount: number, password: string) => {
       const anchorEarn = new AnchorEarn({
         ...anchorConfig,
-        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const deposit = await anchorEarn.deposit({
         amount: amount.toString(),
@@ -180,7 +194,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     async (amount: number, password: string) => {
       const anchorEarn = new AnchorEarn({
         ...anchorConfig,
-        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const withdraw = await anchorEarn.withdraw({
         amount: amount.toString(),
@@ -195,7 +209,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const swapMAsset = React.useCallback(
     async (symbol: string, amount: number, mode: 'buy' | 'sell', password: string) => {
       const key = new MnemonicKey({
-        mnemonic: CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(CryptoJS.enc.Utf8),
+        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = terra.wallet(key)
       const mirror = new Mirror({ ...mirrorOptions, key })

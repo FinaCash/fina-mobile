@@ -97,12 +97,12 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
   )
 
   const onSubmit = React.useCallback(
-    async (passcode: string) => {
+    async (password: string) => {
       if (from && to) {
         await swap(
           new Coin(from, (Number(fromAmount) * 10 ** 6).toString()),
           new Coin(to, (Number(toAmount) * 10 ** 6).toString()),
-          passcode
+          password
         )
       }
       Actions.pop()
@@ -169,7 +169,7 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
       <Button
         style={styles.button}
         size="Large"
-        onPress={() => Actions.Passcode({ onSubmit, title: t('please enter your passcode') })}
+        onPress={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
       >
         Confirm
       </Button>

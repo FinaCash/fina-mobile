@@ -16,4 +16,12 @@ export default (theme: Theme) => ({
   marginLeft: {
     marginLeft: theme.baseSpace * 2,
   },
+  error: {
+    borderWidth: 2,
+    borderColor: theme.palette.red,
+    margin: -2,
+  },
+  errorText: {
+    marginTop: theme.baseSpace,
+  },
 })

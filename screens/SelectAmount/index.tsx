@@ -30,7 +30,7 @@ const SelectAmount: React.FC<SelectAmountProps> = ({ asset, onSubmit }) => {
       <HeaderBar back title={t('amount')} />
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <View style={styles.card}>
-          <AssetItem asset={asset} hideApy disabled />
+          <AssetItem asset={asset} hideApr disabled />
           <View style={styles.amountContainer}>
             <Typography type="Large" bold>
               {t('amount')}

@@ -28,8 +28,8 @@ const Login: React.FC<LoginProps> = () => {
   const [phraseInput, setPhraseInput] = React.useState('')
 
   const onSubmit = React.useCallback(
-    async (passcode: string) => {
-      await login(phraseInput, passcode)
+    async (password: string) => {
+      await login(phraseInput, password)
       Actions.replace('Main')
     },
     [phraseInput, login]
@@ -88,8 +88,8 @@ const Login: React.FC<LoginProps> = () => {
               </Button>
               <Button
                 onPress={() =>
-                  Actions.Passcode({
-                    title: t('please enter passcode'),
+                  Actions.Password({
+                    title: t('please enter password'),
                     onSubmit,
                     confirmationRequired: true,
                   })

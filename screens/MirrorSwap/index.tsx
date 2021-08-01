@@ -99,9 +99,9 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
   // )
 
   const onSubmit = React.useCallback(
-    async (passcode: string) => {
+    async (password: string) => {
       if (fromAmount) {
-        await swapMAsset(asset.symbol, Number(fromAmount), mode, passcode)
+        await swapMAsset(asset.symbol, Number(fromAmount), mode, password)
       }
       Actions.pop()
     },
@@ -146,7 +146,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
       <Button
         style={styles.button}
         size="Large"
-        onPress={() => Actions.Passcode({ onSubmit, title: t('please enter your passcode') })}
+        onPress={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
       >
         Confirm
       </Button>

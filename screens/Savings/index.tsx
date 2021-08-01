@@ -33,7 +33,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const [amount, setAmount] = React.useState('')
-  const [apy, setApy] = React.useState(0)
+  const [apr, setApr] = React.useState(0)
 
   const [baseCurrencyCoin, setBaseCurrencyCoin] = React.useState(new Coin(currency, '0'))
 
@@ -57,10 +57,10 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
   )
 
   const onSubmit = React.useCallback(
-    async (passcode: string) => {
+    async (password: string) => {
       try {
         setLoading(true)
-        await (mode === 'deposit' ? depositSavings : withdrawSavings)(Number(amount), passcode)
+        await (mode === 'deposit' ? depositSavings : withdrawSavings)(Number(amount), password)
         Actions.pop()
       } catch (err) {
         console.log(err)
@@ -70,7 +70,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
     [mode, depositSavings, withdrawSavings, amount]
   )
 
-  const fetchApy = React.useCallback(async () => {
+  const fetchApr = React.useCallback(async () => {
     try {
       const anchorEarn = new AnchorEarn({
         ...anchorConfig,
@@ -79,14 +79,14 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
       const market = await anchorEarn.market({
         currencies: [DENOMS.UST],
       })
-      setApy(Number(get(market, 'markets[0].APY', 0)))
+      setApr(Number(get(market, 'markets[0].APY', 0)))
     } catch (err) {
       console.log(err)
     }
-  }, [setApy])
+  }, [setApr])
 
   React.useEffect(() => {
-    fetchApy()
+    fetchApr()
   }, [])
 
   return (
@@ -102,7 +102,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
         asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
           denom: Currencies.USD,
           amount: (Number(amount) * 10 ** 6).toString(),
-          apy,
+          apr,
         })}
         onPress={() => null}
       />
@@ -126,7 +126,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
         asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
           denom: Currencies.USD,
           amount: (Number(amount) * 10 ** 6).toString(),
-          apy,
+          apr,
         })}
         onPress={() => null}
       />
@@ -139,7 +139,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
       <Button
         style={styles.button}
         size="Large"
-        onPress={() => Actions.Passcode({ title: t('please enter your passcode'), onSubmit })}
+        onPress={() => Actions.Password({ title: t('please enter your password'), onSubmit })}
         loading={loading}
       >
         Confirm

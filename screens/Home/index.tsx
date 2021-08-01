@@ -30,10 +30,10 @@ const Home: React.FC = () => {
   const { showActionSheetWithOptions } = useActionSheet()
   const assetsDistribution = transformAssetsToDistributions(assets)
   assetsDistribution.overview = Object.values(assetsDistribution).reduce((a, b) => a + b, 0)
-  const averageSavingsAPY =
+  const averageSavingsAPR =
     assets
       .filter((a) => a.type === AssetTypes.Savings)
-      .map((a) => get(a, 'worth.amount', 0) * (a.apy || 0))
+      .map((a) => get(a, 'worth.amount', 0) * (a.apr || 0))
       .reduce((a, b) => a + b, 0) / assetsDistribution[AssetTypes.Savings]
 
   const [search, setSearch] = React.useState('')
@@ -102,23 +102,23 @@ const Home: React.FC = () => {
             </Button>
           ))}
         </ScrollView>
-        <Typography color={theme.palette.white}>
+        <Typography color={theme.palette.white} type="Large">
           {t(filterAsset === 'overview' ? 'total balance' : 'equity value', {
             currency: getCurrencyFromDenom(currency),
           })}
         </Typography>
         <View style={styles.row}>
           <Typography color={theme.palette.white} type="H2">
-            {formatCurrency(assetsDistribution[filterAsset], currency)}
+            {formatCurrency(assetsDistribution[filterAsset], currency, true)}
           </Typography>
           {filterAsset === AssetTypes.Savings ? (
             <Button
-              style={styles.avgApy}
+              style={styles.avgApr}
               bgColor={theme.palette.green}
               size="Small"
               borderRadius={2}
             >
-              {`${t('apy')} ${formatPercentage(averageSavingsAPY, 2)}`}
+              {`+ ${formatPercentage(averageSavingsAPR, 2)}`}
             </Button>
           ) : null}
         </View>
@@ -134,8 +134,8 @@ const Home: React.FC = () => {
                         asset,
                         amount,
                         onSubmit: (address: string) =>
-                          Actions.Passcode({
-                            title: t('please enter your passcode'),
+                          Actions.Password({
+                            title: t('please enter your password'),
                             onSubmit: async (password: string) => {
                               await send({ denom: asset.coin.denom, amount }, address, password)
                               Actions.Success({
@@ -151,14 +151,19 @@ const Home: React.FC = () => {
                 assets,
               })
             }
-            borderRadius={2}
+            borderRadius={1}
             style={styles.button}
-            size="Large"
+            iconStyle={styles.buttonIcon}
             icon={<TransferIcon />}
           >
             {t('transfer')}
           </Button>
-          <Button borderRadius={2} style={styles.button} size="Large" icon={<ReceiveIcon />}>
+          <Button
+            borderRadius={1}
+            style={styles.button}
+            iconStyle={styles.buttonIcon}
+            icon={<ReceiveIcon />}
+          >
             {t('receive')}
           </Button>
         </View>
@@ -166,7 +171,7 @@ const Home: React.FC = () => {
       <Modalize
         alwaysOpen={
           theme.screenHeight -
-          68 * theme.baseSpace -
+          65 * theme.baseSpace -
           theme.bottomSpace -
           theme.tabBarHeight -
           theme.statusBarHeight
