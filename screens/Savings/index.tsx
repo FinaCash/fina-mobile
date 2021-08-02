@@ -1,22 +1,20 @@
 import React from 'react'
 import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
-import get from 'lodash/get'
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import { AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
 import { Currencies } from '../../types/misc'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
-import { terraLCDClient as terra, anchorConfig } from '../../utils/terraConfig'
+import { anchorClient, terraLCDClient as terra } from '../../utils/terraConfig'
 import Button from '../../components/Button'
-import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
 import {
   getCurrencyFromDenom,
   getCurrentAssetDetail,
@@ -72,14 +70,10 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
 
   const fetchApr = React.useCallback(async () => {
     try {
-      const anchorEarn = new AnchorEarn({
-        ...anchorConfig,
-        address,
+      const rate = await anchorClient.earn.getAPY({
+        market: MARKET_DENOMS.UUSD,
       })
-      const market = await anchorEarn.market({
-        currencies: [DENOMS.UST],
-      })
-      setApr(Number(get(market, 'markets[0].APY', 0)))
+      setApr(rate)
     } catch (err) {
       console.log(err)
     }

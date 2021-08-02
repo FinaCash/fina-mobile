@@ -1,10 +1,13 @@
 import { Currencies, CurrencySymbols } from '../types/misc'
 
 export const formatCurrency = (amount: string | number, denom: string, withSymbol?: boolean) =>
-  Object.values(Currencies).includes(denom as any)
-    ? `${withSymbol ? (CurrencySymbols as any)[denom] : ''}${new Intl.NumberFormat('en', {
-        maximumFractionDigits: 2,
-      }).format((Number(amount) || 0) / 10 ** 6)}`
+  Object.values(Currencies).includes(`u${denom.slice(-3)}` as any)
+    ? `${withSymbol ? (CurrencySymbols as any)[`u${denom.slice(-3)}`] : ''}${new Intl.NumberFormat(
+        'en',
+        {
+          maximumFractionDigits: 2,
+        }
+      ).format((Number(amount) || 0) / 10 ** 6)}`
     : new Intl.NumberFormat('en', {
         maximumFractionDigits: 6,
       }).format((Number(amount) || 0) / 10 ** 6)

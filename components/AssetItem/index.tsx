@@ -54,7 +54,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...pr
             <View>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t('amount (symbol)', {
-                  symbol: (CurrencySymbols as any)[asset.coin.denom],
+                  symbol: (CurrencySymbols as any)[`u${asset.coin.denom.slice(-3)}`],
                 })}
               </Typography>
               <Typography bold>

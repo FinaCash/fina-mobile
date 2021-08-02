@@ -37,7 +37,7 @@ export const getSavingAssetDetail = (coin: { denom: string; amount: string; apr?
     type: AssetTypes.Savings,
     coin: {
       amount: coin.amount,
-      denom: 'uusd',
+      denom: 'ausd',
     },
     name: 'Anchor USD',
     symbol: 'aUST',
@@ -61,7 +61,7 @@ export const transformCoinsToAssets = async (
         case 'uhkd':
         case 'ukrw':
           return getCurrentAssetDetail(coin)
-        case 'aust':
+        case 'ausd':
           return getSavingAssetDetail(coin)
         case 'uluna':
           // TODO
@@ -80,7 +80,7 @@ export const transformCoinsToAssets = async (
         denom: currency,
         amount: (((mAsset ? mAsset.price : 0) * Number(asset.coin.amount)) / 10 ** 6).toString(),
       }
-    } else if (asset.coin.denom === currency) {
+    } else if (asset.coin.denom.slice(-3) === currency.slice(-3)) {
       asset.worth = asset.coin
     } else {
       const rate = await terra.market.swapRate(

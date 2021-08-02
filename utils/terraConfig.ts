@@ -1,4 +1,4 @@
-import { CHAINS, NETWORKS } from '@anchor-protocol/anchor-earn'
+import { Anchor, tequila0004, AddressProviderFromJson } from '@anchor-protocol/anchor.js'
 import { DEFAULT_TEQUILA_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
 
@@ -7,10 +7,10 @@ export const terraLCDClient = new LCDClient({
   chainID: 'tequila-0004',
 })
 
-export const anchorConfig = {
-  chain: CHAINS.TERRA,
-  network: NETWORKS.TEQUILA_0004,
-}
+export const anchorClient = new Anchor(
+  terraLCDClient as any,
+  new AddressProviderFromJson(tequila0004)
+)
 
 export const mirrorGraphqlUrl = 'https://tequila-graph.mirror.finance/graphql'
 

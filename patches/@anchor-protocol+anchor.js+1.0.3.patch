@@ -1,0 +1,13 @@
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js b/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
+index aa1a88d..8d4c188 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
+@@ -37,7 +37,7 @@ class Earn {
+                 address: getTotalDepositOption.address,
+                 token_address: this._addressProvider.aTerra(getTotalDepositOption.market),
+             })(this._addressProvider);
+-            return new terra_js_1.Int(new terra_js_1.Dec(epochState.exchange_rate).mul(userATerraBalance.balance))
++            return new terra_js_1.Dec(new terra_js_1.Dec(epochState.exchange_rate).mul(userATerraBalance.balance))
+                 .div(1000000)
+                 .toString();
+         });

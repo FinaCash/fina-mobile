@@ -1,12 +1,11 @@
 import React from 'react'
-import { Coin, MsgSwap, MnemonicKey, MsgSend } from '@terra-money/terra.js'
+import { Coin, MsgSwap, MnemonicKey, MsgSend, Wallet } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
-import get from 'lodash/get'
-import { terraLCDClient as terra, anchorConfig, mirrorOptions } from '../utils/terraConfig'
+import { terraLCDClient as terra, mirrorOptions, anchorClient } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset, MirrorAsset } from '../types/assets'
-import { AnchorEarn, DENOMS } from '@anchor-protocol/anchor-earn'
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
 import { useSettingsContext } from './SettingsContext'
@@ -75,27 +74,22 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const fetchAssets = React.useCallback(async () => {
     const balances = await terra.bank.balance(address)
-    const anchorEarn = new AnchorEarn({
-      ...anchorConfig,
+    // TODO: support more denoms
+    const userBalance = await anchorClient.earn.getTotalDeposit({
+      market: MARKET_DENOMS.UUSD,
       address,
     })
-    const userBalance = await anchorEarn.balance({
-      currencies: [DENOMS.UST],
-    })
-    const market = await anchorEarn.market({
-      currencies: [DENOMS.UST],
+    const apr = await anchorClient.earn.getAPY({
+      market: MARKET_DENOMS.UUSD,
     })
     const mAssets = await fetchMirrorBalance(address)
     const result = await transformCoinsToAssets(
       [
         ...JSON.parse(balances.toJSON()),
         {
-          denom: 'aust',
-          amount: (
-            Number(get(userBalance, 'total_deposit_balance_in_ust', '0')) *
-            10 ** 6
-          ).toString(),
-          apr: Number(get(market, 'markets[0].APY', 0)),
+          denom: 'ausd',
+          amount: (Number(userBalance) * 10 ** 6).toString(),
+          apr,
         },
         ...mAssets,
       ],
@@ -156,12 +150,12 @@ const AssetsProvider: React.FC = ({ children }) => {
   )
 
   const send = React.useCallback(
-    async (coin: { denom: string; amount: number }, adr: string, password: string) => {
+    async (coin: { denom: string; amount: number }, toAddress: string, password: string) => {
       const key = new MnemonicKey({
         mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = terra.wallet(key)
-      const msg = new MsgSend(key.accAddress, adr, { [coin.denom]: coin.amount * 10 ** 6 })
+      const msg = new MsgSend(key.accAddress, toAddress, { [coin.denom]: coin.amount * 10 ** 6 })
       const tx = await wallet.createAndSignTx({
         msgs: [msg],
         feeDenoms: ['uluna'],
@@ -176,14 +170,13 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const depositSavings = React.useCallback(
     async (amount: number, password: string) => {
-      const anchorEarn = new AnchorEarn({
-        ...anchorConfig,
+      const key = new MnemonicKey({
         mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
-      const deposit = await anchorEarn.deposit({
-        amount: amount.toString(),
-        currency: DENOMS.UST,
-      })
+      const wallet = new Wallet(terra, key)
+      const deposit = await anchorClient.earn
+        .depositStable({ market: MARKET_DENOMS.UUSD, amount: String(amount) })
+        .execute(wallet as any, {})
       fetchAssets()
       return deposit
     },
@@ -192,14 +185,13 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const withdrawSavings = React.useCallback(
     async (amount: number, password: string) => {
-      const anchorEarn = new AnchorEarn({
-        ...anchorConfig,
+      const key = new MnemonicKey({
         mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
-      const withdraw = await anchorEarn.withdraw({
-        amount: amount.toString(),
-        currency: DENOMS.UST,
-      })
+      const wallet = new Wallet(terra, key)
+      const withdraw = await anchorClient.earn
+        .withdrawStable({ market: MARKET_DENOMS.UUSD, amount: String(amount) })
+        .execute(wallet as any, {})
       fetchAssets()
       return withdraw
     },
