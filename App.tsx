@@ -1,8 +1,10 @@
 import 'node-libs-react-native/globals'
 import React from 'react'
 import * as Font from 'expo-font'
+import { StatusBar } from 'expo-status-bar'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import AppLoading from 'expo-app-loading'
+import { RootSiblingParent } from 'react-native-root-siblings'
 import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
 import { AssetsProvider, useAssetsContext } from './contexts/AssetsContext'
@@ -37,7 +39,10 @@ export default function App() {
     <ActionSheetProvider>
       <SettingsProvider>
         <AssetsProvider>
-          <InnerApp />
+          <RootSiblingParent>
+            <StatusBar style="light" />
+            <InnerApp />
+          </RootSiblingParent>
         </AssetsProvider>
       </SettingsProvider>
     </ActionSheetProvider>

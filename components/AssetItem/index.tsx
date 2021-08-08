@@ -3,10 +3,9 @@ import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-nati
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { Asset } from '../../types/assets'
-import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
+import { formatCurrency, formatPercentage, getCurrencySymbol } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
-import { Currencies, CurrencySymbols } from '../../types/misc'
 import get from 'lodash/get'
 
 interface AssetItemProps extends TouchableOpacityProps {
@@ -41,7 +40,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...pr
                 {asset.worth
                   ? formatCurrency(
                       get(asset, 'worth.amount', 0).toString(),
-                      asset.worth.denom as Currencies,
+                      asset.worth.denom,
                       true
                     )
                   : ''}
@@ -54,20 +53,20 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...pr
             <View>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t('amount (symbol)', {
-                  symbol: (CurrencySymbols as any)[`u${asset.coin.denom.slice(-3)}`],
+                  symbol: getCurrencySymbol(`u${asset.coin.denom.slice(-3)}`),
                 })}
               </Typography>
               <Typography bold>
                 {formatCurrency(
                   get(asset, 'worth.amount', 0).toString(),
-                  get(asset, 'worth.denom', '') as Currencies
+                  get(asset, 'worth.denom', '')
                 )}
               </Typography>
             </View>
             <View>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t(asset.autoCompound ? 'apy' : 'apr', {
-                  symbol: (CurrencySymbols as any)[asset.coin.denom],
+                  symbol: getCurrencySymbol(`u${asset.coin.denom.slice(-3)}`),
                 })}
               </Typography>
               <Typography bold>{formatPercentage(asset.apr, 2)}</Typography>
@@ -81,7 +80,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...pr
                   ? t('auto compounded')
                   : formatCurrency(
                       get(asset, 'rewards.amount', 0).toString(),
-                      get(asset, 'rewards.denom', '') as Currencies
+                      get(asset, 'rewards.denom', '')
                     )}
               </Typography>
             </View>

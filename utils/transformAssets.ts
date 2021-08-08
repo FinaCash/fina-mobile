@@ -3,12 +3,13 @@ import { terraLCDClient as terra } from './terraConfig'
 import { Coin } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import { Asset, AssetTypes, MirrorAsset } from '../types/assets'
-import { Currencies } from '../types/misc'
 
-export const getCurrencyFromDenom = (denom: string) => denom.replace(/^u/, '').toUpperCase()
+export const getCurrencyFromDenom = (denom: string) => denom.slice(1).toUpperCase()
+export const getSymbolFromDenom = (denom: string) =>
+  denom === 'uluna' ? 'LUNA' : denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
 
 export const getCurrentAssetDetail = (coin: { denom: string; amount: string }) => {
-  const symbol = coin.denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
+  const symbol = getSymbolFromDenom(coin.denom)
   return {
     type: AssetTypes.Currents,
     coin,
@@ -33,15 +34,13 @@ export const getMAssetDetail = (
 }
 
 export const getSavingAssetDetail = (coin: { denom: string; amount: string; apr?: number }) => {
+  const symbol = `a${coin.denom.slice(1, coin.denom.length - 1).toUpperCase()}T`
   return {
     type: AssetTypes.Savings,
-    coin: {
-      amount: coin.amount,
-      denom: 'ausd',
-    },
-    name: 'Anchor USD',
-    symbol: 'aUST',
-    image: `https://whitelist.anchorprotocol.com/logo/aUST.png`,
+    coin,
+    name: `Anchor ${getCurrencyFromDenom(coin.denom)}`,
+    symbol,
+    image: `https://whitelist.anchorprotocol.com/logo/${symbol}.png`,
     apr: coin.apr,
     autoCompound: true,
   }
@@ -50,25 +49,20 @@ export const getSavingAssetDetail = (coin: { denom: string; amount: string; apr?
 export const transformCoinsToAssets = async (
   coins: Array<{ amount: string; denom: string; apr?: number }>,
   availableMirrorAssets: MirrorAsset[],
-  currency: Currencies
+  baseCurrency: string
 ): Promise<Asset[]> => {
   const assets = coins
     .map((coin) => {
-      switch (coin.denom) {
-        case 'uusd':
-        case 'ujpy':
-        case 'ueur':
-        case 'uhkd':
-        case 'ukrw':
-          return getCurrentAssetDetail(coin)
-        case 'ausd':
-          return getSavingAssetDetail(coin)
-        case 'uluna':
-          // TODO
-          return null
-        default:
-          return getMAssetDetail(coin, availableMirrorAssets)
+      if (coin.denom === 'uluna') {
+        return null
       }
+      if (coin.denom.match(/^u/)) {
+        return getCurrentAssetDetail(coin)
+      }
+      if (coin.denom.match(/^a/)) {
+        return getSavingAssetDetail(coin)
+      }
+      return getMAssetDetail(coin, availableMirrorAssets)
     })
     .filter((a) => a) as Asset[]
   for (let i = 0; i < assets.length; i++) {
@@ -77,15 +71,15 @@ export const transformCoinsToAssets = async (
       // TODO: this is USD value only
       const mAsset = availableMirrorAssets.find((a) => a.symbol === asset.coin.denom)
       asset.worth = {
-        denom: currency,
+        denom: baseCurrency,
         amount: (((mAsset ? mAsset.price : 0) * Number(asset.coin.amount)) / 10 ** 6).toString(),
       }
-    } else if (asset.coin.denom.slice(-3) === currency.slice(-3)) {
+    } else if (asset.coin.denom.slice(-3) === baseCurrency.slice(-3)) {
       asset.worth = asset.coin
     } else {
       const rate = await terra.market.swapRate(
         new Coin(asset.coin.denom, asset.coin.amount),
-        currency
+        baseCurrency
       )
       asset.worth = {
         denom: rate.denom,

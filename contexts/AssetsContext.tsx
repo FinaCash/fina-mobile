@@ -9,19 +9,30 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
 import { useSettingsContext } from './SettingsContext'
-import { fetchAvailableMirrorAssets, fetchMirrorBalance } from '../utils/fetchMirrorGql'
+import {
+  fetchAnchorBalances,
+  fetchAvailableCurrencies,
+  fetchAvailableMirrorAssets,
+  fetchMirrorBalance,
+} from '../utils/fetches'
 
 interface AssetsState {
   address: string
   assets: Asset[]
   availableMirrorAssets: MirrorAsset[]
+  availableCurrencies: string[]
   loaded: boolean
   login(secretPhrase: string, password: string): void
   logout(): void
   swap(from: Coin, to: Coin, password: string): void
-  send(coin: { denom: string; amount: number }, address: string, password: string): void
-  depositSavings(amount: number, password: string): void
-  withdrawSavings(amount: number, password: string): void
+  send(
+    coin: { denom: string; amount: number },
+    address: string,
+    password: string,
+    simulate?: boolean
+  ): void
+  depositSavings(market: MARKET_DENOMS, amount: number, password: string): void
+  withdrawSavings(market: MARKET_DENOMS, amount: number, password: string): void
   swapMAsset(symbol: string, amount: number, mode: 'buy' | 'sell', password: string): void
 }
 
@@ -29,6 +40,7 @@ const initialState: AssetsState = {
   address: '',
   assets: [],
   availableMirrorAssets: [],
+  availableCurrencies: ['uusd'],
   loaded: false,
   login: () => null,
   logout: () => null,
@@ -62,7 +74,12 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets, {
     secure: true,
   })
-  const [availableMirrorAssets, setAvailableMirrorAssets] = React.useState<MirrorAsset[]>([])
+  const [availableMirrorAssets, setAvailableMirrorAssets] = React.useState<MirrorAsset[]>(
+    initialState.availableMirrorAssets
+  )
+  const [availableCurrencies, setAvailableCurrencies] = React.useState<string[]>(
+    initialState.availableCurrencies
+  )
   const [encryptedSecretPhrase, setEncryptedSecretPhrase] = usePersistedState(
     'encryptedSecretPhrase',
     '',
@@ -74,25 +91,10 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const fetchAssets = React.useCallback(async () => {
     const balances = await terra.bank.balance(address)
-    // TODO: support more denoms
-    const userBalance = await anchorClient.earn.getTotalDeposit({
-      market: MARKET_DENOMS.UUSD,
-      address,
-    })
-    const apr = await anchorClient.earn.getAPY({
-      market: MARKET_DENOMS.UUSD,
-    })
-    const mAssets = await fetchMirrorBalance(address)
+    const anchorBalances = await fetchAnchorBalances(address)
+    const mAssetsBalances = await fetchMirrorBalance(address)
     const result = await transformCoinsToAssets(
-      [
-        ...JSON.parse(balances.toJSON()),
-        {
-          denom: 'ausd',
-          amount: (Number(userBalance) * 10 ** 6).toString(),
-          apr,
-        },
-        ...mAssets,
-      ],
+      [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances],
       availableMirrorAssets,
       currency
     )
@@ -107,6 +109,7 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     fetchAvailableMirrorAssets().then(setAvailableMirrorAssets)
+    fetchAvailableCurrencies().then(setAvailableCurrencies)
   }, [setAvailableMirrorAssets])
 
   const login = React.useCallback(
@@ -132,30 +135,6 @@ const AssetsProvider: React.FC = ({ children }) => {
       })
       const wallet = terra.wallet(key)
       const msg = new MsgSwap(key.accAddress, from, to.denom)
-      // const rate = await terra.market.swapRate(new Coin('uluna', '1'), from.denom)
-      const tx = await wallet.createAndSignTx({
-        msgs: [msg],
-        // TODO: some currencies not accepted as gas fee
-        // feeDenoms: [from.denom],
-        // gasPrices: {
-        //   [from.denom]:
-        //     rate.amount.toNumber() * Number(get(terra, 'config.gasPrices.uluna', '0.15')),
-        // },
-      })
-      const result = await terra.tx.broadcast(tx)
-      fetchAssets()
-      return result
-    },
-    [fetchAssets, encryptedSecretPhrase]
-  )
-
-  const send = React.useCallback(
-    async (coin: { denom: string; amount: number }, toAddress: string, password: string) => {
-      const key = new MnemonicKey({
-        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
-      })
-      const wallet = terra.wallet(key)
-      const msg = new MsgSend(key.accAddress, toAddress, { [coin.denom]: coin.amount * 10 ** 6 })
       const tx = await wallet.createAndSignTx({
         msgs: [msg],
         feeDenoms: ['uluna'],
@@ -168,14 +147,44 @@ const AssetsProvider: React.FC = ({ children }) => {
     [fetchAssets, encryptedSecretPhrase]
   )
 
+  const send = React.useCallback(
+    async (
+      coin: { denom: string; amount: number },
+      toAddress: string,
+      password: string,
+      simulate?: boolean
+    ) => {
+      const msg = new MsgSend(address, toAddress, { [coin.denom]: coin.amount * 10 ** 6 })
+      const key = new MnemonicKey({
+        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
+      })
+      const wallet = terra.wallet(key)
+      if (simulate) {
+        const tx = await wallet.createTx({
+          msgs: [msg],
+          gasAdjustment: 1.5,
+        })
+        return tx
+      }
+      const tx = await wallet.createAndSignTx({
+        msgs: [msg],
+        gasAdjustment: 1.5,
+      })
+      const result = await terra.tx.broadcast(tx)
+      fetchAssets()
+      return result
+    },
+    [fetchAssets, encryptedSecretPhrase, address]
+  )
+
   const depositSavings = React.useCallback(
-    async (amount: number, password: string) => {
+    async (market: MARKET_DENOMS, amount: number, password: string) => {
       const key = new MnemonicKey({
         mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = new Wallet(terra, key)
       const deposit = await anchorClient.earn
-        .depositStable({ market: MARKET_DENOMS.UUSD, amount: String(amount) })
+        .depositStable({ market, amount: String(amount) })
         .execute(wallet as any, {})
       fetchAssets()
       return deposit
@@ -184,13 +193,13 @@ const AssetsProvider: React.FC = ({ children }) => {
   )
 
   const withdrawSavings = React.useCallback(
-    async (amount: number, password: string) => {
+    async (market: MARKET_DENOMS, amount: number, password: string) => {
       const key = new MnemonicKey({
         mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = new Wallet(terra, key)
       const withdraw = await anchorClient.earn
-        .withdrawStable({ market: MARKET_DENOMS.UUSD, amount: String(amount) })
+        .withdrawStable({ market, amount: String(amount) })
         .execute(wallet as any, {})
       fetchAssets()
       return withdraw
@@ -221,6 +230,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       const tx = await wallet.createAndSignTx({
         msgs: [msg],
+        gasAdjustment: 1.5,
       })
       const result = await terra.tx.broadcast(tx)
       fetchAssets()
@@ -235,6 +245,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         assets,
         availableMirrorAssets,
+        availableCurrencies,
         loaded,
         login,
         logout,

@@ -18,7 +18,6 @@ const Invest: React.FC = () => {
       <HeaderBar title={t('invest')} />
       <FlatList
         style={styles.list}
-        contentContainerStyle={styles.container}
         keyExtractor={(item) => item.symbol}
         data={availableMirrorAssets}
         renderItem={({ item }) => (

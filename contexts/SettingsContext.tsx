@@ -1,16 +1,16 @@
 import React from 'react'
-import { Currencies, ThemeType } from '../types/misc'
+import { ThemeType } from '../types/misc'
 import usePersistedState from '../utils/usePersistedState'
 
 interface SettingsState {
-  currency: Currencies
+  currency: string
   theme: ThemeType
-  setCurrency?: React.Dispatch<React.SetStateAction<Currencies>>
+  setCurrency?: React.Dispatch<React.SetStateAction<string>>
   setTheme?: React.Dispatch<React.SetStateAction<ThemeType>>
 }
 
 const initialState: SettingsState = {
-  currency: Currencies.USD,
+  currency: 'uusd',
   theme: 'light',
 }
 

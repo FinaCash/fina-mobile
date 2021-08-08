@@ -1,16 +1,15 @@
-import { Currencies, CurrencySymbols } from '../types/misc'
+import { getCurrencyFromDenom } from './transformAssets'
 
 export const formatCurrency = (amount: string | number, denom: string, withSymbol?: boolean) =>
-  Object.values(Currencies).includes(`u${denom.slice(-3)}` as any)
-    ? `${withSymbol ? (CurrencySymbols as any)[`u${denom.slice(-3)}`] : ''}${new Intl.NumberFormat(
-        'en',
-        {
-          maximumFractionDigits: 2,
-        }
-      ).format((Number(amount) || 0) / 10 ** 6)}`
-    : new Intl.NumberFormat('en', {
-        maximumFractionDigits: 6,
-      }).format((Number(amount) || 0) / 10 ** 6)
+  new Intl.NumberFormat('en', {
+    maximumSignificantDigits: withSymbol ? undefined : 6,
+    maximumFractionDigits: withSymbol ? 2 : undefined,
+    style: withSymbol ? 'currency' : undefined,
+    currency: withSymbol ? getCurrencyFromDenom(denom) : undefined,
+  }).format((Number(amount) || 0) / 10 ** 6)
+
+export const getCurrencySymbol = (denom: string) =>
+  formatCurrency(0, denom, true).replace(/[0-9.,]/g, '')
 
 export const formatPercentage = (percent: number, digits?: number): string =>
   new Intl.NumberFormat('en', {

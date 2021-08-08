@@ -52,5 +52,9 @@
   "transaction fee": "Transaction Fee",
   "total": "Total",
   "transaction sent": "Transaction Sent",
-  "close": "Close"
+  "close": "Close",
+  "my address": "My Address",
+  "share": "Share",
+  "address copied": "Address copied to clipboard",
+  "scan": "Scan"
 }

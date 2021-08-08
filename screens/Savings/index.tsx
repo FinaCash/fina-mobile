@@ -10,7 +10,6 @@ import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
-import { Currencies } from '../../types/misc'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
 import { anchorClient, terraLCDClient as terra } from '../../utils/terraConfig'
@@ -43,9 +42,9 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
         setAmount(a)
         const newCoinAmount = (Number(a) * 10 ** 6).toString()
         const rate =
-          Currencies.USD === currency
-            ? new Coin(Currencies.USD, newCoinAmount)
-            : await terra.market.swapRate(new Coin(Currencies.USD, newCoinAmount), currency)
+          currency === 'uusd'
+            ? new Coin('uusd', newCoinAmount)
+            : await terra.market.swapRate(new Coin('uusd', newCoinAmount), currency)
         setBaseCurrencyCoin(rate)
       } catch (err) {
         setBaseCurrencyCoin(new Coin(currency, 0))
@@ -58,7 +57,11 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
     async (password: string) => {
       try {
         setLoading(true)
-        await (mode === 'deposit' ? depositSavings : withdrawSavings)(Number(amount), password)
+        await (mode === 'deposit' ? depositSavings : withdrawSavings)(
+          MARKET_DENOMS.UUSD,
+          Number(amount),
+          password
+        )
         Actions.pop()
       } catch (err) {
         console.log(err)
@@ -94,7 +97,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
       <AssetItem
         style={styles.from}
         asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: Currencies.USD,
+          denom: 'uusd',
           amount: (Number(amount) * 10 ** 6).toString(),
           apr,
         })}
@@ -109,8 +112,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
           value={amount}
         />
         <Typography>
-          =
-          {formatCurrency(baseCurrencyCoin.amount.toString(), baseCurrencyCoin.denom as Currencies)}{' '}
+          ={formatCurrency(baseCurrencyCoin.amount.toString(), baseCurrencyCoin.denom)}{' '}
           {getCurrencyFromDenom(baseCurrencyCoin.denom)}
         </Typography>
         <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
@@ -118,7 +120,7 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
       <AssetItem
         style={styles.to}
         asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: Currencies.USD,
+          denom: 'uusd',
           amount: (Number(amount) * 10 ** 6).toString(),
           apr,
         })}

@@ -1,6 +1,8 @@
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
+import { Coin } from '@terra-money/terra.js'
 import { AssetTypes } from '../types/assets'
-import { mirrorGraphqlUrl, mirrorOptions } from './terraConfig'
+import { anchorClient, mirrorGraphqlUrl, mirrorOptions, terraLCDClient } from './terraConfig'
 
 export const fetchAvailableMirrorAssets = async () => {
   try {
@@ -88,4 +90,31 @@ export const fetchMirrorBalance = async (address: string) => {
   } catch (err) {
     console.log(err)
   }
+}
+
+export const fetchAnchorBalances = async (address: string) => {
+  const result = []
+  // const markets = Object.values(MARKET_DENOMS)
+  const markets = [MARKET_DENOMS.UUSD]
+  for (let i = 0; i < markets.length; i += 1) {
+    const market = markets[i]
+    const userBalance = await anchorClient.earn.getTotalDeposit({
+      market,
+      address,
+    })
+    const apr = await anchorClient.earn.getAPY({
+      market,
+    })
+    result.push({
+      denom: market.replace(/^u/, 'a'),
+      amount: (Number(userBalance) * 10 ** 6).toString(),
+      apr,
+    })
+  }
+  return result
+}
+
+export const fetchAvailableCurrencies = async () => {
+  const result = await terraLCDClient.oracle.activeDenoms()
+  return result
 }

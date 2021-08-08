@@ -42,19 +42,3 @@ export interface Theme {
   screenWidth: number
   screenHeight: number
 }
-
-export enum Currencies {
-  USD = 'uusd',
-  HKD = 'uhkd',
-  EUR = 'ueur',
-  JPY = 'ujpy',
-  KRW = 'ukrw',
-}
-
-export const CurrencySymbols = {
-  [Currencies.USD]: '$',
-  [Currencies.HKD]: '$',
-  [Currencies.EUR]: '€',
-  [Currencies.JPY]: '¥',
-  [Currencies.KRW]: '₩',
-}

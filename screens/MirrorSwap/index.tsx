@@ -10,7 +10,6 @@ import getStyles from './styles'
 import { AssetTypes, MirrorAsset } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
-import { Currencies } from '../../types/misc'
 import Button from '../../components/Button'
 import MirrorAssetItem from '../../components/MirrorAssetItem'
 import { useAssetsContext } from '../../contexts/AssetsContext'
@@ -37,7 +36,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
   const currentAsset = {
     type: AssetTypes.Currents,
     coin: {
-      denom: Currencies.USD,
+      denom: 'uusd',
       amount: (Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6).toString(),
     },
   }
@@ -117,7 +116,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         </TouchableOpacity>
       </View>
       {mode === 'buy' ? (
-        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} dropdown />
+        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} />
       ) : (
         <MirrorAssetItem mAsset={asset} />
       )}
@@ -132,7 +131,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
       </View>
       {mode === 'sell' ? (
-        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} dropdown />
+        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} />
       ) : (
         <MirrorAssetItem mAsset={asset} />
       )}

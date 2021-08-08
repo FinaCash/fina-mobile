@@ -20,6 +20,7 @@ import { Actions } from 'react-native-router-flux'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
+import AssetFilter from '../../components/AssetFilter'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
@@ -37,7 +38,34 @@ const Home: React.FC = () => {
       .reduce((a, b) => a + b, 0) / assetsDistribution[AssetTypes.Savings]
 
   const [search, setSearch] = React.useState('')
-  const [filterAsset, setFilterAsset] = React.useState<AssetTypes | 'overview'>('overview')
+  const [filterAsset, setFilterAsset] = React.useState('overview')
+
+  const transferAsset = React.useCallback(
+    (asset: Asset) => {
+      Actions.SelectAmount({
+        asset,
+        onSubmit: (amount: number) =>
+          Actions.SelectRecipient({
+            asset,
+            amount,
+            onSubmit: (address: string) =>
+              Actions.Password({
+                title: t('please enter your password'),
+                onSubmit: async (password: string) => {
+                  await send({ denom: asset.coin.denom, amount }, address, password)
+                  Actions.Success({
+                    asset,
+                    amount,
+                    address,
+                    onClose: () => Actions.jump('Home'),
+                  })
+                },
+              }),
+          }),
+      })
+    },
+    [send, t]
+  )
 
   const selectAsset = React.useCallback(
     (asset: Asset) => {
@@ -55,10 +83,10 @@ const Home: React.FC = () => {
             return
           }
           if (asset.type === AssetTypes.Currents && index === 0) {
-            // Send
+            return transferAsset(asset)
           }
           if (asset.type === AssetTypes.Currents && index === 1) {
-            // Receive
+            return Actions.MyAddress()
           }
           if (asset.type === AssetTypes.Currents && index === 2) {
             return Actions.Swap({ from: asset.coin.denom })
@@ -72,7 +100,7 @@ const Home: React.FC = () => {
         }
       )
     },
-    [t, showActionSheetWithOptions]
+    [t, showActionSheetWithOptions, transferAsset]
   )
 
   return (
@@ -83,26 +111,8 @@ const Home: React.FC = () => {
       style={styles.parentContainer}
     >
       <View style={styles.header}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.filterScrollView}
-          contentContainerStyle={styles.filterContainer}
-        >
-          {['overview', ...Object.values(AssetTypes)].map((v) => (
-            <Button
-              key={v}
-              borderRadius={2}
-              style={styles.filterButton}
-              bgColor={filterAsset === v ? theme.palette.grey[1] : 'transparent'}
-              color={filterAsset === v ? theme.palette.primary : theme.palette.white}
-              onPress={() => setFilterAsset(v as any)}
-            >
-              {t(v)}
-            </Button>
-          ))}
-        </ScrollView>
-        <Typography color={theme.palette.white} type="Large">
+        <AssetFilter withOverview currentFilter={filterAsset} onChange={setFilterAsset} />
+        <Typography style={styles.title} color={theme.palette.white} type="Large">
           {t(filterAsset === 'overview' ? 'total balance' : 'equity value', {
             currency: getCurrencyFromDenom(currency),
           })}
@@ -126,28 +136,7 @@ const Home: React.FC = () => {
           <Button
             onPress={() =>
               Actions.SelectAsset({
-                onSelect: (asset: Asset) =>
-                  Actions.SelectAmount({
-                    asset,
-                    onSubmit: (amount: number) =>
-                      Actions.SelectRecipient({
-                        asset,
-                        amount,
-                        onSubmit: (address: string) =>
-                          Actions.Password({
-                            title: t('please enter your password'),
-                            onSubmit: async (password: string) => {
-                              await send({ denom: asset.coin.denom, amount }, address, password)
-                              Actions.Success({
-                                asset,
-                                amount,
-                                address,
-                                onClose: () => Actions.jump('Home'),
-                              })
-                            },
-                          }),
-                      }),
-                  }),
+                onSelect: transferAsset,
                 assets,
               })
             }
@@ -159,6 +148,7 @@ const Home: React.FC = () => {
             {t('transfer')}
           </Button>
           <Button
+            onPress={() => Actions.MyAddress()}
             borderRadius={1}
             style={styles.button}
             iconStyle={styles.buttonIcon}

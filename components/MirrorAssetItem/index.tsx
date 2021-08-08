@@ -5,7 +5,6 @@ import { MirrorAsset } from '../../types/assets'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
-import { Currencies } from '../../types/misc'
 
 interface MirrorAssetItemProps extends TouchableOpacityProps {
   mAsset: MirrorAsset
@@ -30,7 +29,7 @@ const MirrorAssetItem: React.FC<MirrorAssetItemProps> = ({ mAsset, style, ...pro
         </View>
 
         <View style={styles.rightAligned}>
-          <Typography type="H6">{formatCurrency(mAsset.price, Currencies.USD)}</Typography>
+          <Typography type="H6">{formatCurrency(mAsset.price, 'uusd')}</Typography>
           <Typography bold color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}>
             {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
           </Typography>

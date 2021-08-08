@@ -8,10 +8,8 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import { AssetTypes } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
-import { Currencies } from '../../types/misc'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
 import { terraLCDClient as terra } from '../../utils/terraConfig'
@@ -19,8 +17,8 @@ import Button from '../../components/Button'
 import { getCurrencyFromDenom, getCurrentAssetDetail } from '../../utils/transformAssets'
 
 interface SwapProps {
-  from?: Currencies
-  to?: Currencies
+  from?: string
+  to?: string
 }
 
 const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
@@ -30,16 +28,16 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()
 
-  const [from, setFrom] = React.useState(defaultFrom)
+  const [from, setFrom] = React.useState(defaultFrom || 'uusd')
   const [fromAmount, setFromAmount] = React.useState('')
 
-  const [to, setTo] = React.useState(defaultTo)
+  const [to, setTo] = React.useState(defaultTo || 'uusd')
   const [toAmount, setToAmount] = React.useState('')
 
   const [baseCurrencyCoin, setBaseCurrencyCoin] = React.useState(new Coin(currency, '0'))
 
   const changeAmount = React.useCallback(
-    async (a: string, which: 'from' | 'to', defaultObj?: Currencies) => {
+    async (a: string, which: 'from' | 'to', defaultObj?: string) => {
       try {
         ;(which === 'from' ? setFromAmount : setToAmount)(a)
         const subj = which === 'from' ? from : to
@@ -73,7 +71,8 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
 
   const selectAsset = React.useCallback(
     (which: 'from' | 'to') => {
-      const values = Object.values(Currencies)
+      // TODO
+      const values = Object.values(['uusd', 'uhkd'])
       const options = [...values.map((c) => t(`${c} name`)), t('cancel')]
       showActionSheetWithOptions(
         {
@@ -120,15 +119,10 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
       </View>
       <AssetItem
         style={styles.from}
-        asset={
-          from
-            ? getCurrentAssetDetail({
-                denom: from,
-                amount: (Number(fromAmount) * 10 ** 6).toString(),
-              })
-            : undefined
-        }
-        dropdown
+        asset={getCurrentAssetDetail({
+          denom: from,
+          amount: (Number(fromAmount) * 10 ** 6).toString(),
+        })}
         onPress={() => selectAsset('from')}
       />
       <View style={styles.centered}>
@@ -140,23 +134,17 @@ const Swap: React.FC<SwapProps> = ({ from: defaultFrom, to: defaultTo }) => {
           value={fromAmount}
         />
         <Typography>
-          =
-          {formatCurrency(baseCurrencyCoin.amount.toString(), baseCurrencyCoin.denom as Currencies)}{' '}
+          ={formatCurrency(baseCurrencyCoin.amount.toString(), baseCurrencyCoin.denom)}{' '}
           {getCurrencyFromDenom(baseCurrencyCoin.denom)}
         </Typography>
         <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
       </View>
       <AssetItem
         style={styles.to}
-        asset={
-          to
-            ? getCurrentAssetDetail({
-                denom: to,
-                amount: (Number(toAmount) * 10 ** 6).toString(),
-              })
-            : undefined
-        }
-        dropdown
+        asset={getCurrentAssetDetail({
+          denom: to,
+          amount: (Number(toAmount) * 10 ** 6).toString(),
+        })}
         onPress={() => selectAsset('to')}
       />
       <TextInput

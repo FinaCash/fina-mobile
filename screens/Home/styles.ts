@@ -4,9 +4,8 @@ export default (theme: Theme) => ({
   parentContainer: {
     flex: 1,
   },
-  filterScrollView: {
-    marginBottom: 9 * theme.baseSpace,
-    alignSelf: 'stretch',
+  title: {
+    marginTop: 9 * theme.baseSpace,
   },
   swipeIndicator: {
     width: '30%',
@@ -18,12 +17,6 @@ export default (theme: Theme) => ({
   },
   searchBarContainer: {
     paddingHorizontal: 4 * theme.baseSpace,
-  },
-  filterContainer: {
-    paddingHorizontal: 4 * theme.baseSpace,
-  },
-  filterButton: {
-    marginRight: theme.baseSpace,
   },
   buttonRow: {
     flexDirection: 'row',
