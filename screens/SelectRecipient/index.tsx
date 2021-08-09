@@ -17,6 +17,7 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getCurrencyFromDenom } from '../../utils/transformAssets'
 import isAddressValid from '../../utils/isAddressValid'
 import ConfirmTransactionModal from '../../components/ConfirmModals/ConfirmTransactionModal'
+import { Actions } from 'react-native-router-flux'
 
 interface SelectRecipientProps {
   asset: Asset
@@ -56,7 +57,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
                 <TouchableOpacity>
                   <ContactIcon style={styles.iconButton} fill={theme.palette.grey[7]} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => Actions.ScanQRCode({ onScan: setAddress })}>
                   <QRCodeIcon style={styles.iconButton} fill={theme.palette.grey[7]} />
                 </TouchableOpacity>
               </View>
