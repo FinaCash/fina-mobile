@@ -1,9 +1,11 @@
 import React from 'react'
-import { Animated, ScrollView, View } from 'react-native'
+import { Animated, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
 import get from 'lodash/get'
+import * as WebBrowser from 'expo-web-browser'
 import SearchIcon from '../../assets/images/icons/search.svg'
+import TransakIcon from '../../assets/images/icons/transak.svg'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
 import ReceiveIcon from '../../assets/images/icons/receive.svg'
 import AssetItem from '../../components/AssetItem'
@@ -21,11 +23,12 @@ import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import AssetFilter from '../../components/AssetFilter'
+import { getTransakUrl } from '../../utils/terraConfig'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, send } = useAssetsContext()
+  const { assets, send, address: walletAddress } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()
@@ -133,6 +136,15 @@ const Home: React.FC = () => {
           ) : null}
         </View>
         <View style={styles.buttonRow}>
+          <Button
+            onPress={() => WebBrowser.openBrowserAsync(getTransakUrl(walletAddress))}
+            borderRadius={1}
+            style={styles.button}
+            iconStyle={styles.buttonIcon}
+            icon={<TransakIcon style={{ transform: [{ scale: 1.5 }] }} />}
+          >
+            {t('buy')}
+          </Button>
           <Button
             onPress={() =>
               Actions.SelectAsset({

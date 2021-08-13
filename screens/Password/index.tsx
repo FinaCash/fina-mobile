@@ -1,5 +1,5 @@
 import React from 'react'
-import { ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
@@ -29,6 +29,7 @@ const Password: React.FC<PasswordProps> = ({ isSetting, onSubmit, confirmationRe
       setError('')
       if (confirmationRequired && !isConfirming) {
         setIsConfirming(true)
+        setTimeout(() => (inputRef.current as any).focus(), 100)
         return
       }
       if (confirmationRequired && isConfirming && code !== confirmCode) {
