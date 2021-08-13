@@ -23,6 +23,8 @@ import SelectRecipient from '../screens/SelectRecipient'
 import Success from '../screens/Success'
 import MyAddress from '../screens/MyAddress'
 import ScanQRCode from '../screens/ScanQRCode'
+import Recipients from '../screens/Recipients'
+import SelectRecipients from '../screens/SelectRecipients'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -78,12 +80,12 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
                   component={Invest}
                 />
                 <Scene
-                  key="Contacts"
+                  key="Recipients"
                   hideNavBar
                   iconSvg={<RecipientsIcon />}
                   tabTitle={t('recipients')}
                   icon={TabIcon}
-                  component={() => null}
+                  component={Recipients}
                 />
                 <Scene
                   key="Settings"
@@ -97,14 +99,15 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
               <Scene key="SelectAsset" hideNavBar component={SelectAsset} />
               <Scene key="SelectAmount" hideNavBar component={SelectAmount} />
               <Scene key="SelectRecipient" hideNavBar component={SelectRecipient} />
+              <Scene key="SelectRecipients" hideNavBar component={SelectRecipients} />
+              <Scene key="MyAddress" hideNavBar component={MyAddress} />
+              <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
             </Stack>
             <Scene key="Swap" hideNavBar component={Swap} />
             <Scene key="Savings" hideNavBar component={Savings} />
             <Scene key="MirrorSwap" hideNavBar component={MirrorSwap} />
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />
-            <Scene key="MyAddress" hideNavBar component={MyAddress} />
-            <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
           </Modal>
         </Scene>
       </Router>

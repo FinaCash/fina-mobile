@@ -29,6 +29,7 @@ export default {
   },
   extra: {
     torusProjectId: process.env.TORUS_PROJECT_ID,
+    defaultAvatarUrl: process.env.DEFAULT_AVATAR_URL,
   },
   packagerOpts: {
     config: 'metro.config.js',

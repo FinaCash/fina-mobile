@@ -21,7 +21,6 @@ const SelectAsset: React.FC<SelectAssetProps> = ({ onSelect, assets }) => {
       <HeaderBar back title={t('select asset')} />
       <FlatList
         style={styles.list}
-        contentContainerStyle={styles.container}
         keyExtractor={(item) => item.symbol}
         data={assets}
         renderItem={({ item }) => <AssetItem hideApr asset={item} onPress={() => onSelect(item)} />}

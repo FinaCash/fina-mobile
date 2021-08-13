@@ -5,7 +5,4 @@ export default (theme: Theme) => ({
     backgroundColor: theme.palette.white,
     flex: 1,
   },
-  title: {
-    margin: theme.baseSpace * 2,
-  },
 })

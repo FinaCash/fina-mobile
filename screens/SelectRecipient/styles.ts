@@ -47,4 +47,7 @@ export default (theme: Theme) => ({
     height: theme.baseSpace * 5,
     marginLeft: theme.baseSpace * 4,
   },
+  addButton: {
+    marginTop: 2 * theme.baseSpace,
+  },
 })

@@ -10,9 +10,13 @@ import Typography from '../Typography'
 interface HeaderBarProps {
   title: string
   back?: boolean
+  rightButton?: {
+    icon: React.ReactNode
+    onPress(): void
+  }
 }
 
-const HeaderBar: React.FC<HeaderBarProps> = ({ title, back }) => {
+const HeaderBar: React.FC<HeaderBarProps> = ({ title, back, rightButton }) => {
   const { theme, styles } = useStyles(getStyles)
   return (
     <LinearGradient
@@ -29,6 +33,11 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, back }) => {
       <Typography color={theme.palette.white} type="H6">
         {title}
       </Typography>
+      {rightButton ? (
+        <TouchableOpacity style={styles.rightButton} onPress={rightButton.onPress}>
+          {rightButton.icon}
+        </TouchableOpacity>
+      ) : null}
     </LinearGradient>
   )
 }

@@ -9,6 +9,7 @@ import { RootSiblingParent } from 'react-native-root-siblings'
 import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
 import { AssetsProvider, useAssetsContext } from './contexts/AssetsContext'
+import { RecipientsProvider } from './contexts/RecipientsContext'
 import './locales'
 
 const InnerApp: React.FC = () => {
@@ -40,10 +41,12 @@ export default function App() {
     <ActionSheetProvider>
       <SettingsProvider>
         <AssetsProvider>
-          <RootSiblingParent>
-            <StatusBar style="light" />
-            <InnerApp />
-          </RootSiblingParent>
+          <RecipientsProvider>
+            <RootSiblingParent>
+              <StatusBar style="light" />
+              <InnerApp />
+            </RootSiblingParent>
+          </RecipientsProvider>
         </AssetsProvider>
       </SettingsProvider>
     </ActionSheetProvider>

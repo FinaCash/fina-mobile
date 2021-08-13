@@ -89,6 +89,7 @@ const ConfirmTransactionModal: React.FC<ConfirmTransactionModalProps> = ({
         Object.keys(total).length * 2 * theme.baseSpace +
         theme.bottomSpace
       }
+      onClosed={onClose}
     >
       <View style={styles.confirmHeader}>
         <Typography type="H6">{t('confirm transacrtion')}</Typography>

@@ -56,5 +56,16 @@
   "my address": "My Address",
   "share": "Share",
   "address copied": "Address copied to clipboard",
-  "scan": "Scan"
+  "scan": "Scan",
+  "add recipient": "Add Recipient",
+  "edit recipient": "Edit Recipient",
+  "name": "Name",
+  "name placeholder": "Satoshi Nakamoto",
+  "recipient added": "Recipient added",
+  "recipient updated": "Recipient updated",
+  "recipient deleted": "Recipient deleted",
+  "remove": "Remove",
+  "save": "Save",
+  "confirm remove recipient": "Are you sure to remove this recipient?",
+  "save recipient": "Save recipient"
 }

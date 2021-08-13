@@ -1,6 +1,6 @@
 import React from 'react'
 import get from 'lodash/get'
-import Clipboard from 'expo-clipboard'
+import * as Clipboard from 'expo-clipboard'
 import HeaderBar from '../../components/HeaderBar'
 import useTranslation from '../../locales/useTranslation'
 import getStyles from './styles'
@@ -18,6 +18,10 @@ import { getCurrencyFromDenom } from '../../utils/transformAssets'
 import isAddressValid from '../../utils/isAddressValid'
 import ConfirmTransactionModal from '../../components/ConfirmModals/ConfirmTransactionModal'
 import { Actions } from 'react-native-router-flux'
+import { Recipient } from '../../types/recipients'
+import RecipientModal from '../../components/RecipientModal'
+import { useRecipientsContext } from '../../contexts/RecipientsContext'
+import Toast from 'react-native-root-toast'
 
 interface SelectRecipientProps {
   asset: Asset
@@ -29,9 +33,11 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
   const { t } = useTranslation()
   const { styles, theme } = useStyles(getStyles)
   const { currency } = useSettingsContext()
+  const { addRecipient } = useRecipientsContext()
   const price = Number(get(asset, 'worth.amount', 0)) / Number(asset.coin.amount)
   const [address, setAddress] = React.useState('')
   const [isConfirming, setIsConfirming] = React.useState(false)
+  const [isSavingRecipient, setIsSavingRecipient] = React.useState(false)
 
   return (
     <>
@@ -54,7 +60,16 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
                 {t('recipient address')}
               </Typography>
               <View style={styles.row}>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    Actions.SelectRecipients({
+                      onSelect: (recipient: Recipient) => {
+                        setAddress(recipient.address)
+                        Actions.pop()
+                      },
+                    })
+                  }
+                >
                   <ContactIcon style={styles.iconButton} fill={theme.palette.grey[7]} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => Actions.ScanQRCode({ onScan: setAddress })}>
@@ -84,6 +99,18 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
                 </TouchableOpacity>
               }
             />
+            <TouchableOpacity
+              disabled={!isAddressValid(address)}
+              style={styles.addButton}
+              onPress={() => setIsSavingRecipient(true)}
+            >
+              <Typography
+                bold
+                color={isAddressValid(address) ? theme.palette.secondary : theme.palette.grey[5]}
+              >
+                {t('save recipient')}
+              </Typography>
+            </TouchableOpacity>
           </View>
         </View>
         <Button
@@ -105,6 +132,16 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
         address={address}
         amount={amount}
         onConfirm={() => onSubmit(address)}
+      />
+      <RecipientModal
+        open={isSavingRecipient}
+        onClose={() => setIsSavingRecipient(false)}
+        recipient={{ name: '', image: '', address }}
+        onSave={(recipient) => {
+          addRecipient(recipient)
+          setIsSavingRecipient(false)
+          Toast.show(t('recipient added'))
+        }}
       />
     </>
   )
