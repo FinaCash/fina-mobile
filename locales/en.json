@@ -68,5 +68,7 @@
   "save": "Save",
   "confirm remove recipient": "Are you sure to remove this recipient?",
   "save recipient": "Save recipient",
-  "buy": "Buy"
+  "buy": "Buy",
+  "sell": "Sell",
+  "buy ust": "Buy UST"
 }

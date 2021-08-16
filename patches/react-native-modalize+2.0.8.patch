@@ -1,0 +1,23 @@
+diff --git a/node_modules/react-native-modalize/lib/index.js b/node_modules/react-native-modalize/lib/index.js
+index 28e86cd..12a9061 100644
+--- a/node_modules/react-native-modalize/lib/index.js
++++ b/node_modules/react-native-modalize/lib/index.js
+@@ -37,6 +37,18 @@ const invariant_1 = require("./utils/invariant");
+ const compose_refs_1 = require("./utils/compose-refs");
+ const styles_1 = __importDefault(require("./styles"));
+ const AnimatedKeyboardAvoidingView = react_native_1.Animated.createAnimatedComponent(react_native_1.KeyboardAvoidingView);
++
++//Patching code for web
++if (!react_native_1.Animated.FlatList) {
++    react_native_1.Animated.FlatList = react_native_1.Animated.createAnimatedComponent(
++        react_native_1.FlatList, { scrollEventThrottle: 0.0001 }
++    )
++}
++if (!react_native_1.Animated.SectionList) {
++    react_native_1.Animated.SectionList = react_native_1.Animated.createAnimatedComponent(
++        react_native_1.SectionList, { scrollEventThrottle: 0.0001 }
++    )
++}
+ /**
+  * When scrolling, it happens than beginScrollYValue is not always equal to 0 (top of the ScrollView).
+  * Since we use this to trigger the swipe down gesture animation, we allow a small threshold to

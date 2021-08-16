@@ -11,7 +11,7 @@ import getStyles from './styles'
 const Invest: React.FC = () => {
   const { t } = useTranslation()
   const { styles } = useStyles(getStyles)
-  const { availableMirrorAssets } = useAssetsContext()
+  const { availableAssets } = useAssetsContext()
 
   return (
     <>
@@ -19,7 +19,7 @@ const Invest: React.FC = () => {
       <FlatList
         style={styles.list}
         keyExtractor={(item) => item.symbol}
-        data={availableMirrorAssets}
+        data={availableAssets}
         renderItem={({ item }) => (
           <MirrorAssetItem
             mAsset={item}

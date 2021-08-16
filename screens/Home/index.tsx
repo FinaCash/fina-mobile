@@ -72,10 +72,21 @@ const Home: React.FC = () => {
 
   const selectAsset = React.useCallback(
     (asset: Asset) => {
-      const options =
-        asset.type === AssetTypes.Currents
-          ? [t('transfer'), t('receive'), t('swap'), t('cancel')]
-          : [t('deposit'), t('withdraw'), t('cancel')]
+      let options = []
+      switch (asset.type) {
+        case AssetTypes.Currents:
+          options = [t('transfer'), t('swap'), t('cancel')]
+          break
+        case AssetTypes.Savings:
+          options = [t('deposit'), t('withdraw'), t('cancel')]
+          break
+        case AssetTypes.Investments:
+          options = [t('buy'), t('sell'), t('cancel')]
+          break
+        case AssetTypes.Tokens:
+          options = [t('buy'), t('sell'), t('cancel')]
+          break
+      }
       showActionSheetWithOptions(
         {
           options,
@@ -89,9 +100,6 @@ const Home: React.FC = () => {
             return transferAsset(asset)
           }
           if (asset.type === AssetTypes.Currents && index === 1) {
-            return Actions.MyAddress()
-          }
-          if (asset.type === AssetTypes.Currents && index === 2) {
             return Actions.Swap({ from: asset.coin.denom })
           }
           if (asset.type === AssetTypes.Savings && index === 0) {
@@ -143,13 +151,14 @@ const Home: React.FC = () => {
             iconStyle={styles.buttonIcon}
             icon={<TransakIcon style={{ transform: [{ scale: 1.5 }] }} />}
           >
-            {t('buy')}
+            {t('buy ust')}
           </Button>
           <Button
             onPress={() =>
               Actions.SelectAsset({
                 onSelect: transferAsset,
-                assets,
+                // TODO: transfer other tokens
+                assets: assets.filter((a) => a.coin.denom.match(/^u/)),
               })
             }
             borderRadius={1}

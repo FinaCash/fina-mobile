@@ -111,10 +111,22 @@ export const fetchAnchorBalances = async (address: string) => {
       apr,
     })
   }
+  const ancBalance = await anchorClient.anchorToken.getBalance(address)
+  result.push({
+    denom: 'ANC',
+    amount: (Number(ancBalance) * 10 ** 6).toString(),
+  })
   return result
 }
 
 export const fetchAvailableCurrencies = async () => {
   const result = await terraLCDClient.oracle.activeDenoms()
   return result
+}
+
+export const fetchCoingeckoPrice = async (id: string) => {
+  const result = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true`
+  ).then((r) => r.json())
+  return result[id]
 }

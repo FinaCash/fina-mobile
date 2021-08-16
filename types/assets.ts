@@ -1,5 +1,3 @@
-import { Coin } from '@terra-money/terra.js'
-
 export enum AssetTypes {
   Currents = 'currents',
   Savings = 'savings',
@@ -28,8 +26,8 @@ export interface Asset {
   autoCompound?: boolean
 }
 
-export interface MirrorAsset {
-  type: AssetTypes.Investments
+export interface AvailableAsset {
+  type: AssetTypes.Investments | AssetTypes.Tokens
   name: string
   symbol: string
   image: string

@@ -1,8 +1,8 @@
 import groupBy from 'lodash/groupBy'
-import { terraLCDClient as terra } from './terraConfig'
+import { supportedTokens, terraLCDClient as terra } from './terraConfig'
 import { Coin } from '@terra-money/terra.js'
 import get from 'lodash/get'
-import { Asset, AssetTypes, MirrorAsset } from '../types/assets'
+import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
 
 export const getCurrencyFromDenom = (denom: string) => denom.slice(1).toUpperCase()
 export const getSymbolFromDenom = (denom: string) =>
@@ -21,11 +21,11 @@ export const getCurrentAssetDetail = (coin: { denom: string; amount: string }) =
 
 export const getMAssetDetail = (
   coin: { denom: string; amount: string },
-  availableMirrorAssets: MirrorAsset[]
+  availableAssets: AvailableAsset[]
 ) => {
-  const mAsset = availableMirrorAssets.find((a) => a.symbol === coin.denom)
+  const mAsset = availableAssets.find((a) => a.symbol === coin.denom)
   return {
-    type: AssetTypes.Investments,
+    type: coin.denom === 'MIR' ? AssetTypes.Tokens : AssetTypes.Investments,
     coin,
     name: get(mAsset, 'name', ''),
     symbol: get(mAsset, 'symbol', ''),
@@ -46,15 +46,30 @@ export const getSavingAssetDetail = (coin: { denom: string; amount: string; apr?
   }
 }
 
+export const getTokenAssetDetail = (coin: { denom: string; amount: string; apr?: number }) => {
+  const token = (supportedTokens as any)[coin.denom]
+  if (!token) {
+    return null
+  }
+  return {
+    type: AssetTypes.Tokens,
+    coin,
+    name: token.name,
+    symbol: token.symbol,
+    image: token.image,
+    apr: coin.apr,
+  }
+}
+
 export const transformCoinsToAssets = async (
   coins: Array<{ amount: string; denom: string; apr?: number }>,
-  availableMirrorAssets: MirrorAsset[],
+  availableAssets: AvailableAsset[],
   baseCurrency: string
 ): Promise<Asset[]> => {
   const assets = coins
     .map((coin) => {
       if (coin.denom === 'uluna') {
-        return null
+        return getTokenAssetDetail(coin)
       }
       if (coin.denom.match(/^u/)) {
         return getCurrentAssetDetail(coin)
@@ -62,14 +77,14 @@ export const transformCoinsToAssets = async (
       if (coin.denom.match(/^a/)) {
         return getSavingAssetDetail(coin)
       }
-      return getMAssetDetail(coin, availableMirrorAssets)
+      return getMAssetDetail(coin, availableAssets)
     })
     .filter((a) => a) as Asset[]
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    if (asset.type === AssetTypes.Investments) {
+    if (asset.type === AssetTypes.Investments || asset.coin.denom === 'MIR') {
       // TODO: this is USD value only
-      const mAsset = availableMirrorAssets.find((a) => a.symbol === asset.coin.denom)
+      const mAsset = availableAssets.find((a) => a.symbol === asset.coin.denom)
       asset.worth = {
         denom: baseCurrency,
         amount: (((mAsset ? mAsset.price : 0) * Number(asset.coin.amount)) / 10 ** 6).toString(),

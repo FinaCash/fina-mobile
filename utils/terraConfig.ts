@@ -7,6 +7,27 @@ export const terraLCDClient = new LCDClient({
   chainID: 'tequila-0004',
 })
 
+export const supportedTokens = {
+  uluna: {
+    symbol: 'LUNA',
+    name: 'Terra LUNA',
+    image: 'https://assets.terra.money/icon/600/Luna.png',
+    coingeckoId: 'terra-luna',
+  },
+  MIR: {
+    symbol: 'MIR',
+    name: 'Mirror Token',
+    image: 'https://whitelist.mirror.finance/icon/MIR.png',
+    coingeckoId: 'mirror-protocol',
+  },
+  ANC: {
+    symbol: 'ANC',
+    name: 'Anchor Token',
+    image: 'https://whitelist.anchorprotocol.com/logo/ANC.png',
+    coingeckoId: 'anchor-protocol',
+  },
+}
+
 export const anchorClient = new Anchor(
   terraLCDClient as any,
   new AddressProviderFromJson(tequila0004)

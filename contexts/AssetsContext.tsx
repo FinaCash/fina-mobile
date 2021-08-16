@@ -2,9 +2,14 @@ import React from 'react'
 import { Coin, MsgSwap, MnemonicKey, MsgSend, Wallet } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
-import { terraLCDClient as terra, mirrorOptions, anchorClient } from '../utils/terraConfig'
+import {
+  terraLCDClient as terra,
+  mirrorOptions,
+  anchorClient,
+  supportedTokens,
+} from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
-import { Asset, MirrorAsset } from '../types/assets'
+import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
@@ -13,13 +18,14 @@ import {
   fetchAnchorBalances,
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
+  fetchCoingeckoPrice,
   fetchMirrorBalance,
 } from '../utils/fetches'
 
 interface AssetsState {
   address: string
   assets: Asset[]
-  availableMirrorAssets: MirrorAsset[]
+  availableAssets: AvailableAsset[]
   availableCurrencies: string[]
   loaded: boolean
   login(secretPhrase: string, password: string): void
@@ -39,7 +45,7 @@ interface AssetsState {
 const initialState: AssetsState = {
   address: '',
   assets: [],
-  availableMirrorAssets: [],
+  availableAssets: [],
   availableCurrencies: ['uusd'],
   loaded: false,
   login: () => null,
@@ -68,14 +74,10 @@ const decryptMnemonic = (encryptedSecretPhrase: string, password: string) => {
 const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
-  const [address, setAddress, loaded] = usePersistedState('address', initialState.address, {
-    secure: true,
-  })
-  const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets, {
-    secure: true,
-  })
-  const [availableMirrorAssets, setAvailableMirrorAssets] = React.useState<MirrorAsset[]>(
-    initialState.availableMirrorAssets
+  const [address, setAddress, loaded] = usePersistedState('address', initialState.address)
+  const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets)
+  const [availableAssets, setAvailableAssets] = React.useState<AvailableAsset[]>(
+    initialState.availableAssets
   )
   const [availableCurrencies, setAvailableCurrencies] = React.useState<string[]>(
     initialState.availableCurrencies
@@ -95,22 +97,41 @@ const AssetsProvider: React.FC = ({ children }) => {
     const mAssetsBalances = await fetchMirrorBalance(address)
     const result = await transformCoinsToAssets(
       [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances],
-      availableMirrorAssets,
+      availableAssets,
       currency
     )
     setAssets(result)
-  }, [address, setAssets, fetchMirrorBalance, availableMirrorAssets, currency])
+  }, [address, setAssets, fetchMirrorBalance, availableAssets, currency])
 
   React.useEffect(() => {
-    if (address && availableMirrorAssets) {
+    if (address && availableAssets) {
       fetchAssets()
     }
-  }, [address, availableMirrorAssets])
+  }, [address, availableAssets])
 
   React.useEffect(() => {
-    fetchAvailableMirrorAssets().then(setAvailableMirrorAssets)
+    fetchAvailableMirrorAssets().then(async (mAssets) => {
+      const tokens = Object.values(supportedTokens).filter(
+        (t) => !mAssets.find((m: any) => m.symbol === t.symbol)
+      )
+      const tokenAssets = []
+      for (let i = 0; i < tokens.length; i += 1) {
+        const price = await fetchCoingeckoPrice(tokens[i].coingeckoId)
+        tokenAssets.push({
+          type: AssetTypes.Tokens,
+          name: tokens[i].name,
+          symbol: tokens[i].symbol,
+          image: tokens[i].image,
+          description: '',
+          price: price.usd * 10 ** 6,
+          prevPrice: (price.usd * 10 ** 6) / (1 + price.usd_24h_change / 100),
+          priceHistories: [],
+        })
+      }
+      setAvailableAssets([...tokenAssets, ...mAssets])
+    })
     fetchAvailableCurrencies().then(setAvailableCurrencies)
-  }, [setAvailableMirrorAssets])
+  }, [])
 
   const login = React.useCallback(
     async (secretPhrase: string, password: string) => {
@@ -244,7 +265,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       value={{
         address,
         assets,
-        availableMirrorAssets,
+        availableAssets,
         availableCurrencies,
         loaded,
         login,
