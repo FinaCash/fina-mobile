@@ -9,7 +9,6 @@ import Typography from '../components/Typography'
 import useStyles from '../theme/useStyles'
 import getStyles from './styles'
 import Home from '../screens/Home'
-import Swap from '../screens/Swap'
 import Login from '../screens/Login'
 import useTranslation from '../locales/useTranslation'
 import Password from '../screens/Password'
@@ -25,6 +24,7 @@ import MyAddress from '../screens/MyAddress'
 import ScanQRCode from '../screens/ScanQRCode'
 import Recipients from '../screens/Recipients'
 import SelectRecipients from '../screens/SelectRecipients'
+import CurrencyExchange from '../screens/CurrencyExchange'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -102,10 +102,10 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
               <Scene key="SelectRecipients" hideNavBar component={SelectRecipients} />
               <Scene key="MyAddress" hideNavBar component={MyAddress} />
               <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
+              <Scene key="CurrencyExchange" hideNavBar component={CurrencyExchange} />
+              <Scene key="Savings" hideNavBar component={Savings} />
+              <Scene key="MirrorSwap" hideNavBar component={MirrorSwap} />
             </Stack>
-            <Scene key="Swap" hideNavBar component={Swap} />
-            <Scene key="Savings" hideNavBar component={Savings} />
-            <Scene key="MirrorSwap" hideNavBar component={MirrorSwap} />
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />
           </Modal>

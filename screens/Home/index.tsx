@@ -75,7 +75,7 @@ const Home: React.FC = () => {
       let options = []
       switch (asset.type) {
         case AssetTypes.Currents:
-          options = [t('transfer'), t('swap'), t('cancel')]
+          options = [t('transfer'), t('currency exchange'), t('cancel')]
           break
         case AssetTypes.Savings:
           options = [t('deposit'), t('withdraw'), t('cancel')]
@@ -100,7 +100,7 @@ const Home: React.FC = () => {
             return transferAsset(asset)
           }
           if (asset.type === AssetTypes.Currents && index === 1) {
-            return Actions.Swap({ from: asset.coin.denom })
+            return Actions.CurrencyExchange({ from: asset.coin.denom })
           }
           if (asset.type === AssetTypes.Savings && index === 0) {
             return Actions.Savings({ from: asset.coin.denom, mode: 'deposit' })

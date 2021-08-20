@@ -12,4 +12,8 @@ export default (theme: Theme) => ({
   button: {
     marginBottom: 4 * theme.baseSpace + theme.bottomSpace,
   },
+  arrow: {
+    alignSelf: 'center',
+    marginVertical: 4 * theme.baseSpace,
+  },
 })

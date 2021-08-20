@@ -4,7 +4,7 @@ import useStyles from '../../theme/useStyles'
 import Typography from '../Typography'
 import getStyles from './styles'
 
-interface InputProps extends TextInputProps {
+export interface InputProps extends TextInputProps {
   icon?: React.ReactElement
   endAdornment?: React.ReactElement
   size?: 'XLarge' | 'Large' | 'Base'

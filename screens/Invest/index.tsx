@@ -2,7 +2,7 @@ import React from 'react'
 import { FlatList } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import HeaderBar from '../../components/HeaderBar'
-import MirrorAssetItem from '../../components/MirrorAssetItem'
+import AvailableAssetItem from '../../components/AvailableAssetItem'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
@@ -21,8 +21,8 @@ const Invest: React.FC = () => {
         keyExtractor={(item) => item.symbol}
         data={availableAssets}
         renderItem={({ item }) => (
-          <MirrorAssetItem
-            mAsset={item}
+          <AvailableAssetItem
+            availableAsset={item}
             onPress={() => Actions.MirrorSwap({ mode: 'buy', asset: item })}
           />
         )}

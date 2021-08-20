@@ -30,7 +30,7 @@ interface AssetsState {
   loaded: boolean
   login(secretPhrase: string, password: string): void
   logout(): void
-  swap(from: Coin, to: Coin, password: string): void
+  swap(from: { denom: string; amount: number }, toDenom: string, password: string): void
   send(
     coin: { denom: string; amount: number },
     address: string,
@@ -150,12 +150,16 @@ const AssetsProvider: React.FC = ({ children }) => {
   }, [])
 
   const swap = React.useCallback(
-    async (from: Coin, to: Coin, password: string) => {
+    async (from: { denom: string; amount: number }, toDenom: string, password: string) => {
       const key = new MnemonicKey({
         mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = terra.wallet(key)
-      const msg = new MsgSwap(key.accAddress, from, to.denom)
+      const msg = new MsgSwap(
+        key.accAddress,
+        new Coin(from.denom, (Number(from.amount) * 10 ** 6).toString()),
+        toDenom
+      )
       const tx = await wallet.createAndSignTx({
         msgs: [msg],
         feeDenoms: ['uluna'],

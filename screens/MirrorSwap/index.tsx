@@ -7,11 +7,11 @@ import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import { AssetTypes, MirrorAsset } from '../../types/assets'
+import { AssetTypes, AvailableAsset } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import AssetItem from '../../components/AssetItem'
 import Button from '../../components/Button'
-import MirrorAssetItem from '../../components/MirrorAssetItem'
+import AvailableAssetItem from '../../components/AvailableAssetItem'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { mirrorOptions } from '../../utils/terraConfig'
 import { getCurrentAssetDetail } from '../../utils/transformAssets'
@@ -19,7 +19,7 @@ import { getCurrentAssetDetail } from '../../utils/transformAssets'
 const mirror = new Mirror(mirrorOptions)
 
 interface MirrorSwapProps {
-  asset: MirrorAsset
+  asset: AvailableAsset
   mode: 'buy' | 'sell'
 }
 
@@ -118,7 +118,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
       {mode === 'buy' ? (
         <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} />
       ) : (
-        <MirrorAssetItem mAsset={asset} />
+        <AvailableAssetItem availableAsset={asset} />
       )}
       <View style={styles.centered}>
         <TextInput
@@ -133,7 +133,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
       {mode === 'sell' ? (
         <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} />
       ) : (
-        <MirrorAssetItem mAsset={asset} />
+        <AvailableAssetItem availableAsset={asset} />
       )}
       <TextInput
         style={styles.input}

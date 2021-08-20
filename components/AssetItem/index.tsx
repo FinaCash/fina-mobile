@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
+import { FontAwesome as Icon } from '@expo/vector-icons'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { Asset } from '../../types/assets'
@@ -8,8 +9,8 @@ import Typography from '../Typography'
 import getStyles from './styles'
 import get from 'lodash/get'
 
-interface AssetItemProps extends TouchableOpacityProps {
-  asset: Asset
+export interface AssetItemProps extends TouchableOpacityProps {
+  asset?: Asset
   hideApr?: boolean
   hideAmount?: boolean
 }
@@ -22,16 +23,28 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...pr
     <TouchableOpacity {...props}>
       <View style={styles.innerContainer}>
         <View style={styles.topContainer}>
-          <View style={styles.row}>
-            <Image source={{ uri: asset.image }} style={styles.avatar} />
-            <View>
-              <Typography style={styles.gutterBottom} type="H6">
-                {asset.symbol}
-              </Typography>
-              <Typography color={theme.palette.grey[7]}>{asset.name}</Typography>
+          {asset ? (
+            <View style={styles.row}>
+              <Image source={{ uri: asset.image }} style={styles.avatar} />
+              <View>
+                <Typography style={styles.gutterBottom} type="H6">
+                  {asset.symbol}
+                </Typography>
+                <Typography color={theme.palette.grey[7]}>{asset.name}</Typography>
+              </View>
             </View>
-          </View>
-          {(!asset.apr || hideApr) && !hideAmount ? (
+          ) : (
+            <View style={styles.row}>
+              <Icon
+                name="question-circle-o"
+                size={10 * theme.baseSpace}
+                style={styles.avatar}
+                color={theme.fonts.H6.color}
+              />
+              <Typography type="H6">{t('select asset')}</Typography>
+            </View>
+          )}
+          {asset && (!asset.apr || hideApr) && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
                 {formatCurrency(asset.coin.amount, asset.coin.denom)}
@@ -47,8 +60,11 @@ const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...pr
               </Typography>
             </View>
           ) : null}
+          {!asset ? (
+            <Icon name="chevron-down" size={4 * theme.baseSpace} color={theme.fonts.H6.color} />
+          ) : null}
         </View>
-        {asset.apr && !hideApr ? (
+        {asset && asset.apr && !hideApr ? (
           <View style={styles.aprContainer}>
             <View>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>

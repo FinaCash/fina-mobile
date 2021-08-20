@@ -68,7 +68,8 @@ export const transformCoinsToAssets = async (
 ): Promise<Asset[]> => {
   const assets = coins
     .map((coin) => {
-      if (coin.denom === 'uluna') {
+      console.log(coin)
+      if (Object.keys(supportedTokens).includes(coin.denom)) {
         return getTokenAssetDetail(coin)
       }
       if (coin.denom.match(/^u/)) {
@@ -80,15 +81,25 @@ export const transformCoinsToAssets = async (
       return getMAssetDetail(coin, availableAssets)
     })
     .filter((a) => a) as Asset[]
+  // Calculate asset worth
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    if (asset.type === AssetTypes.Investments || asset.coin.denom === 'MIR') {
+    if (
+      asset.type === AssetTypes.Investments ||
+      Object.keys(supportedTokens).includes(asset.coin.denom)
+    ) {
       // TODO: this is USD value only
       const mAsset = availableAssets.find((a) => a.symbol === asset.coin.denom)
       asset.worth = {
         denom: baseCurrency,
         amount: (((mAsset ? mAsset.price : 0) * Number(asset.coin.amount)) / 10 ** 6).toString(),
       }
+      // } else if (asset.coin.denom === 'ANC') {
+      //   const rate = await anchorClient.anchorToken.getANCPrice()
+      //   asset.worth = {
+      //     denom: baseCurrency,
+      //     amount: ((Number(rate) * Number(asset.coin.amount)) / 10 ** 6).toString(),
+      //   }
     } else if (asset.coin.denom.slice(-3) === baseCurrency.slice(-3)) {
       asset.worth = asset.coin
     } else {
