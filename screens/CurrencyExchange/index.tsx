@@ -1,14 +1,12 @@
 import React from 'react'
 import { ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
-import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Actions } from 'react-native-router-flux'
-import { formatCurrency } from '../../utils/formatNumbers'
 import { Coin } from '@terra-money/terra.js'
 import { terraLCDClient as terra } from '../../utils/terraConfig'
 import Button from '../../components/Button'
@@ -16,6 +14,7 @@ import { getCurrentAssetDetail } from '../../utils/transformAssets'
 import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
 import { Asset, AssetTypes } from '../../types/assets'
+import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
 
 interface CurrencyExchangeProps {
   from?: string
@@ -37,6 +36,8 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
 
   const [to, setTo] = React.useState(defaultTo)
   const [toAmount, setToAmount] = React.useState('')
+
+  const [isConfirming, setIsConfirming] = React.useState(false)
 
   const [baseCurrencyAmount, setBaseCurrencyAmount] = React.useState(0)
 
@@ -73,17 +74,18 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
     [fromAmount, from, toAmount, to, currency]
   )
 
-  const onSubmit = React.useCallback(
-    async (password: string) => {
-      if (from && to) {
-        await swap({ denom: from, amount: Number(fromAmount) }, to, password)
-      }
-      Actions.jump('Home')
-    },
-    [from, to, fromAmount, toAmount]
-  )
-
   const fromAsset = assets.find((a) => a.coin.denom === from)
+  const fromAssetWithAmount =
+    from && fromAsset
+      ? {
+          ...fromAsset,
+          coin: { denom: from, amount: String(Number(fromAmount) * 10 ** 6) },
+          worth: {
+            denom: currency,
+            amount: String(baseCurrencyAmount),
+          },
+        }
+      : undefined
   const toAsset = to
     ? {
         ...getCurrentAssetDetail({
@@ -96,6 +98,23 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
         },
       }
     : undefined
+
+  const onSubmit = React.useCallback(
+    async (password: string) => {
+      if (from && to) {
+        await swap({ denom: from, amount: Number(fromAmount) }, to, password)
+      }
+      Actions.Success({
+        message: {
+          type: 'swap',
+          from: fromAssetWithAmount,
+          to: toAsset,
+        },
+        onClose: () => Actions.jump('Home'),
+      })
+    },
+    [from, to, fromAmount, toAmount, fromAssetWithAmount, toAsset, baseCurrencyAmount, currency]
+  )
 
   return (
     <>
@@ -154,11 +173,20 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
           }
           style={styles.button}
           size="Large"
-          onPress={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
+          onPress={() => setIsConfirming(true)}
         >
           {t('next')}
         </Button>
       </View>
+      {from && fromAssetWithAmount && toAsset ? (
+        <ConfirmSwapModal
+          open={isConfirming}
+          from={fromAssetWithAmount}
+          to={toAsset}
+          onClose={() => setIsConfirming(false)}
+          onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
+        />
+      ) : null}
     </>
   )
 }

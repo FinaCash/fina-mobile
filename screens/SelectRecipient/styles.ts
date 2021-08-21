@@ -50,4 +50,7 @@ export default (theme: Theme) => ({
   addButton: {
     marginTop: 2 * theme.baseSpace,
   },
+  marginTop: {
+    marginTop: theme.baseSpace * 4,
+  },
 })

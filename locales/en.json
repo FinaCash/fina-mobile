@@ -70,5 +70,9 @@
   "save recipient": "Save recipient",
   "buy": "Buy",
   "sell": "Sell",
-  "buy ust": "Buy UST"
+  "buy ust": "Buy UST",
+  "memo": "Note (Memo)",
+  "default memo": "Default Note (Memo)",
+  "memo placeholder": "Optional",
+  "from": "From"
 }

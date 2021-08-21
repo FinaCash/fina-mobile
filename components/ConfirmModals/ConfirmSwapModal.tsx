@@ -16,44 +16,47 @@ import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 
-interface ConfirmTransactionModalProps {
+interface ConfirmSwapModalProps {
   open: boolean
   onClose(): void
-  asset: Asset
-  amount: number
-  address: string
+  from: Asset
+  to: Asset
   onConfirm(): void
 }
 
-const ConfirmTransactionModal: React.FC<ConfirmTransactionModalProps> = ({
+const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   open,
   onClose,
-  asset,
-  amount,
-  address,
+  from,
+  to,
   onConfirm,
 }) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
-  const { send } = useAssetsContext()
+  const { swap } = useAssetsContext()
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {
     const result = cloneDeep(fee)
-    if (result[asset.coin.denom]) {
-      result[asset.coin.denom].amount += amount
+    if (result[from.coin.denom]) {
+      result[from.coin.denom].amount += Number(from.coin.amount) / 10 ** 6
     } else {
-      result[asset.coin.denom] = {
-        denom: asset.coin.denom,
-        amount,
+      result[from.coin.denom] = {
+        denom: from.coin.denom,
+        amount: Number(from.coin.amount) / 10 ** 6,
       }
     }
     return result
-  }, [fee, asset, amount])
+  }, [fee, from])
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await send({ denom: asset.coin.denom, amount }, address, '', true)
+      const tx = await swap(
+        { denom: from.coin.denom, amount: Number(from.coin.amount) / 10 ** 6 },
+        to.coin.denom,
+        '',
+        true
+      )
       setFee(
         keyBy(
           JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
@@ -66,7 +69,7 @@ const ConfirmTransactionModal: React.FC<ConfirmTransactionModalProps> = ({
     } catch (err) {
       console.log(err)
     }
-  }, [asset, amount, address, send])
+  }, [from, to, swap])
 
   React.useEffect(() => {
     if (open) {
@@ -84,7 +87,7 @@ const ConfirmTransactionModal: React.FC<ConfirmTransactionModalProps> = ({
       withHandle={false}
       scrollViewProps={{ scrollEnabled: false }}
       modalHeight={
-        theme.baseSpace * 100 +
+        theme.baseSpace * 108 +
         Object.keys(fee).length * 2 * theme.baseSpace +
         Object.keys(total).length * 2 * theme.baseSpace +
         theme.bottomSpace
@@ -97,28 +100,14 @@ const ConfirmTransactionModal: React.FC<ConfirmTransactionModalProps> = ({
           <CloseIcon fill={theme.palette.grey[9]} />
         </TouchableOpacity>
       </View>
-      <AssetItem asset={asset} hideAmount hideApr />
-      <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
-        <Typography type="Large" color={theme.palette.grey[7]}>
-          {t('amount')}
-        </Typography>
-        <Typography type="Large">
-          {formatCurrency(amount * 10 ** 6, '')} {asset.symbol}
-        </Typography>
-      </View>
-      <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
-        <Typography type="Large" color={theme.palette.grey[7]}>
-          {t('to')}
-        </Typography>
-        <View style={styles.alignRight}>
-          <Typography type="Large" style={styles.marginBottom}>
-            {t('new address')}
-          </Typography>
-          <Typography type="Small" color={theme.palette.grey[7]}>
-            {address}
-          </Typography>
-        </View>
-      </View>
+      <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
+        {t('from')}
+      </Typography>
+      <AssetItem asset={from} hideApr />
+      <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
+        {t('to')}
+      </Typography>
+      <AssetItem asset={to} hideApr />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('transaction fee')}
@@ -148,4 +137,4 @@ const ConfirmTransactionModal: React.FC<ConfirmTransactionModalProps> = ({
   )
 }
 
-export default ConfirmTransactionModal
+export default ConfirmSwapModal

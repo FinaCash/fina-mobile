@@ -31,4 +31,9 @@ export default (theme: Theme) => ({
   modalButton: {
     margin: 4 * theme.baseSpace,
   },
+  padded: {
+    marginTop: 3 * theme.baseSpace,
+    marginBottom: -2 * theme.baseSpace,
+    marginHorizontal: 4 * theme.baseSpace,
+  },
 })

@@ -16,17 +16,16 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getCurrencyFromDenom } from '../../utils/transformAssets'
 import isAddressValid from '../../utils/isAddressValid'
-import ConfirmTransactionModal from '../../components/ConfirmModals/ConfirmTransactionModal'
+import ConfirmTransferModal from '../../components/ConfirmModals/ConfirmTransferModal'
 import { Actions } from 'react-native-router-flux'
 import { Recipient } from '../../types/recipients'
-import RecipientModal from '../../components/RecipientModal'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import Toast from 'react-native-root-toast'
 
 interface SelectRecipientProps {
   asset: Asset
   amount: number
-  onSubmit(address: string): void
+  onSubmit(address: string, memo: string): void
 }
 
 const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubmit }) => {
@@ -36,8 +35,8 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
   const { addRecipient } = useRecipientsContext()
   const price = Number(get(asset, 'worth.amount', 0)) / Number(asset.coin.amount)
   const [address, setAddress] = React.useState('')
+  const [memo, setMemo] = React.useState('')
   const [isConfirming, setIsConfirming] = React.useState(false)
-  const [isSavingRecipient, setIsSavingRecipient] = React.useState(false)
 
   return (
     <>
@@ -65,6 +64,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
                     Actions.SelectRecipients({
                       onSelect: (recipient: Recipient) => {
                         setAddress(recipient.address)
+                        setMemo((m) => recipient.memo || m)
                         Actions.pop()
                       },
                     })
@@ -81,7 +81,6 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
               style={styles.input}
               placeholder={t('recipient address placeholder')}
               size="Large"
-              autoFocus
               autoCorrect={false}
               autoCapitalize="none"
               value={address}
@@ -99,10 +98,47 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
                 </TouchableOpacity>
               }
             />
+            <View style={[styles.splitRow, styles.marginTop]}>
+              <Typography type="Large" bold>
+                {t('memo')}
+              </Typography>
+              <TouchableOpacity onPress={() => Actions.ScanQRCode({ onScan: setMemo })}>
+                <QRCodeIcon style={styles.iconButton} fill={theme.palette.grey[7]} />
+              </TouchableOpacity>
+            </View>
+            <Input
+              style={styles.input}
+              placeholder={t('memo placeholder')}
+              size="Large"
+              autoCorrect={false}
+              autoCapitalize="none"
+              value={memo}
+              onChangeText={setMemo}
+              endAdornment={
+                <TouchableOpacity
+                  onPress={async () => {
+                    const text = await Clipboard.getStringAsync()
+                    setMemo(text)
+                  }}
+                >
+                  <Typography bold color={theme.palette.secondary}>
+                    {t('paste')}
+                  </Typography>
+                </TouchableOpacity>
+              }
+            />
             <TouchableOpacity
               disabled={!isAddressValid(address)}
               style={styles.addButton}
-              onPress={() => setIsSavingRecipient(true)}
+              onPress={() =>
+                Actions.UpdateRecipient({
+                  recipient: { name: '', image: '', address, memo },
+                  onSave: (recipient: Recipient) => {
+                    addRecipient(recipient)
+                    Toast.show(t('recipient added'))
+                  },
+                })
+              }
             >
               <Typography
                 bold
@@ -125,23 +161,13 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
           {t('next')}
         </Button>
       </KeyboardAvoidingView>
-      <ConfirmTransactionModal
+      <ConfirmTransferModal
         open={isConfirming}
         onClose={() => setIsConfirming(false)}
         asset={asset}
         address={address}
         amount={amount}
-        onConfirm={() => onSubmit(address)}
-      />
-      <RecipientModal
-        open={isSavingRecipient}
-        onClose={() => setIsSavingRecipient(false)}
-        recipient={{ name: '', image: '', address }}
-        onSave={(recipient) => {
-          addRecipient(recipient)
-          setIsSavingRecipient(false)
-          Toast.show(t('recipient added'))
-        }}
+        onConfirm={() => onSubmit(address, memo)}
       />
     </>
   )

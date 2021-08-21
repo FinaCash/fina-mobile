@@ -1,16 +1,10 @@
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
-  modal: {
-    borderTopLeftRadius: theme.borderRadius[2],
-    borderTopRightRadius: theme.borderRadius[2],
-    padding: theme.baseSpace,
-  },
-  confirmHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    margin: theme.baseSpace * 4,
+  container: {
+    backgroundColor: theme.palette.white,
+    flex: 1,
+    paddingTop: 6 * theme.baseSpace,
   },
   input: {
     marginTop: theme.baseSpace * 2,
@@ -41,6 +35,7 @@ export default (theme: Theme) => ({
   },
   buttonsRow: {
     flexDirection: 'row',
+    marginBottom: theme.bottomSpace,
   },
   button: {
     margin: 4 * theme.baseSpace,

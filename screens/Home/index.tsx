@@ -51,15 +51,18 @@ const Home: React.FC = () => {
           Actions.SelectRecipient({
             asset,
             amount,
-            onSubmit: (address: string) =>
+            onSubmit: (address: string, memo: string) =>
               Actions.Password({
                 title: t('please enter your password'),
                 onSubmit: async (password: string) => {
-                  await send({ denom: asset.coin.denom, amount }, address, password)
+                  await send({ denom: asset.coin.denom, amount }, address, memo, password)
                   Actions.Success({
-                    asset,
-                    amount,
-                    address,
+                    message: {
+                      type: 'send',
+                      asset,
+                      amount,
+                      address,
+                    },
                     onClose: () => Actions.jump('Home'),
                   })
                 },

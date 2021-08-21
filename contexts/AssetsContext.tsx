@@ -30,16 +30,21 @@ interface AssetsState {
   loaded: boolean
   login(secretPhrase: string, password: string): void
   logout(): void
-  swap(from: { denom: string; amount: number }, toDenom: string, password: string): void
+  swap(
+    from: { denom: string; amount: number },
+    toDenom: string,
+    password: string,
+    simulate?: boolean
+  ): void
   send(
     coin: { denom: string; amount: number },
     address: string,
+    memo: string,
     password: string,
     simulate?: boolean
   ): void
   depositSavings(market: MARKET_DENOMS, amount: number, password: string): void
   withdrawSavings(market: MARKET_DENOMS, amount: number, password: string): void
-  swapMAsset(symbol: string, amount: number, mode: 'buy' | 'sell', password: string): void
 }
 
 const initialState: AssetsState = {
@@ -54,7 +59,6 @@ const initialState: AssetsState = {
   send: () => null,
   depositSavings: () => null,
   withdrawSavings: () => null,
-  swapMAsset: () => null,
 }
 
 const decryptMnemonic = (encryptedSecretPhrase: string, password: string) => {
@@ -150,32 +154,74 @@ const AssetsProvider: React.FC = ({ children }) => {
   }, [])
 
   const swap = React.useCallback(
-    async (from: { denom: string; amount: number }, toDenom: string, password: string) => {
+    async (
+      from: { denom: string; amount: number },
+      toDenom: string,
+      password: string,
+      simulate?: boolean
+    ) => {
       const key = new MnemonicKey({
-        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = terra.wallet(key)
-      const msg = new MsgSwap(
-        key.accAddress,
-        new Coin(from.denom, (Number(from.amount) * 10 ** 6).toString()),
-        toDenom
+      const mAssets = availableAssets.filter(
+        (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
       )
+      let msg
+      // Buy mAsset
+      if (mAssets.find((a) => a.symbol === toDenom)) {
+        const mirror = new Mirror({ ...mirrorOptions, key })
+        msg = mirror.assets[toDenom].pair.swap(
+          {
+            amount: (Number(from.amount) * 10 ** 6).toString(),
+            info: UST,
+          },
+          {}
+        )
+        // Sell mAsset
+      } else if (mAssets.find((a) => a.symbol === from.denom)) {
+        const mirror = new Mirror({ ...mirrorOptions, key })
+        msg = mirror.assets[from.denom].pair.swap(
+          {
+            amount: (Number(from.amount) * 10 ** 6).toString(),
+            info: {
+              token: {
+                contract_addr: mirror.assets[from.denom].token.contractAddress as string,
+              },
+            },
+          },
+          {}
+        )
+      } else {
+        msg = new MsgSwap(
+          address,
+          new Coin(from.denom, (Number(from.amount) * 10 ** 6).toString()),
+          toDenom
+        )
+      }
+      if (simulate) {
+        const tx = await wallet.createTx({
+          msgs: [msg],
+          gasAdjustment: 1.5,
+        })
+        return tx
+      }
       const tx = await wallet.createAndSignTx({
         msgs: [msg],
-        feeDenoms: ['uluna'],
         gasAdjustment: 1.5,
       })
       const result = await terra.tx.broadcast(tx)
       fetchAssets()
       return result
     },
-    [fetchAssets, encryptedSecretPhrase]
+    [fetchAssets, encryptedSecretPhrase, availableAssets, address]
   )
 
   const send = React.useCallback(
     async (
       coin: { denom: string; amount: number },
       toAddress: string,
+      memo: string,
       password: string,
       simulate?: boolean
     ) => {
@@ -194,6 +240,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       const tx = await wallet.createAndSignTx({
         msgs: [msg],
         gasAdjustment: 1.5,
+        memo,
       })
       const result = await terra.tx.broadcast(tx)
       fetchAssets()
@@ -232,38 +279,6 @@ const AssetsProvider: React.FC = ({ children }) => {
     [encryptedSecretPhrase, fetchAssets]
   )
 
-  const swapMAsset = React.useCallback(
-    async (symbol: string, amount: number, mode: 'buy' | 'sell', password: string) => {
-      const key = new MnemonicKey({
-        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
-      })
-      const wallet = terra.wallet(key)
-      const mirror = new Mirror({ ...mirrorOptions, key })
-      const msg = mirror.assets[symbol].pair.swap(
-        {
-          amount: (Number(amount) * 10 ** 6).toString(),
-          info:
-            mode === 'buy'
-              ? UST
-              : {
-                  token: {
-                    contract_addr: mirror.assets[symbol].token.contractAddress as string,
-                  },
-                },
-        },
-        {}
-      )
-      const tx = await wallet.createAndSignTx({
-        msgs: [msg],
-        gasAdjustment: 1.5,
-      })
-      const result = await terra.tx.broadcast(tx)
-      fetchAssets()
-      return result
-    },
-    [encryptedSecretPhrase, fetchAssets]
-  )
-
   return (
     <AssetsContext.Provider
       value={{
@@ -278,7 +293,6 @@ const AssetsProvider: React.FC = ({ children }) => {
         send,
         depositSavings,
         withdrawSavings,
-        swapMAsset,
       }}
     >
       {children}

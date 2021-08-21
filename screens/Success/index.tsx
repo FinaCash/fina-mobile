@@ -1,4 +1,5 @@
 import React from 'react'
+import { Feather as Icon } from '@expo/vector-icons'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
 import { Asset } from '../../types/assets'
@@ -12,13 +13,23 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 
 interface SuccessProps {
-  asset: Asset
-  amount: number
-  address: string
+  message:
+    | {
+        type: 'send'
+        asset: Asset
+        amount: number
+        address: string
+      }
+    | {
+        type: 'swap'
+        from: Asset
+        to: Asset
+      }
+
   onClose(): void
 }
 
-const Success: React.FC<SuccessProps> = ({ asset, amount, address, onClose }) => {
+const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
   return (
@@ -33,28 +44,44 @@ const Success: React.FC<SuccessProps> = ({ asset, amount, address, onClose }) =>
           >
             <CheckIcon fill={theme.palette.white} />
           </LinearGradient>
-          <AssetItem asset={asset} hideAmount />
-          <View style={[styles.row, styles.borderBottom]}>
-            <Typography type="Large" color={theme.palette.grey[7]}>
-              {t('amount')}
-            </Typography>
-            <Typography type="Large">
-              {formatCurrency(amount * 10 ** 6, '')} {asset.symbol}
-            </Typography>
-          </View>
-          <View style={styles.row}>
-            <Typography type="Large" color={theme.palette.grey[7]}>
-              {t('to')}
-            </Typography>
-            <View style={styles.alignRight}>
-              <Typography type="Large" style={styles.marginBottom}>
-                {t('new address')}
-              </Typography>
-              <Typography type="Small" color={theme.palette.grey[7]}>
-                {address}
-              </Typography>
-            </View>
-          </View>
+          {message.type === 'send' ? (
+            <>
+              <AssetItem asset={message.asset} hideAmount hideBorder />
+              <View style={[styles.row, styles.borderBottom]}>
+                <Typography type="Large" color={theme.palette.grey[7]}>
+                  {t('amount')}
+                </Typography>
+                <Typography type="Large">
+                  {formatCurrency(message.amount * 10 ** 6, '')} {message.asset.symbol}
+                </Typography>
+              </View>
+              <View style={styles.row}>
+                <Typography type="Large" color={theme.palette.grey[7]}>
+                  {t('to')}
+                </Typography>
+                <View style={styles.alignRight}>
+                  <Typography type="Large" style={styles.marginBottom}>
+                    {t('new address')}
+                  </Typography>
+                  <Typography type="Small" color={theme.palette.grey[7]}>
+                    {message.address}
+                  </Typography>
+                </View>
+              </View>
+            </>
+          ) : null}
+          {message.type === 'swap' ? (
+            <>
+              <AssetItem asset={message.from} hideBorder />
+              <Icon
+                name="arrow-down"
+                size={theme.baseSpace * 8}
+                color={theme.palette.grey[10]}
+                style={styles.arrow}
+              />
+              <AssetItem asset={message.to} hideBorder />
+            </>
+          ) : null}
         </View>
         <Typography style={styles.title} type="H6">
           {t('transaction sent')}

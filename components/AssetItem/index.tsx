@@ -13,15 +13,22 @@ export interface AssetItemProps extends TouchableOpacityProps {
   asset?: Asset
   hideApr?: boolean
   hideAmount?: boolean
+  hideBorder?: boolean
 }
 
-const AssetItem: React.FC<AssetItemProps> = ({ asset, hideApr, hideAmount, ...props }) => {
+const AssetItem: React.FC<AssetItemProps> = ({
+  asset,
+  hideApr,
+  hideAmount,
+  hideBorder,
+  ...props
+}) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
 
   return (
     <TouchableOpacity {...props}>
-      <View style={styles.innerContainer}>
+      <View style={[styles.innerContainer, hideBorder ? { borderBottomWidth: 0 } : {}]}>
         <View style={styles.topContainer}>
           {asset ? (
             <View style={styles.row}>

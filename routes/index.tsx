@@ -25,6 +25,7 @@ import ScanQRCode from '../screens/ScanQRCode'
 import Recipients from '../screens/Recipients'
 import SelectRecipients from '../screens/SelectRecipients'
 import CurrencyExchange from '../screens/CurrencyExchange'
+import UpdateRecipient from '../screens/UpdateRecipient'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -100,6 +101,7 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
               <Scene key="SelectAmount" hideNavBar component={SelectAmount} />
               <Scene key="SelectRecipient" hideNavBar component={SelectRecipient} />
               <Scene key="SelectRecipients" hideNavBar component={SelectRecipients} />
+              <Scene key="UpdateRecipient" hideNavBar component={UpdateRecipient} />
               <Scene key="MyAddress" hideNavBar component={MyAddress} />
               <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
               <Scene key="CurrencyExchange" hideNavBar component={CurrencyExchange} />

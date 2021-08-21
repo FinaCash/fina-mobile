@@ -10,8 +10,8 @@ import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import RecipientModal from '../../components/RecipientModal'
 import { Recipient } from '../../types/recipients'
+import { Actions } from 'react-native-router-flux'
 
 const Recipients: React.FC = () => {
   const { t } = useTranslation()
@@ -19,16 +19,20 @@ const Recipients: React.FC = () => {
 
   const { recipients, addRecipient, deleteRecipient, updateRecipient } = useRecipientsContext()
 
-  const [isRecipientModalOpen, setIsRecipientModalOpen] = React.useState(false)
-  const [edittingRecipient, setEdittingRecipient] = React.useState<Recipient | undefined>()
-
   return (
     <>
       <HeaderBar
         title={t('recipients')}
         rightButton={{
           icon: <Icon name="user-plus" color={theme.palette.white} size={theme.baseSpace * 5} />,
-          onPress: () => setIsRecipientModalOpen(true),
+          onPress: () =>
+            Actions.UpdateRecipient({
+              onSave: (recipient: Recipient) => {
+                addRecipient(recipient)
+                Actions.pop()
+                Toast.show(t('recipient added'))
+              },
+            }),
         }}
       />
       <FlatList
@@ -39,8 +43,19 @@ const Recipients: React.FC = () => {
           <TouchableOpacity
             style={styles.item}
             onPress={() => {
-              setEdittingRecipient(item)
-              setIsRecipientModalOpen(true)
+              Actions.UpdateRecipient({
+                recipient: item,
+                onSave: (recipient: Recipient) => {
+                  updateRecipient(recipient)
+                  Actions.pop()
+                  Toast.show(t('recipient updated'))
+                },
+                onDelete: (recipient: Recipient) => {
+                  deleteRecipient(recipient.address)
+                  Actions.pop()
+                  Toast.show(t('recipient deleted'))
+                },
+              })
             }}
           >
             <Image
@@ -50,38 +65,27 @@ const Recipients: React.FC = () => {
             <View>
               <Typography type="H6">{item.name}</Typography>
               <Typography>{item.address}</Typography>
+              <Typography>{item.memo}</Typography>
             </View>
           </TouchableOpacity>
         )}
         ListFooterComponent={
-          <Button style={styles.button} size="Large" onPress={() => setIsRecipientModalOpen(true)}>
+          <Button
+            style={styles.button}
+            size="Large"
+            onPress={() =>
+              Actions.UpdateRecipient({
+                onSave: (recipient: Recipient) => {
+                  addRecipient(recipient)
+                  Actions.pop()
+                  Toast.show(t('recipient added'))
+                },
+              })
+            }
+          >
             {t('add recipient')}
           </Button>
         }
-      />
-      <RecipientModal
-        open={isRecipientModalOpen}
-        onClose={() => {
-          setIsRecipientModalOpen(false)
-          setEdittingRecipient(undefined)
-        }}
-        recipient={edittingRecipient}
-        onSave={(recipient) => {
-          if (edittingRecipient) {
-            updateRecipient(recipient)
-          } else {
-            addRecipient(recipient)
-          }
-          setIsRecipientModalOpen(false)
-          setEdittingRecipient(undefined)
-          Toast.show(t(edittingRecipient ? 'recipient updated' : 'recipient added'))
-        }}
-        onDelete={(recipient) => {
-          deleteRecipient(recipient.address)
-          setIsRecipientModalOpen(false)
-          setEdittingRecipient(undefined)
-          Toast.show(t('recipient deleted'))
-        }}
       />
     </>
   )

@@ -68,7 +68,6 @@ export const transformCoinsToAssets = async (
 ): Promise<Asset[]> => {
   const assets = coins
     .map((coin) => {
-      console.log(coin)
       if (Object.keys(supportedTokens).includes(coin.denom)) {
         return getTokenAssetDetail(coin)
       }
@@ -89,10 +88,13 @@ export const transformCoinsToAssets = async (
       Object.keys(supportedTokens).includes(asset.coin.denom)
     ) {
       // TODO: this is USD value only
-      const mAsset = availableAssets.find((a) => a.symbol === asset.coin.denom)
+      const availableAsset = availableAssets.find((a) => a.symbol === asset.symbol)
       asset.worth = {
         denom: baseCurrency,
-        amount: (((mAsset ? mAsset.price : 0) * Number(asset.coin.amount)) / 10 ** 6).toString(),
+        amount: (
+          ((availableAsset ? availableAsset.price : 0) * Number(asset.coin.amount)) /
+          10 ** 6
+        ).toString(),
       }
       // } else if (asset.coin.denom === 'ANC') {
       //   const rate = await anchorClient.anchorToken.getANCPrice()
