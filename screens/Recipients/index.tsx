@@ -1,6 +1,6 @@
 import React from 'react'
 import { FlatList, TouchableOpacity, View, Image } from 'react-native'
-import { FontAwesome as Icon } from '@expo/vector-icons'
+import { Feather as Icon } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import Toast from 'react-native-root-toast'
 import Button from '../../components/Button'

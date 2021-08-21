@@ -15,6 +15,7 @@ import useTranslation from '../../locales/useTranslation'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
+import { useRecipientsContext } from '../../contexts/RecipientsContext'
 
 interface ConfirmTransferModalProps {
   open: boolean
@@ -22,6 +23,7 @@ interface ConfirmTransferModalProps {
   asset: Asset
   amount: number
   address: string
+  memo: string
   onConfirm(): void
 }
 
@@ -31,12 +33,15 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
   asset,
   amount,
   address,
+  memo,
   onConfirm,
 }) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
   const { send } = useAssetsContext()
+  const { recipients } = useRecipientsContext()
+  const recipient = recipients.find((r) => r.address === address)
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {
     const result = cloneDeep(fee)
@@ -53,7 +58,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await send({ denom: asset.coin.denom, amount }, address, '', true)
+      const tx = await send({ denom: asset.coin.denom, amount }, address, memo, '', true)
       setFee(
         keyBy(
           JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
@@ -66,7 +71,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
     } catch (err) {
       console.log(err)
     }
-  }, [asset, amount, address, send])
+  }, [asset, amount, address, memo, send])
 
   React.useEffect(() => {
     if (open) {
@@ -84,7 +89,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
       withHandle={false}
       scrollViewProps={{ scrollEnabled: false }}
       modalHeight={
-        theme.baseSpace * 100 +
+        theme.baseSpace * 112 +
         Object.keys(fee).length * 2 * theme.baseSpace +
         Object.keys(total).length * 2 * theme.baseSpace +
         theme.bottomSpace
@@ -112,12 +117,18 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
         </Typography>
         <View style={styles.alignRight}>
           <Typography type="Large" style={styles.marginBottom}>
-            {t('new address')}
+            {recipient ? recipient.name : t('new address')}
           </Typography>
           <Typography type="Small" color={theme.palette.grey[7]}>
             {address}
           </Typography>
         </View>
+      </View>
+      <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
+        <Typography type="Large" color={theme.palette.grey[7]}>
+          {t('memo')}
+        </Typography>
+        <Typography type="Large">{memo}</Typography>
       </View>
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>

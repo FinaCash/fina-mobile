@@ -34,6 +34,7 @@ const SelectRecipients: React.FC<SelectRecipientsProps> = ({ onSelect }) => {
             <View>
               <Typography type="H6">{item.name}</Typography>
               <Typography>{item.address}</Typography>
+              <Typography>{item.memo}</Typography>
             </View>
           </TouchableOpacity>
         )}

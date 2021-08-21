@@ -167,6 +167,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
         asset={asset}
         address={address}
         amount={amount}
+        memo={memo}
         onConfirm={() => onSubmit(address, memo)}
       />
     </>

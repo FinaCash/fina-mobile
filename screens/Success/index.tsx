@@ -11,6 +11,7 @@ import Typography from '../../components/Typography'
 import useTranslation from '../../locales/useTranslation'
 import { formatCurrency } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
+import { useRecipientsContext } from '../../contexts/RecipientsContext'
 
 interface SuccessProps {
   message:
@@ -19,6 +20,7 @@ interface SuccessProps {
         asset: Asset
         amount: number
         address: string
+        memo: string
       }
     | {
         type: 'swap'
@@ -32,6 +34,9 @@ interface SuccessProps {
 const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
+  const { recipients } = useRecipientsContext()
+  const recipient =
+    message.type === 'send' ? recipients.find((r) => r.address === message.address) : undefined
   return (
     <View style={styles.container}>
       <View>
@@ -61,12 +66,18 @@ const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
                 </Typography>
                 <View style={styles.alignRight}>
                   <Typography type="Large" style={styles.marginBottom}>
-                    {t('new address')}
+                    {recipient ? recipient.name : t('new address')}
                   </Typography>
                   <Typography type="Small" color={theme.palette.grey[7]}>
                     {message.address}
                   </Typography>
                 </View>
+              </View>
+              <View style={[styles.row, styles.borderBottom]}>
+                <Typography type="Large" color={theme.palette.grey[7]}>
+                  {t('memo')}
+                </Typography>
+                <Typography type="Large">{message.memo}</Typography>
               </View>
             </>
           ) : null}

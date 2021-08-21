@@ -62,6 +62,7 @@ const Home: React.FC = () => {
                       asset,
                       amount,
                       address,
+                      memo,
                     },
                     onClose: () => Actions.jump('Home'),
                   })
@@ -216,12 +217,21 @@ const Home: React.FC = () => {
           </View>
         }
         flatListProps={{
-          data: assets.filter(
-            (a) =>
-              a.type === filterAsset &&
-              (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())
+          contentContainerStyle: { paddingBottom: theme.tabBarHeight + theme.bottomSpace },
+          data: assets
+            .filter(
+              (a) =>
+                (filterAsset === 'overview' || a.type === filterAsset) &&
+                (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())
+            )
+            .sort((a, b) => (a.type > b.type ? 1 : -1)),
+          renderItem: ({ item }) => (
+            <AssetItem
+              asset={item}
+              onPress={() => selectAsset(item)}
+              hideApr={filterAsset === 'overview'}
+            />
           ),
-          renderItem: ({ item }) => <AssetItem asset={item} onPress={() => selectAsset(item)} />,
           keyExtractor: (item, i) => item.denom + '_' + i,
           showsVerticalScrollIndicator: false,
           ListFooterComponent: (
