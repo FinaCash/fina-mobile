@@ -112,10 +112,12 @@ export const fetchAnchorBalances = async (address: string) => {
     })
   }
   const ancBalance = await anchorClient.anchorToken.getBalance(address)
-  result.push({
-    denom: 'ANC',
-    amount: (Number(ancBalance) * 10 ** 6).toString(),
-  })
+  if (Number(ancBalance) > 0) {
+    result.push({
+      denom: 'ANC',
+      amount: (Number(ancBalance) * 10 ** 6).toString(),
+    })
+  }
   return result
 }
 
