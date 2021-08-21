@@ -26,9 +26,8 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
   to: defaultTo,
 }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { swap } = useAssetsContext()
+  const { assets, availableCurrencies, swap } = useAssetsContext()
   const { currency } = useSettingsContext()
-  const { assets, availableCurrencies } = useAssetsContext()
   const { t } = useTranslation()
 
   const [from, setFrom] = React.useState(defaultFrom)

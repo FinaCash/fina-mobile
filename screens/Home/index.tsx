@@ -28,7 +28,7 @@ import { getTransakUrl } from '../../utils/terraConfig'
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, send, address: walletAddress } = useAssetsContext()
+  const { assets, send, address: walletAddress, availableAssets } = useAssetsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()
@@ -111,6 +111,15 @@ const Home: React.FC = () => {
           }
           if (asset.type === AssetTypes.Savings && index === 1) {
             return Actions.Savings({ from: asset.coin.denom, mode: 'withdraw' })
+          }
+          if (asset.type === AssetTypes.Investments && index === 0) {
+            return Actions.MirrorSwap({
+              asset: availableAssets.find((a) => a.symbol === asset.symbol),
+              mode: 'buy',
+            })
+          }
+          if (asset.type === AssetTypes.Investments && index === 1) {
+            return Actions.MirrorSwap({ asset, mode: 'sell' })
           }
         }
       )

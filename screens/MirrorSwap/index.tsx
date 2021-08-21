@@ -1,48 +1,56 @@
 import React from 'react'
-import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
-import { useActionSheet } from '@expo/react-native-action-sheet'
+import { ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
-import Typography from '../../components/Typography'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import { AssetTypes, AvailableAsset } from '../../types/assets'
+import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
-import AssetItem from '../../components/AssetItem'
 import Button from '../../components/Button'
-import AvailableAssetItem from '../../components/AvailableAssetItem'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { mirrorOptions } from '../../utils/terraConfig'
-import { getCurrentAssetDetail } from '../../utils/transformAssets'
+import { getCurrentAssetDetail, getMAssetDetail } from '../../utils/transformAssets'
+import HeaderBar from '../../components/HeaderBar'
+import AssetAmountInput from '../../components/AssetAmountInput'
+import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const mirror = new Mirror(mirrorOptions)
 
-interface MirrorSwapProps {
-  asset: AvailableAsset
-  mode: 'buy' | 'sell'
-}
+type MirrorSwapProps =
+  | {
+      asset: AvailableAsset
+      mode: 'buy'
+    }
+  | {
+      asset: Asset
+      mode: 'sell'
+    }
 
 const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
-  const { swapMAsset } = useAssetsContext()
+  const { swap, assets, availableAssets } = useAssetsContext()
+  const { currency } = useSettingsContext()
 
   const [asset, setAsset] = React.useState(defaultAsset)
 
   const [fromAmount, setFromAmount] = React.useState('')
   const [toAmount, setToAmount] = React.useState('')
 
-  const currentAsset = {
-    type: AssetTypes.Currents,
-    coin: {
+  const [isConfirming, setIsConfirming] = React.useState(false)
+
+  // MAsset can only be traded with UST
+  const currentAsset =
+    assets.find((a) => a.coin.denom === 'uusd') ||
+    getCurrentAssetDetail({
       denom: 'uusd',
       amount: (Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6).toString(),
-    },
-  }
+    })
 
   const changeAmount = React.useCallback(
-    async (a: string, which: 'from' | 'to') => {
+    async (a: string, which: 'from' | 'to', defaultDenom?: string) => {
       try {
         ;(which === 'from' ? setFromAmount : setToAmount)(a)
         const simulation = {
@@ -53,11 +61,13 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
           simulation.info = UST
         } else {
           simulation.info = {
-            token: { contract_addr: mirror.assets[asset.symbol].token.contractAddress },
+            token: {
+              contract_addr: mirror.assets[defaultDenom || asset.symbol].token.contractAddress,
+            },
           }
         }
 
-        const result = await mirror.assets[asset.symbol].pair[
+        const result = await mirror.assets[defaultDenom || asset.symbol].pair[
           which === 'from' ? 'getSimulation' : 'getReverseSimulation'
         ](simulation as any)
         ;(which === 'from' ? setToAmount : setFromAmount)(
@@ -72,84 +82,167 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
     },
     [asset, mode]
   )
-
-  // const selectAsset = React.useCallback(
-  //   () => {
-  //     const values = Object.values(Currencies)
-  //     const options = [...values.map((c) => t(`${c} name`)), t('cancel')]
-  //     showActionSheetWithOptions(
-  //       {
-  //         options,
-  //         cancelButtonIndex: options.length - 1,
-  //       },
-  //       (index) => {
-  //         if (index === options.length - 1) {
-  //           return
-  //         }
-  //         ;(which === 'from' ? setFrom : setTo)(values[index])
-  //         changeAmount(
-  //           which === 'to' ? fromAmount : toAmount,
-  //           which === 'from' ? 'to' : 'from',
-  //         )
-  //       }
-  //     )
-  //   },
-  //   [t, fromAmount, toAmount, changeAmount]
-  // )
+  // TODO: calculate non USD base currency
+  const fromAsset = React.useMemo(
+    () => ({
+      ...(mode === 'buy'
+        ? currentAsset
+        : getMAssetDetail(
+            { denom: asset.symbol, amount: String(Number(fromAmount) * 10 ** 6) },
+            availableAssets
+          )),
+      coin: {
+        denom: mode === 'buy' ? currentAsset.coin.denom : asset.symbol,
+        amount: String(Number(fromAmount) * 10 ** 6),
+      },
+      worth: {
+        denom: currency,
+        amount: String(Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6),
+      },
+    }),
+    [mode, currentAsset, asset, fromAmount, toAmount, availableAssets, currency]
+  )
+  const toAsset = React.useMemo(
+    () => ({
+      ...(mode === 'buy' ? (asset as Asset) : currentAsset),
+      coin: {
+        denom: mode === 'buy' ? asset.symbol : currentAsset.coin.denom,
+        amount: String(Number(toAmount) * 10 ** 6),
+      },
+      worth: {
+        denom: currency,
+        amount: String(Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6),
+      },
+    }),
+    [mode, currentAsset, asset, fromAmount, toAmount, currency]
+  )
 
   const onSubmit = React.useCallback(
     async (password: string) => {
       if (fromAmount) {
-        await swapMAsset(asset.symbol, Number(fromAmount), mode, password)
+        if (mode === 'buy') {
+          await swap(
+            { denom: currentAsset.coin.denom, amount: Number(fromAmount) },
+            asset.symbol,
+            password
+          )
+        } else {
+          await swap(
+            { denom: asset.symbol, amount: Number(fromAmount) },
+            currentAsset.coin.denom,
+            password
+          )
+        }
+        Actions.Success({
+          message: {
+            type: 'swap',
+            from: fromAsset,
+            to: toAsset,
+          },
+          onClose: () => Actions.jump('Home'),
+        })
       }
-      Actions.pop()
     },
-    [asset, fromAmount, mode]
+    [asset, fromAmount, fromAsset, toAsset, swap, currentAsset, mode]
   )
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <Typography type="H3">{t('exchange')}</Typography>
-        <TouchableOpacity onPress={() => Actions.pop()}>
-          <Icon name="x" size={theme.fonts.H3.fontSize} color={theme.palette.grey[10]} />
-        </TouchableOpacity>
+    <>
+      <HeaderBar title={t(mode)} back />
+      <View style={styles.container}>
+        <ScrollView scrollEnabled={false}>
+          {mode === 'buy' ? (
+            <AssetAmountInput
+              asset={currentAsset}
+              amount={fromAmount}
+              setAmount={(a) => changeAmount(a, 'from')}
+              assetItemProps={{
+                disabled: true,
+              }}
+            />
+          ) : (
+            <AssetAmountInput
+              asset={asset as Asset}
+              amount={fromAmount}
+              setAmount={(a) => changeAmount(a, 'from')}
+              assetItemProps={{
+                onPress: () => {
+                  Actions.SelectAsset({
+                    assets: assets.filter(
+                      (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
+                    ),
+                    onSelect: (a: Asset) => {
+                      setAsset(a)
+                      changeAmount(toAmount, 'to', a.symbol)
+                      Actions.pop()
+                    },
+                  })
+                },
+              }}
+            />
+          )}
+          <Icon
+            name="arrow-down"
+            size={theme.baseSpace * 8}
+            color={theme.palette.grey[10]}
+            style={styles.arrow}
+          />
+          {mode === 'buy' ? (
+            <AssetAmountInput
+              availableAsset={asset as AvailableAsset}
+              asset={toAsset}
+              amount={toAmount}
+              setAmount={(a) => changeAmount(a, 'to')}
+              availableAssetItemProps={{
+                onPress: () => {
+                  Actions.SelectAsset({
+                    availableAssets: availableAssets.filter(
+                      (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
+                    ),
+                    onSelect: (a: AvailableAsset) => {
+                      setAsset(a)
+                      changeAmount(fromAmount, 'from', a.symbol)
+                      Actions.pop()
+                    },
+                  })
+                },
+              }}
+            />
+          ) : (
+            <AssetAmountInput
+              asset={currentAsset}
+              amount={toAmount}
+              setAmount={(a) => changeAmount(a, 'to')}
+              assetItemProps={{
+                disabled: true,
+                hideAmount: true,
+              }}
+            />
+          )}
+        </ScrollView>
+        <Button
+          disabled={
+            !Number(fromAmount) ||
+            (mode === 'buy' && Number(fromAmount) * 10 ** 6 > Number(currentAsset.coin.amount)) ||
+            (mode === 'sell' && Number(fromAmount) * 10 ** 6 > Number((asset as Asset).coin.amount))
+          }
+          style={styles.button}
+          size="Large"
+          onPress={() => setIsConfirming(true)}
+        >
+          {t('next')}
+        </Button>
       </View>
-      {mode === 'buy' ? (
-        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} />
-      ) : (
-        <AvailableAssetItem availableAsset={asset} />
-      )}
-      <View style={styles.centered}>
-        <TextInput
-          style={styles.input}
-          placeholder="0"
-          placeholderTextColor={theme.palette.grey[3]}
-          onChangeText={(a) => changeAmount(a, 'from')}
-          value={fromAmount}
+      {fromAsset && toAsset ? (
+        <ConfirmSwapModal
+          open={isConfirming}
+          from={fromAsset}
+          to={toAsset}
+          onClose={() => setIsConfirming(false)}
+          onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
         />
-        <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
-      </View>
-      {mode === 'sell' ? (
-        <AssetItem style={styles.from} asset={getCurrentAssetDetail(currentAsset.coin)} />
-      ) : (
-        <AvailableAssetItem availableAsset={asset} />
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="0"
-        placeholderTextColor={theme.palette.grey[3]}
-        onChangeText={(a) => changeAmount(a, 'to')}
-        value={toAmount}
-      />
-      <Button
-        style={styles.button}
-        size="Large"
-        onPress={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
-      >
-        Confirm
-      </Button>
-    </ScrollView>
+      ) : null}
+    </>
   )
 }
 

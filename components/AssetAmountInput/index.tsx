@@ -3,27 +3,32 @@ import get from 'lodash/get'
 import useTranslation from '../../locales/useTranslation'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { Asset } from '../../types/assets'
+import { Asset, AvailableAsset } from '../../types/assets'
 import { TouchableOpacity, View } from 'react-native'
 import AssetItem, { AssetItemProps } from '../../components/AssetItem'
 import Typography from '../../components/Typography'
 import Input, { InputProps } from '../../components/Input'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import AvailableAssetItem, { AvailableAssetItemProps } from '../AvailableAssetItem'
 
 interface AssetAmountInputProps {
   asset?: Asset
+  availableAsset?: AvailableAsset
   amount: string
   setAmount(amount: string): void
-  assetItemProps?: AssetItemProps
+  assetItemProps?: Omit<AssetItemProps, 'asset'>
+  availableAssetItemProps?: Omit<AvailableAssetItemProps, 'availableAsset'>
   inputProps?: InputProps
 }
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   asset,
+  availableAsset,
   amount,
   setAmount,
   assetItemProps,
+  availableAssetItemProps,
   inputProps,
 }) => {
   const { t } = useTranslation()
@@ -33,7 +38,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
 
   return (
     <View style={styles.card}>
-      <AssetItem asset={asset} {...assetItemProps} />
+      {availableAsset ? (
+        <AvailableAssetItem availableAsset={availableAsset} {...availableAssetItemProps} />
+      ) : (
+        <AssetItem asset={asset} {...assetItemProps} />
+      )}
       <View style={styles.amountContainer}>
         <Typography type="Large" bold>
           {t('amount')}

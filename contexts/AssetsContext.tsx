@@ -178,6 +178,7 @@ const AssetsProvider: React.FC = ({ children }) => {
           },
           {}
         )
+        msg.sender = address
         // Sell mAsset
       } else if (mAssets.find((a) => a.symbol === from.denom)) {
         const mirror = new Mirror({ ...mirrorOptions, key })
@@ -192,6 +193,7 @@ const AssetsProvider: React.FC = ({ children }) => {
           },
           {}
         )
+        msg.sender = address
       } else {
         msg = new MsgSwap(
           address,

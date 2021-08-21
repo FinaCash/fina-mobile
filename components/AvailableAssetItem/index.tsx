@@ -6,7 +6,7 @@ import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
 
-interface AvailableAssetItemProps extends TouchableOpacityProps {
+export interface AvailableAssetItemProps extends TouchableOpacityProps {
   availableAsset: AvailableAsset
 }
 
