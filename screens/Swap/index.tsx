@@ -2,6 +2,12 @@ import React from 'react'
 import { ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
+import {
+  queryTerraswapNativeSimulation,
+  queryTerraswapReverseNativeSimulation,
+  queryTerraswapSimulation,
+  queryTerraswapReverseTokenSimulation,
+} from '@anchor-protocol/anchor.js/dist/queries/terraswap'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -9,16 +15,27 @@ import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
 import { Actions } from 'react-native-router-flux'
 import Button from '../../components/Button'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { mirrorOptions } from '../../utils/terraConfig'
-import { getCurrentAssetDetail, getMAssetDetail } from '../../utils/transformAssets'
+import {
+  anchorAddressProvider,
+  anchorClient,
+  mirrorOptions,
+  terraLCDClient,
+  terraUstPairContract,
+} from '../../utils/terraConfig'
+import {
+  getCurrentAssetDetail,
+  getMAssetDetail,
+  getTokenAssetDetail,
+} from '../../utils/transformAssets'
 import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
 import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { Coin } from '@terra-money/terra.js'
 
 const mirror = new Mirror(mirrorOptions)
 
-type MirrorSwapProps =
+type SwapProps =
   | {
       asset: AvailableAsset
       mode: 'buy'
@@ -28,10 +45,10 @@ type MirrorSwapProps =
       mode: 'sell'
     }
 
-const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) => {
+const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
-  const { swap, assets, availableAssets } = useAssetsContext()
+  const { swap, assets, availableAssets, address } = useAssetsContext()
   const { currency } = useSettingsContext()
 
   const [asset, setAsset] = React.useState(defaultAsset)
@@ -41,7 +58,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
 
   const [isConfirming, setIsConfirming] = React.useState(false)
 
-  // MAsset can only be traded with UST
+  // TODO: currently non current assets can only be traded with UST
   const currentAsset =
     assets.find((a) => a.coin.denom === 'uusd') ||
     getCurrentAssetDetail({
@@ -50,49 +67,83 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
     })
 
   const changeAmount = React.useCallback(
-    async (a: string, which: 'from' | 'to', defaultDenom?: string) => {
+    async (a: string, which: 'from' | 'to', defaultSymbol?: string) => {
       try {
         ;(which === 'from' ? setFromAmount : setToAmount)(a)
-        const simulation = {
-          amount: (Number(a) * 10 ** 6).toString(),
-          info: {},
-        }
-        if ((which === 'from' && mode === 'buy') || (which === 'to' && mode === 'sell')) {
-          simulation.info = UST
-        } else {
-          simulation.info = {
-            token: {
-              contract_addr: mirror.assets[defaultDenom || asset.symbol].token.contractAddress,
-            },
+        let rate
+        const isUstBase =
+          (which === 'from' && mode === 'buy') || (which === 'to' && mode === 'sell')
+        // LUNA or ANC
+        if ((defaultSymbol || asset.symbol) === 'LUNA') {
+          rate = await (which === 'from'
+            ? queryTerraswapNativeSimulation
+            : queryTerraswapReverseNativeSimulation)({
+            lcd: terraLCDClient as any,
+            pair_contract_address: terraUstPairContract,
+            denom: isUstBase ? currentAsset.coin.denom : 'uluna',
+            amount: a,
+          })(anchorAddressProvider)
+        } else if ((defaultSymbol || asset.symbol) === 'ANC') {
+          if (isUstBase) {
+            rate = await (which === 'from'
+              ? queryTerraswapNativeSimulation
+              : queryTerraswapReverseNativeSimulation)({
+              lcd: terraLCDClient as any,
+              pair_contract_address: anchorAddressProvider.terraswapAncUstPair(),
+              denom: currentAsset.coin.denom,
+              amount: a,
+            })(anchorAddressProvider)
+          } else {
+            rate = await (which === 'from'
+              ? queryTerraswapSimulation
+              : queryTerraswapReverseTokenSimulation)({
+              lcd: terraLCDClient as any,
+              pair_contract_address: anchorAddressProvider.terraswapAncUstPair(),
+              contractAddr: anchorAddressProvider.ANC(),
+              amount: a,
+            })(anchorAddressProvider)
+            console.log(rate)
           }
+        } else {
+          // M Assets
+          const simulation = {
+            amount: (Number(a) * 10 ** 6).toString(),
+            info: isUstBase
+              ? UST
+              : {
+                  token: {
+                    contract_addr:
+                      mirror.assets[defaultSymbol || asset.coin.denom].token.contractAddress,
+                  },
+                },
+          }
+          rate = await mirror.assets[defaultSymbol || asset.coin.denom].pair[
+            which === 'from' ? 'getSimulation' : 'getReverseSimulation'
+          ](simulation as any)
         }
-
-        const result = await mirror.assets[defaultDenom || asset.symbol].pair[
-          which === 'from' ? 'getSimulation' : 'getReverseSimulation'
-        ](simulation as any)
-        ;(which === 'from' ? setToAmount : setFromAmount)(
-          (
-            Number((result as any).offer_amount || (result as any).return_amount) /
-            10 ** 6
-          ).toString()
-        )
+        const result = (
+          Number((rate as any).offer_amount || (rate as any).return_amount) /
+          10 ** 6
+        ).toString()
+        ;(which === 'from' ? setToAmount : setFromAmount)(result)
       } catch (err) {
+        console.log(err)
         ;(which === 'from' ? setToAmount : setFromAmount)('')
       }
     },
-    [asset, mode]
+    [asset, mode, currentAsset, address]
   )
   // TODO: calculate non USD base currency
   const fromAsset = React.useMemo(
     () => ({
       ...(mode === 'buy'
         ? currentAsset
-        : getMAssetDetail(
-            { denom: asset.symbol, amount: String(Number(fromAmount) * 10 ** 6) },
+        : (asset.type === AssetTypes.Tokens ? getTokenAssetDetail : getMAssetDetail)(
+            { denom: asset.coin.denom, amount: String(Number(fromAmount) * 10 ** 6) },
             availableAssets
           )),
       coin: {
-        denom: mode === 'buy' ? currentAsset.coin.denom : asset.symbol,
+        denom: mode === 'buy' ? currentAsset.coin.denom : asset.coin.denom,
         amount: String(Number(fromAmount) * 10 ** 6),
       },
       worth: {
@@ -106,7 +157,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
     () => ({
       ...(mode === 'buy' ? (asset as Asset) : currentAsset),
       coin: {
-        denom: mode === 'buy' ? asset.symbol : currentAsset.coin.denom,
+        denom: mode === 'buy' ? asset.coin.denom : currentAsset.coin.denom,
         amount: String(Number(toAmount) * 10 ** 6),
       },
       worth: {
@@ -123,12 +174,12 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
         if (mode === 'buy') {
           await swap(
             { denom: currentAsset.coin.denom, amount: Number(fromAmount) },
-            asset.symbol,
+            asset.coin.denom,
             password
           )
         } else {
           await swap(
-            { denom: asset.symbol, amount: Number(fromAmount) },
+            { denom: asset.coin.denom, amount: Number(fromAmount) },
             currentAsset.coin.denom,
             password
           )
@@ -169,7 +220,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
                 onPress: () => {
                   Actions.SelectAsset({
                     assets: assets.filter(
-                      (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
+                      (a) => a.type === AssetTypes.Investments || a.type === AssetTypes.Tokens
                     ),
                     onSelect: (a: Asset) => {
                       setAsset(a)
@@ -196,9 +247,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
               availableAssetItemProps={{
                 onPress: () => {
                   Actions.SelectAsset({
-                    availableAssets: availableAssets.filter(
-                      (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
-                    ),
+                    availableAssets,
                     onSelect: (a: AvailableAsset) => {
                       setAsset(a)
                       changeAmount(fromAmount, 'from', a.symbol)
@@ -236,7 +285,7 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
       {fromAsset && toAsset ? (
         <ConfirmSwapModal
           open={isConfirming}
-          from={fromAsset}
+          from={fromAsset as any}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
           onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
@@ -246,4 +295,4 @@ const MirrorSwap: React.FC<MirrorSwapProps> = ({ asset: defaultAsset, mode }) =>
   )
 }
 
-export default MirrorSwap
+export default Swap

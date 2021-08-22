@@ -11,3 +11,29 @@ index aa1a88d..8d4c188 100644
                  .div(1000000)
                  .toString();
          });
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/reverse-token-simulation.js b/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/reverse-token-simulation.js
+index ea56a88..55a7e43 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/reverse-token-simulation.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/reverse-token-simulation.js
+@@ -16,7 +16,7 @@ const queryTerraswapReverseTokenSimulation = ({ lcd, contractAddr, amount, pair_
+         reverse_simulation: {
+             ask_asset: {
+                 info: {
+-                    ANC: {
++                    token: {
+                         contract_addr: contractAddr,
+                     },
+                 },
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/simulation.js b/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/simulation.js
+index f005d30..d779365 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/simulation.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/queries/terraswap/simulation.js
+@@ -16,7 +16,7 @@ const queryTerraswapSimulation = ({ lcd, contractAddr, amount, pair_contract_add
+         simulation: {
+             offer_asset: {
+                 info: {
+-                    ANC: {
++                    token: {
+                         contract_addr: contractAddr,
+                     },
+                 },

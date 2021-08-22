@@ -10,17 +10,13 @@ export interface AvailableAssetItemProps extends TouchableOpacityProps {
   availableAsset: AvailableAsset
 }
 
-const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
-  availableAsset,
-  style,
-  ...props
-}) => {
+const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({ availableAsset, ...props }) => {
   const { styles, theme } = useStyles(getStyles)
 
   const deltaPercent = (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
 
   return (
-    <TouchableOpacity style={[styles.container, style]} {...props}>
+    <TouchableOpacity {...props}>
       <View style={styles.innerContainer}>
         <View style={styles.row}>
           <Image source={{ uri: availableAsset.image }} style={styles.avatar} />

@@ -15,7 +15,7 @@ import Password from '../screens/Password'
 import Savings from '../screens/Savings'
 import Settings from '../screens/Settings'
 import Invest from '../screens/Invest'
-import MirrorSwap from '../screens/MirrorSwap'
+import Swap from '../screens/Swap'
 import SelectAsset from '../screens/SelectAsset'
 import SelectAmount from '../screens/SelectAmount'
 import SelectRecipient from '../screens/SelectRecipient'
@@ -106,7 +106,7 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
               <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
               <Scene key="CurrencyExchange" hideNavBar component={CurrencyExchange} />
               <Scene key="Savings" hideNavBar component={Savings} />
-              <Scene key="MirrorSwap" hideNavBar component={MirrorSwap} />
+              <Scene key="Swap" hideNavBar component={Swap} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />

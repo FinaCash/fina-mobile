@@ -1,8 +1,14 @@
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
-import { Coin } from '@terra-money/terra.js'
 import { AssetTypes } from '../types/assets'
-import { anchorClient, mirrorGraphqlUrl, mirrorOptions, terraLCDClient } from './terraConfig'
+import {
+  anchorApiUrl,
+  anchorClient,
+  mirrorGraphqlUrl,
+  mirrorOptions,
+  terraFCDUrl,
+  terraLCDClient,
+} from './terraConfig'
 
 export const fetchAvailableMirrorAssets = async () => {
   try {
@@ -40,9 +46,10 @@ export const fetchAvailableMirrorAssets = async () => {
       }),
     }).then((r) => r.json())
     return result.data.assets.map((a: any) => ({
-      type: AssetTypes.Investments,
+      type: a.symbol === 'MIR' ? AssetTypes.Tokens : AssetTypes.Investments,
       name: a.name,
       symbol: a.symbol,
+      coin: { denom: a.symbol },
       image: `https://whitelist.mirror.finance/icon/${a.symbol.replace(/^m/, '')}.png`,
       description: a.description,
       price: Number(a.prices.price || a.prices.oraclePrice) * 10 ** 6,
@@ -124,11 +131,4 @@ export const fetchAnchorBalances = async (address: string) => {
 export const fetchAvailableCurrencies = async () => {
   const result = await terraLCDClient.oracle.activeDenoms()
   return result
-}
-
-export const fetchCoingeckoPrice = async (id: string) => {
-  const result = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true`
-  ).then((r) => r.json())
-  return result[id]
 }

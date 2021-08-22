@@ -30,6 +30,7 @@ export interface AvailableAsset {
   type: AssetTypes.Investments | AssetTypes.Tokens
   name: string
   symbol: string
+  coin: { denom: string }
   image: string
   description: string
   price: number

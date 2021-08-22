@@ -18,9 +18,9 @@ import {
   fetchAnchorBalances,
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
-  fetchCoingeckoPrice,
   fetchMirrorBalance,
 } from '../utils/fetches'
+import sortBy from 'lodash/sortBy'
 
 interface AssetsState {
   address: string
@@ -104,7 +104,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       availableAssets,
       currency
     )
-    setAssets(result)
+    setAssets(sortBy(result, ['type', 'symbol']))
   }, [address, setAssets, fetchMirrorBalance, availableAssets, currency])
 
   React.useEffect(() => {
@@ -120,19 +120,19 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       const tokenAssets = []
       for (let i = 0; i < tokens.length; i += 1) {
-        const price = await fetchCoingeckoPrice(tokens[i].coingeckoId)
+        const result = await tokens[i].priceFetcher()
         tokenAssets.push({
           type: AssetTypes.Tokens,
           name: tokens[i].name,
           symbol: tokens[i].symbol,
+          coin: { denom: tokens[i].denom },
           image: tokens[i].image,
           description: '',
-          price: price.usd * 10 ** 6,
-          prevPrice: (price.usd * 10 ** 6) / (1 + price.usd_24h_change / 100),
           priceHistories: [],
+          ...result,
         })
       }
-      setAvailableAssets([...tokenAssets, ...mAssets])
+      setAvailableAssets(sortBy([...tokenAssets, ...mAssets], ['-type', 'symbol']))
     })
     fetchAvailableCurrencies().then(setAvailableCurrencies)
   }, [])
@@ -168,8 +168,18 @@ const AssetsProvider: React.FC = ({ children }) => {
         (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
       )
       let msg
-      // Buy mAsset
-      if (mAssets.find((a) => a.symbol === toDenom)) {
+      // Buy ANC
+      if (toDenom === 'ANC') {
+        msg = (
+          await anchorClient.anchorToken.buyANC(String(from.amount)).generateWithAddress(address)
+        )[0]
+        // Sell ANC
+      } else if (from.denom === 'ANC') {
+        msg = (
+          await anchorClient.anchorToken.sellANC(String(from.amount)).generateWithAddress(address)
+        )[0]
+        // Buy mAsset
+      } else if (mAssets.find((a) => a.symbol === toDenom)) {
         const mirror = new Mirror({ ...mirrorOptions, key })
         msg = mirror.assets[toDenom].pair.swap(
           {
@@ -203,13 +213,13 @@ const AssetsProvider: React.FC = ({ children }) => {
       }
       if (simulate) {
         const tx = await wallet.createTx({
-          msgs: [msg],
+          msgs: [msg as any],
           gasAdjustment: 1.5,
         })
         return tx
       }
       const tx = await wallet.createAndSignTx({
-        msgs: [msg],
+        msgs: [msg as any],
         gasAdjustment: 1.5,
       })
       const result = await terra.tx.broadcast(tx)

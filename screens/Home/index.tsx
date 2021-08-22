@@ -112,14 +112,20 @@ const Home: React.FC = () => {
           if (asset.type === AssetTypes.Savings && index === 1) {
             return Actions.Savings({ from: asset.coin.denom, mode: 'withdraw' })
           }
-          if (asset.type === AssetTypes.Investments && index === 0) {
-            return Actions.MirrorSwap({
+          if (
+            (asset.type === AssetTypes.Investments || asset.type === AssetTypes.Tokens) &&
+            index === 0
+          ) {
+            return Actions.Swap({
               asset: availableAssets.find((a) => a.symbol === asset.symbol),
               mode: 'buy',
             })
           }
-          if (asset.type === AssetTypes.Investments && index === 1) {
-            return Actions.MirrorSwap({ asset, mode: 'sell' })
+          if (
+            (asset.type === AssetTypes.Investments || asset.type === AssetTypes.Tokens) &&
+            index === 1
+          ) {
+            return Actions.Swap({ asset, mode: 'sell' })
           }
         }
       )
@@ -227,13 +233,11 @@ const Home: React.FC = () => {
         }
         flatListProps={{
           contentContainerStyle: { paddingBottom: theme.tabBarHeight + theme.bottomSpace },
-          data: assets
-            .filter(
-              (a) =>
-                (filterAsset === 'overview' || a.type === filterAsset) &&
-                (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())
-            )
-            .sort((a, b) => (a.type > b.type ? 1 : -1)),
+          data: assets.filter(
+            (a) =>
+              (filterAsset === 'overview' || a.type === filterAsset) &&
+              (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())
+          ),
           renderItem: ({ item }) => (
             <AssetItem
               asset={item}

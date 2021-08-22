@@ -6,7 +6,9 @@ import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
 
 export const getCurrencyFromDenom = (denom: string) => denom.slice(1).toUpperCase()
 export const getSymbolFromDenom = (denom: string) =>
-  denom === 'uluna' ? 'LUNA' : denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
+  (supportedTokens as any)[denom]
+    ? (supportedTokens as any)[denom].symbol
+    : denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
 
 export const getCurrentAssetDetail = (coin: { denom: string; amount: string }) => {
   const symbol = getSymbolFromDenom(coin.denom)
@@ -96,12 +98,6 @@ export const transformCoinsToAssets = async (
           10 ** 6
         ).toString(),
       }
-      // } else if (asset.coin.denom === 'ANC') {
-      //   const rate = await anchorClient.anchorToken.getANCPrice()
-      //   asset.worth = {
-      //     denom: baseCurrency,
-      //     amount: ((Number(rate) * Number(asset.coin.amount)) / 10 ** 6).toString(),
-      //   }
     } else if (asset.coin.denom.slice(-3) === baseCurrency.slice(-3)) {
       asset.worth = asset.coin
     } else {

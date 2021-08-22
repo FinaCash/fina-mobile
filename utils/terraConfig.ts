@@ -7,31 +7,53 @@ export const terraLCDClient = new LCDClient({
   chainID: 'tequila-0004',
 })
 
+export const terraFCDUrl = 'https://tequila-fcd.terra.dev'
+
+export const terraUstPairContract = 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff'
+
 export const supportedTokens = {
   uluna: {
     symbol: 'LUNA',
+    denom: 'uluna',
     name: 'Terra LUNA',
     image: 'https://assets.terra.money/icon/600/Luna.png',
-    coingeckoId: 'terra-luna',
+    priceFetcher: async () => {
+      const result = await fetch(`${terraFCDUrl}/v1/market/price?denom=uusd&interval=15m`).then(
+        (r) => r.json()
+      )
+      return {
+        price: result.lastPrice * 10 ** 6,
+        prevPrice: (result.lastPrice - Number(result.oneDayVariation)) * 10 ** 6,
+      }
+    },
   },
   MIR: {
     symbol: 'MIR',
+    denom: 'MIR',
     name: 'Mirror Token',
     image: 'https://whitelist.mirror.finance/icon/MIR.png',
-    coingeckoId: 'mirror-protocol',
+    priceFetcher: async () => null, // Price fetch handled in fetchMAssets
   },
   ANC: {
     symbol: 'ANC',
+    denom: 'ANC',
     name: 'Anchor Token',
     image: 'https://whitelist.anchorprotocol.com/logo/ANC.png',
-    coingeckoId: 'anchor-protocol',
+    priceFetcher: async () => {
+      const result = await fetch(`${anchorApiUrl}/v1/anc/1d`).then((r) => r.json())
+      return {
+        price: Number(result[0].anc_price) * 10 ** 6,
+        prevPrice: Number(result[1].anc_price) * 10 ** 6,
+      }
+    },
   },
 }
 
-export const anchorClient = new Anchor(
-  terraLCDClient as any,
-  new AddressProviderFromJson(tequila0004)
-)
+export const anchorAddressProvider = new AddressProviderFromJson(tequila0004)
+
+export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvider)
+
+export const anchorApiUrl = 'https://tequila-api.anchorprotocol.com/api'
 
 export const mirrorGraphqlUrl = 'https://tequila-graph.mirror.finance/graphql'
 
