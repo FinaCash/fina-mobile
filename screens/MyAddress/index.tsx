@@ -7,17 +7,17 @@ import Toast from 'react-native-root-toast'
 import Button from '../../components/Button'
 import HeaderBar from '../../components/HeaderBar'
 import Typography from '../../components/Typography'
-import { useAssetsContext } from '../../contexts/AssetsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
+import { useAccountsContext } from '../../contexts/AccountsContext'
 
 interface MyAddressProps {}
 
 const MyAddress: React.FC<MyAddressProps> = () => {
   const { t } = useTranslation()
   const { styles, theme } = useStyles(getStyles)
-  const { address } = useAssetsContext()
+  const { address } = useAccountsContext()
 
   return (
     <>

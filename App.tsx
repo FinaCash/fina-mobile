@@ -8,13 +8,14 @@ import AppLoading from 'expo-app-loading'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
-import { AssetsProvider, useAssetsContext } from './contexts/AssetsContext'
+import { AssetsProvider } from './contexts/AssetsContext'
 import { RecipientsProvider } from './contexts/RecipientsContext'
 import './locales'
+import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext'
 
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)
-  const { loaded: accountLoaded, address } = useAssetsContext()
+  const { loaded: accountLoaded, address } = useAccountsContext()
 
   const initialize = React.useCallback(async () => {
     try {
@@ -39,16 +40,18 @@ const InnerApp: React.FC = () => {
 export default function App() {
   return (
     <ActionSheetProvider>
-      <SettingsProvider>
-        <AssetsProvider>
-          <RecipientsProvider>
-            <RootSiblingParent>
-              <StatusBar style="light" />
-              <InnerApp />
-            </RootSiblingParent>
-          </RecipientsProvider>
-        </AssetsProvider>
-      </SettingsProvider>
+      <AccountsProvider>
+        <SettingsProvider>
+          <AssetsProvider>
+            <RecipientsProvider>
+              <RootSiblingParent>
+                <StatusBar style="light" />
+                <InnerApp />
+              </RootSiblingParent>
+            </RecipientsProvider>
+          </AssetsProvider>
+        </SettingsProvider>
+      </AccountsProvider>
     </ActionSheetProvider>
   )
 }

@@ -9,8 +9,8 @@ import useStateHistory from '../../utils/useStateHistory'
 import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
 import { MnemonicKey } from '@terra-money/terra.js'
-import { useAssetsContext } from '../../contexts/AssetsContext'
 import { ScrollView } from 'react-native'
+import { useAccountsContext } from '../../contexts/AccountsContext'
 
 enum ContentStage {
   Start = 'start',
@@ -23,7 +23,7 @@ interface LoginProps {}
 const Login: React.FC<LoginProps> = () => {
   const { styles } = useStyles(getStyles)
   const { t } = useTranslation()
-  const { login } = useAssetsContext()
+  const { login } = useAccountsContext()
   const [stage, setStage, back] = useStateHistory(ContentStage.Start)
   const [phraseInput, setPhraseInput] = React.useState('')
 

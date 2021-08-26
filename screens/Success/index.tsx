@@ -83,14 +83,14 @@ const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
           ) : null}
           {message.type === 'swap' ? (
             <>
-              <AssetItem asset={message.from} hideBorder />
+              <AssetItem asset={message.from} hideBorder hideApr />
               <Icon
                 name="arrow-down"
                 size={theme.baseSpace * 8}
                 color={theme.palette.grey[10]}
                 style={styles.arrow}
               />
-              <AssetItem asset={message.to} hideBorder />
+              <AssetItem asset={message.to} hideBorder hideApr />
             </>
           ) : null}
         </View>

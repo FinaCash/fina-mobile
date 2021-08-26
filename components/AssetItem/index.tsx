@@ -81,8 +81,8 @@ const AssetItem: React.FC<AssetItemProps> = ({
               </Typography>
               <Typography bold>
                 {formatCurrency(
-                  get(asset, 'worth.amount', 0).toString(),
-                  get(asset, 'worth.denom', '')
+                  get(asset, 'coin.amount', 0).toString(),
+                  get(asset, 'coin.denom', '')
                 )}
               </Typography>
             </View>

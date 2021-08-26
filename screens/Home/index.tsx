@@ -24,11 +24,13 @@ import Button from '../../components/Button'
 import Input from '../../components/Input'
 import AssetFilter from '../../components/AssetFilter'
 import { getTransakUrl } from '../../utils/terraConfig'
+import { useAccountsContext } from '../../contexts/AccountsContext'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, send, address: walletAddress, availableAssets } = useAssetsContext()
+  const { assets, send, availableAssets } = useAssetsContext()
+  const { address: walletAddress } = useAccountsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
   const { showActionSheetWithOptions } = useActionSheet()

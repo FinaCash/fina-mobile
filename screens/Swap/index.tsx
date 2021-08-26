@@ -17,7 +17,6 @@ import Button from '../../components/Button'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import {
   anchorAddressProvider,
-  anchorClient,
   mirrorOptions,
   terraLCDClient,
   terraUstPairContract,
@@ -31,7 +30,7 @@ import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
 import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { Coin } from '@terra-money/terra.js'
+import { useAccountsContext } from '../../contexts/AccountsContext'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -48,7 +47,8 @@ type SwapProps =
 const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
-  const { swap, assets, availableAssets, address } = useAssetsContext()
+  const { swap, assets, availableAssets } = useAssetsContext()
+  const { address } = useAccountsContext()
   const { currency } = useSettingsContext()
 
   const [asset, setAsset] = React.useState(defaultAsset)

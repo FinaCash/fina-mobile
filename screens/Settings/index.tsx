@@ -1,13 +1,13 @@
 import React from 'react'
 import { View } from 'react-native'
 import Button from '../../components/Button'
-import { useAssetsContext } from '../../contexts/AssetsContext'
+import { useAccountsContext } from '../../contexts/AccountsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 
 const Settings: React.FC = () => {
-  const { logout } = useAssetsContext()
+  const { logout } = useAccountsContext()
   const { t } = useTranslation()
   const { styles } = useStyles(getStyles)
 

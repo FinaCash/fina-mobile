@@ -1,7 +1,8 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
+import { MARKET_DENOMS, queryMarketEpochState } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
 import { AssetTypes } from '../types/assets'
 import {
+  anchorAddressProvider,
   anchorApiUrl,
   anchorClient,
   mirrorGraphqlUrl,
@@ -126,6 +127,12 @@ export const fetchAnchorBalances = async (address: string) => {
     })
   }
   return result
+}
+
+export const fetchAassetRate = async (market: MARKET_DENOMS) => {
+  const response = await queryMarketEpochState({ lcd: terraLCDClient as any, market })
+  const result = await response(anchorAddressProvider)
+  return Number(result.exchange_rate)
 }
 
 export const fetchAvailableCurrencies = async () => {

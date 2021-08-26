@@ -12,24 +12,21 @@ import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
-import { Actions } from 'react-native-router-flux'
 import { useSettingsContext } from './SettingsContext'
 import {
+  fetchAassetRate,
   fetchAnchorBalances,
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
 } from '../utils/fetches'
 import sortBy from 'lodash/sortBy'
+import { useAccountsContext } from './AccountsContext'
 
 interface AssetsState {
-  address: string
   assets: Asset[]
   availableAssets: AvailableAsset[]
   availableCurrencies: string[]
-  loaded: boolean
-  login(secretPhrase: string, password: string): void
-  logout(): void
   swap(
     from: { denom: string; amount: number },
     toDenom: string,
@@ -43,18 +40,14 @@ interface AssetsState {
     password: string,
     simulate?: boolean
   ): void
-  depositSavings(market: MARKET_DENOMS, amount: number, password: string): void
-  withdrawSavings(market: MARKET_DENOMS, amount: number, password: string): void
+  depositSavings(market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean): void
+  withdrawSavings(market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean): void
 }
 
 const initialState: AssetsState = {
-  address: '',
   assets: [],
   availableAssets: [],
   availableCurrencies: ['uusd'],
-  loaded: false,
-  login: () => null,
-  logout: () => null,
   swap: () => null,
   send: () => null,
   depositSavings: () => null,
@@ -78,7 +71,7 @@ const decryptMnemonic = (encryptedSecretPhrase: string, password: string) => {
 const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
-  const [address, setAddress, loaded] = usePersistedState('address', initialState.address)
+  const { encryptedSecretPhrase, address } = useAccountsContext()
   const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets)
   const [availableAssets, setAvailableAssets] = React.useState<AvailableAsset[]>(
     initialState.availableAssets
@@ -86,13 +79,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [availableCurrencies, setAvailableCurrencies] = React.useState<string[]>(
     initialState.availableCurrencies
   )
-  const [encryptedSecretPhrase, setEncryptedSecretPhrase] = usePersistedState(
-    'encryptedSecretPhrase',
-    '',
-    {
-      secure: true,
-    }
-  )
+
   const { currency } = useSettingsContext()
 
   const fetchAssets = React.useCallback(async () => {
@@ -135,22 +122,6 @@ const AssetsProvider: React.FC = ({ children }) => {
       setAvailableAssets(sortBy([...tokenAssets, ...mAssets], ['-type', 'symbol']))
     })
     fetchAvailableCurrencies().then(setAvailableCurrencies)
-  }, [])
-
-  const login = React.useCallback(
-    async (secretPhrase: string, password: string) => {
-      const key = new MnemonicKey({ mnemonic: secretPhrase })
-      setAddress(key.accAddress)
-      setEncryptedSecretPhrase(CryptoJS.AES.encrypt(secretPhrase, password).toString())
-    },
-    [setAddress, setEncryptedSecretPhrase]
-  )
-
-  const logout = React.useCallback(() => {
-    setAddress(initialState.address)
-    setAssets(initialState.assets)
-    setEncryptedSecretPhrase('')
-    Actions.reset('Login')
   }, [])
 
   const swap = React.useCallback(
@@ -262,45 +233,61 @@ const AssetsProvider: React.FC = ({ children }) => {
   )
 
   const depositSavings = React.useCallback(
-    async (market: MARKET_DENOMS, amount: number, password: string) => {
+    async (market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean) => {
       const key = new MnemonicKey({
-        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = new Wallet(terra, key)
-      const deposit = await anchorClient.earn
-        .depositStable({ market, amount: String(amount) })
-        .execute(wallet as any, {})
+      const ops = anchorClient.earn.depositStable({ market, amount: String(amount) })
+      if (simulate) {
+        const tx = await wallet.createTx({
+          msgs: ops.generateWithAddress(address) as any,
+          gasAdjustment: 1.5,
+        })
+        return tx
+      }
+      const deposit = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
       fetchAssets()
       return deposit
     },
-    [encryptedSecretPhrase, fetchAssets]
+    [encryptedSecretPhrase, fetchAssets, address]
   )
 
   const withdrawSavings = React.useCallback(
-    async (market: MARKET_DENOMS, amount: number, password: string) => {
+    async (market: MARKET_DENOMS, amountInBase: number, password: string, simulate?: boolean) => {
+      const rate = await fetchAassetRate(market)
+      const amount = amountInBase / rate
       const key = new MnemonicKey({
-        mnemonic: decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
       })
       const wallet = new Wallet(terra, key)
-      const withdraw = await anchorClient.earn
-        .withdrawStable({ market, amount: String(amount) })
-        .execute(wallet as any, {})
+      const ops = anchorClient.earn.withdrawStable({ market, amount: String(amount) })
+      if (simulate) {
+        const tx = await wallet.createTx({
+          msgs: ops.generateWithAddress(address) as any,
+          gasAdjustment: 1.5,
+        })
+        return tx
+      }
+      const withdraw = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
       fetchAssets()
       return withdraw
     },
-    [encryptedSecretPhrase, fetchAssets]
+    [encryptedSecretPhrase, fetchAssets, address]
   )
+
+  React.useEffect(() => {
+    if (!address) {
+      setAssets(initialState.assets)
+    }
+  }, [address])
 
   return (
     <AssetsContext.Provider
       value={{
-        address,
         assets,
         availableAssets,
         availableCurrencies,
-        loaded,
-        login,
-        logout,
         swap,
         send,
         depositSavings,

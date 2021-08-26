@@ -1,74 +1,75 @@
 import React from 'react'
-import { ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
-import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { useSettingsContext } from '../../contexts/SettingsContext'
 import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Actions } from 'react-native-router-flux'
-import AssetItem from '../../components/AssetItem'
-import { formatCurrency } from '../../utils/formatNumbers'
-import { Coin } from '@terra-money/terra.js'
-import { anchorClient, terraLCDClient as terra } from '../../utils/terraConfig'
+import { anchorClient } from '../../utils/terraConfig'
 import Button from '../../components/Button'
-import {
-  getCurrencyFromDenom,
-  getCurrentAssetDetail,
-  getSavingAssetDetail,
-} from '../../utils/transformAssets'
+import { getCurrentAssetDetail, getSavingAssetDetail } from '../../utils/transformAssets'
+import HeaderBar from '../../components/HeaderBar'
+import AssetAmountInput from '../../components/AssetAmountInput'
+import ConfirmSavingsModal from '../../components/ConfirmModals/ConfirmSavingsModal'
 
 interface SavingsProps {
   mode: 'deposit' | 'withdraw'
+  denom: MARKET_DENOMS
 }
 
-const Savings: React.FC<SavingsProps> = ({ mode }) => {
+const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { address, depositSavings, withdrawSavings } = useAssetsContext()
-  const { currency } = useSettingsContext()
+  const { depositSavings, withdrawSavings, assets } = useAssetsContext()
   const { t } = useTranslation()
   const [amount, setAmount] = React.useState('')
   const [apr, setApr] = React.useState(0)
+  const [isConfirming, setIsConfirming] = React.useState(false)
 
-  const [baseCurrencyCoin, setBaseCurrencyCoin] = React.useState(new Coin(currency, '0'))
-
-  const [loading, setLoading] = React.useState(false)
-
-  const changeAmount = React.useCallback(
-    async (a: string) => {
-      try {
-        setAmount(a)
-        const newCoinAmount = (Number(a) * 10 ** 6).toString()
-        const rate =
-          currency === 'uusd'
-            ? new Coin('uusd', newCoinAmount)
-            : await terra.market.swapRate(new Coin('uusd', newCoinAmount), currency)
-        setBaseCurrencyCoin(rate)
-      } catch (err) {
-        setBaseCurrencyCoin(new Coin(currency, 0))
-      }
-    },
-    [currency]
-  )
+  const baseAsset =
+    assets.find((a) => a.coin.denom === denom) ||
+    getCurrentAssetDetail({
+      denom,
+      amount: '0',
+    })
+  const savingAsset =
+    assets.find((a) => a.coin.denom === `a${denom.slice(1)}`) ||
+    getSavingAssetDetail({
+      denom: `a${denom.slice(1)}`,
+      amount: '0',
+      apr,
+    })
 
   const onSubmit = React.useCallback(
     async (password: string) => {
       try {
-        setLoading(true)
         await (mode === 'deposit' ? depositSavings : withdrawSavings)(
           MARKET_DENOMS.UUSD,
           Number(amount),
           password
         )
-        Actions.pop()
+        Actions.Success({
+          message: {
+            type: 'swap',
+            from: (mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
+              denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
+              amount: String(Number(amount) * 10 ** 6),
+              apr,
+            }),
+            to: (mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
+              denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
+              amount: String(Number(amount) * 10 ** 6),
+              apr,
+            }),
+          },
+          onClose: () => Actions.jump('Home'),
+        })
       } catch (err) {
         console.log(err)
-        setLoading(false)
       }
     },
-    [mode, depositSavings, withdrawSavings, amount]
+    [mode, depositSavings, withdrawSavings, amount, denom, apr]
   )
 
   const fetchApr = React.useCallback(async () => {
@@ -87,60 +88,58 @@ const Savings: React.FC<SavingsProps> = ({ mode }) => {
   }, [])
 
   return (
-    <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
-      <View style={styles.header}>
-        <Typography type="H3">{t('savings')}</Typography>
-        <TouchableOpacity onPress={() => Actions.pop()}>
-          <Icon name="x" size={theme.fonts.H3.fontSize} color={theme.palette.grey[10]} />
-        </TouchableOpacity>
+    <>
+      <HeaderBar title={t('savings')} back />
+      <View style={styles.container}>
+        <ScrollView scrollEnabled={false}>
+          <AssetAmountInput
+            asset={mode === 'deposit' ? baseAsset : savingAsset}
+            amount={amount}
+            setAmount={setAmount}
+            assetItemProps={{
+              disabled: true,
+            }}
+          />
+          <Icon
+            name="arrow-down"
+            size={theme.baseSpace * 8}
+            color={theme.palette.grey[10]}
+            style={styles.arrow}
+          />
+          <AssetAmountInput
+            asset={mode === 'deposit' ? savingAsset : baseAsset}
+            amount={amount}
+            setAmount={setAmount}
+            assetItemProps={{
+              disabled: true,
+            }}
+          />
+        </ScrollView>
+        <Button
+          disabled={
+            !Number(amount) ||
+            (mode === 'deposit' && Number(amount) * 10 ** 6 > Number(baseAsset.coin.amount)) ||
+            (mode === 'withdraw' && Number(amount) * 10 ** 6 > Number(savingAsset.coin.amount))
+          }
+          style={styles.button}
+          size="Large"
+          onPress={() => setIsConfirming(true)}
+        >
+          {t('next')}
+        </Button>
       </View>
-      <AssetItem
-        style={styles.from}
-        asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: 'uusd',
-          amount: (Number(amount) * 10 ** 6).toString(),
-          apr,
-        })}
-        onPress={() => null}
-      />
-      <View style={styles.centered}>
-        <TextInput
-          style={styles.input}
-          placeholder="0"
-          placeholderTextColor={theme.palette.grey[3]}
-          onChangeText={changeAmount}
-          value={amount}
+      {amount ? (
+        <ConfirmSavingsModal
+          open={isConfirming}
+          denom={denom}
+          amount={Number(amount)}
+          mode={mode}
+          apr={apr}
+          onClose={() => setIsConfirming(false)}
+          onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
         />
-        <Typography>
-          ={formatCurrency(baseCurrencyCoin.amount.toString(), baseCurrencyCoin.denom)}{' '}
-          {getCurrencyFromDenom(baseCurrencyCoin.denom)}
-        </Typography>
-        <Icon name="arrow-down" size={theme.fonts.H1.fontSize} color={theme.palette.grey[10]} />
-      </View>
-      <AssetItem
-        style={styles.to}
-        asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: 'uusd',
-          amount: (Number(amount) * 10 ** 6).toString(),
-          apr,
-        })}
-        onPress={() => null}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="0"
-        placeholderTextColor={theme.palette.grey[3]}
-        value={amount}
-      />
-      <Button
-        style={styles.button}
-        size="Large"
-        onPress={() => Actions.Password({ title: t('please enter your password'), onSubmit })}
-        loading={loading}
-      >
-        Confirm
-      </Button>
-    </ScrollView>
+      ) : null}
+    </>
   )
 }
 
