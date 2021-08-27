@@ -73,10 +73,12 @@ const AssetsContext = React.createContext<AssetsState>(initialState)
 const AssetsProvider: React.FC = ({ children }) => {
   const { encryptedSecretPhrase, address } = useAccountsContext()
   const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets)
-  const [availableAssets, setAvailableAssets] = React.useState<AvailableAsset[]>(
+  const [availableAssets, setAvailableAssets] = usePersistedState<AvailableAsset[]>(
+    'availableAssets',
     initialState.availableAssets
   )
-  const [availableCurrencies, setAvailableCurrencies] = React.useState<string[]>(
+  const [availableCurrencies, setAvailableCurrencies] = usePersistedState<string[]>(
+    'availableCurrencies',
     initialState.availableCurrencies
   )
 

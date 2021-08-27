@@ -2,7 +2,8 @@ import 'dotenv/config'
 
 export default {
   name: 'Fina',
-  slug: 'Fina',
+  slug: 'fina',
+  owner: 'fina-io',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',

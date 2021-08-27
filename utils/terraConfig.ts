@@ -61,4 +61,4 @@ export const mirrorOptions = DEFAULT_TEQUILA_MIRROR_OPTIONS
 
 // TODO: register transak api key
 export const getTransakUrl = (address: string) =>
-  `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=mainnet&walletAddress=${address}`
+  `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
