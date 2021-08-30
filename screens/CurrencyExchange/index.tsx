@@ -70,49 +70,68 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
         ;(which === 'from' ? setToAmount : setFromAmount)('')
       }
     },
-    [fromAmount, from, toAmount, to, currency]
+    [from, to, currency]
   )
 
   const fromAsset = assets.find((a) => a.coin.denom === from)
-  const fromAssetWithAmount =
-    from && fromAsset
-      ? {
-          ...fromAsset,
-          coin: { denom: from, amount: String(Number(fromAmount) * 10 ** 6) },
-          worth: {
-            denom: currency,
-            amount: String(baseCurrencyAmount),
-          },
-        }
-      : undefined
-  const toAsset = to
-    ? {
-        ...getCurrentAssetDetail({
-          denom: to,
-          amount: String(Number(toAmount) * 10 ** 6),
-        }),
-        worth: {
-          denom: currency,
-          amount: String(baseCurrencyAmount),
-        },
-      }
-    : undefined
+  const fromAssetWithAmount = React.useMemo(
+    () =>
+      from && fromAsset
+        ? {
+            ...fromAsset,
+            coin: { denom: from, amount: String(Number(fromAmount) * 10 ** 6) },
+            worth: {
+              denom: currency,
+              amount: String(baseCurrencyAmount),
+            },
+          }
+        : undefined,
+    [from, fromAsset, fromAmount, currency, baseCurrencyAmount]
+  )
+  const toAsset = React.useMemo(
+    () =>
+      to
+        ? {
+            ...getCurrentAssetDetail({
+              denom: to,
+              amount: String(Number(toAmount) * 10 ** 6),
+            }),
+            worth: {
+              denom: currency,
+              amount: String(baseCurrencyAmount),
+            },
+          }
+        : undefined,
+    [to, toAmount, currency, baseCurrencyAmount]
+  )
 
   const onSubmit = React.useCallback(
     async (password: string) => {
       if (from && to) {
-        await swap({ denom: from, amount: Number(fromAmount) }, to, password)
+        try {
+          await swap({ denom: from, amount: Number(fromAmount) }, to, password)
+          Actions.Success({
+            message: {
+              type: 'swap',
+              from: fromAssetWithAmount,
+              to: toAsset,
+            },
+            onClose: () => Actions.jump('Home'),
+          })
+        } catch (err) {
+          Actions.Success({
+            message: {
+              type: 'swap',
+              from: fromAssetWithAmount,
+              to: toAsset,
+            },
+            error: err.message,
+            onClose: () => Actions.popTo('CurrencyExchange'),
+          })
+        }
       }
-      Actions.Success({
-        message: {
-          type: 'swap',
-          from: fromAssetWithAmount,
-          to: toAsset,
-        },
-        onClose: () => Actions.jump('Home'),
-      })
     },
-    [from, to, fromAmount, toAmount, fromAssetWithAmount, toAsset, baseCurrencyAmount, currency]
+    [from, to, fromAmount, fromAssetWithAmount, toAsset, swap]
   )
 
   return (

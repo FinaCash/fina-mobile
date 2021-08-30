@@ -171,27 +171,34 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   const onSubmit = React.useCallback(
     async (password: string) => {
       if (fromAmount) {
-        if (mode === 'buy') {
+        try {
           await swap(
-            { denom: currentAsset.coin.denom, amount: Number(fromAmount) },
-            asset.coin.denom,
+            {
+              denom: mode === 'buy' ? currentAsset.coin.denom : asset.coin.denom,
+              amount: Number(fromAmount),
+            },
+            mode === 'buy' ? asset.coin.denom : currentAsset.coin.denom,
             password
           )
-        } else {
-          await swap(
-            { denom: asset.coin.denom, amount: Number(fromAmount) },
-            currentAsset.coin.denom,
-            password
-          )
+          Actions.Success({
+            message: {
+              type: 'swap',
+              from: fromAsset,
+              to: toAsset,
+            },
+            onClose: () => Actions.jump('Home'),
+          })
+        } catch (err) {
+          Actions.Success({
+            message: {
+              type: 'swap',
+              from: fromAsset,
+              to: toAsset,
+            },
+            error: err.message,
+            onClose: () => Actions.popTo('Swap'),
+          })
         }
-        Actions.Success({
-          message: {
-            type: 'swap',
-            from: fromAsset,
-            to: toAsset,
-          },
-          onClose: () => Actions.jump('Home'),
-        })
       }
     },
     [asset, fromAmount, fromAsset, toAsset, swap, currentAsset, mode]

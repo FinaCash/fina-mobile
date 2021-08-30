@@ -6,6 +6,7 @@ export const formatCurrency = (amount: string | number, denom: string, withSymbo
     maximumFractionDigits: withSymbol ? 2 : undefined,
     style: withSymbol ? 'currency' : undefined,
     currency: withSymbol ? getCurrencyFromDenom(denom) : undefined,
+    notation: (Number(amount) || 0) > 10 ** 12 ? 'compact' : undefined,
   }).format((Number(amount) || 0) / 10 ** 6)
 
 export const getCurrencySymbol = (denom: string) =>

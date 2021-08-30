@@ -19,7 +19,7 @@ const useTranslation = () => {
     [locale]
   )
 
-  return { t, changeLocale }
+  return { t, locale, changeLocale }
 }
 
 export default useTranslation

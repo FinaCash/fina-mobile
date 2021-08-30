@@ -24,6 +24,7 @@ export default {
   },
   gradients: {
     primary: ['#432DD9', '#2FC3FF'],
+    error: ['#FFAD85', '#FD4E76'],
   },
   baseSpace: 4,
   tabBarHeight: 64,

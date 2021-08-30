@@ -21,7 +21,7 @@ enum ContentStage {
 interface LoginProps {}
 
 const Login: React.FC<LoginProps> = () => {
-  const { styles } = useStyles(getStyles)
+  const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
   const { login } = useAccountsContext()
   const [stage, setStage, back] = useStateHistory(ContentStage.Start)
@@ -60,7 +60,8 @@ const Login: React.FC<LoginProps> = () => {
                 setPhraseInput(mnemonic)
               }}
               size="Large"
-              style={styles.button}
+              style={[styles.button, styles.borderButton]}
+              color={theme.palette.primary}
             >
               {t('create wallet')}
             </Button>
@@ -83,7 +84,15 @@ const Login: React.FC<LoginProps> = () => {
               </Typography>
             ) : null}
             <View style={styles.row}>
-              <Button onPress={back} size="Large" style={styles.rowButton}>
+              <Button
+                onPress={() => {
+                  back()
+                  setPhraseInput('')
+                }}
+                size="Large"
+                style={[styles.rowButton, styles.borderButton]}
+                color={theme.palette.primary}
+              >
                 {t('back')}
               </Button>
               <Button

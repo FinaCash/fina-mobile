@@ -38,4 +38,9 @@ export default (theme: Theme) => ({
     marginHorizontal: theme.baseSpace,
     marginBottom: theme.baseSpace * 4,
   },
+  borderButton: {
+    borderWidth: 1,
+    borderColor: theme.palette.primary,
+    backgroundColor: 'transparent',
+  },
 })

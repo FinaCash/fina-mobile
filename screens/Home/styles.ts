@@ -35,6 +35,7 @@ export default (theme: Theme) => ({
   header: {
     alignItems: 'center',
     marginTop: theme.statusBarHeight + 6 * theme.baseSpace,
+    marginBottom: 12 * theme.baseSpace,
   },
   modal: {
     borderTopLeftRadius: theme.borderRadius[2],

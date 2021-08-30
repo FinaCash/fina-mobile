@@ -27,11 +27,11 @@ interface SuccessProps {
         from: Asset
         to: Asset
       }
-
+  error?: string
   onClose(): void
 }
 
-const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
+const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
   const { recipients } = useRecipientsContext()
@@ -43,11 +43,15 @@ const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
         <View style={styles.greyConteiner}>
           <LinearGradient
             style={styles.checkContainer}
-            colors={theme.gradients.primary}
+            colors={error ? theme.gradients.error : theme.gradients.primary}
             start={[0, 0]}
             end={[1, 1]}
           >
-            <CheckIcon fill={theme.palette.white} />
+            {error ? (
+              <Icon name="x" color={theme.palette.white} size={theme.baseSpace * 10} />
+            ) : (
+              <CheckIcon fill={theme.palette.white} />
+            )}
           </LinearGradient>
           {message.type === 'send' ? (
             <>
@@ -95,7 +99,7 @@ const Success: React.FC<SuccessProps> = ({ message, onClose }) => {
           ) : null}
         </View>
         <Typography style={styles.title} type="H6">
-          {t('transaction sent')}
+          {error || t('transaction sent')}
         </Typography>
       </View>
       <Button onPress={onClose} size="Large">

@@ -136,6 +136,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubm
                   onSave: (recipient: Recipient) => {
                     addRecipient(recipient)
                     Toast.show(t('recipient added'))
+                    Actions.pop()
                   },
                 })
               }

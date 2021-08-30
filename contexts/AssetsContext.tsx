@@ -25,6 +25,7 @@ import { useAccountsContext } from './AccountsContext'
 
 interface AssetsState {
   assets: Asset[]
+  fetchAssets(): void
   availableAssets: AvailableAsset[]
   availableCurrencies: string[]
   swap(
@@ -46,6 +47,7 @@ interface AssetsState {
 
 const initialState: AssetsState = {
   assets: [],
+  fetchAssets: () => null,
   availableAssets: [],
   availableCurrencies: ['uusd'],
   swap: () => null,
@@ -196,6 +198,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         gasAdjustment: 1.5,
       })
       const result = await terra.tx.broadcast(tx)
+      if (result.height === 0) {
+        throw new Error(result.raw_log)
+      }
       fetchAssets()
       return result
     },
@@ -228,6 +233,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         memo,
       })
       const result = await terra.tx.broadcast(tx)
+      if (result.height === 0) {
+        throw new Error(result.raw_log)
+      }
       fetchAssets()
       return result
     },
@@ -248,9 +256,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         })
         return tx
       }
-      const deposit = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
+      const result = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
+      if (result.height === 0) {
+        throw new Error(result.raw_log)
+      }
       fetchAssets()
-      return deposit
+      return result
     },
     [encryptedSecretPhrase, fetchAssets, address]
   )
@@ -271,9 +282,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         })
         return tx
       }
-      const withdraw = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
+      const result = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
+      if (result.height === 0) {
+        throw new Error(result.raw_log)
+      }
       fetchAssets()
-      return withdraw
+      return result
     },
     [encryptedSecretPhrase, fetchAssets, address]
   )
@@ -288,6 +302,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     <AssetsContext.Provider
       value={{
         assets,
+        fetchAssets,
         availableAssets,
         availableCurrencies,
         swap,

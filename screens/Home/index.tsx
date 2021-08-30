@@ -1,5 +1,5 @@
 import React from 'react'
-import { Animated, View } from 'react-native'
+import { ActivityIndicator, Animated, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
 import get from 'lodash/get'
@@ -29,7 +29,7 @@ import { useAccountsContext } from '../../contexts/AccountsContext'
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, send, availableAssets } = useAssetsContext()
+  const { assets, send, availableAssets, fetchAssets } = useAssetsContext()
   const { address: walletAddress } = useAccountsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
@@ -44,6 +44,7 @@ const Home: React.FC = () => {
 
   const [search, setSearch] = React.useState('')
   const [filterAsset, setFilterAsset] = React.useState('overview')
+  const [loading, setLoading] = React.useState(false)
 
   const transferAsset = React.useCallback(
     (asset: Asset) => {
@@ -57,17 +58,31 @@ const Home: React.FC = () => {
               Actions.Password({
                 title: t('please enter your password'),
                 onSubmit: async (password: string) => {
-                  await send({ denom: asset.coin.denom, amount }, address, memo, password)
-                  Actions.Success({
-                    message: {
-                      type: 'send',
-                      asset,
-                      amount,
-                      address,
-                      memo,
-                    },
-                    onClose: () => Actions.jump('Home'),
-                  })
+                  try {
+                    await send({ denom: asset.coin.denom, amount }, address, memo, password)
+                    Actions.Success({
+                      message: {
+                        type: 'send',
+                        asset,
+                        amount,
+                        address,
+                        memo,
+                      },
+                      onClose: () => Actions.jump('Home'),
+                    })
+                  } catch (err) {
+                    Actions.Success({
+                      message: {
+                        type: 'send',
+                        asset,
+                        amount,
+                        address,
+                        memo,
+                      },
+                      error: err.message,
+                      onClose: () => Actions.popTo('SelectRecipient'),
+                    })
+                  }
                 },
               }),
           }),
@@ -135,6 +150,12 @@ const Home: React.FC = () => {
     [t, showActionSheetWithOptions, transferAsset]
   )
 
+  const refresh = React.useCallback(async () => {
+    setLoading(true)
+    await fetchAssets()
+    setLoading(false)
+  }, [fetchAssets, setLoading])
+
   return (
     <LinearGradient
       start={[0, 0]}
@@ -160,7 +181,7 @@ const Home: React.FC = () => {
               size="Small"
               borderRadius={2}
             >
-              {`+ ${formatPercentage(averageSavingsAPR, 2)}`}
+              {`${t('apy')} ${formatPercentage(averageSavingsAPR, 2)}`}
             </Button>
           ) : null}
         </View>
@@ -200,15 +221,18 @@ const Home: React.FC = () => {
           </Button>
         </View>
       </View>
+      {loading ? <ActivityIndicator size="large" /> : null}
       <Modalize
         alwaysOpen={
           theme.screenHeight -
           65 * theme.baseSpace -
           theme.bottomSpace -
           theme.tabBarHeight -
-          theme.statusBarHeight
+          theme.statusBarHeight -
+          (loading ? 20 * theme.baseSpace : 0)
         }
         modalStyle={styles.modal}
+        onPullToRefresh={refresh}
         withHandle={false}
         panGestureAnimatedValue={scrollY}
         useNativeDriver={false}
