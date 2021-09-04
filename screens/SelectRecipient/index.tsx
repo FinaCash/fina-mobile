@@ -25,17 +25,23 @@ import Toast from 'react-native-root-toast'
 interface SelectRecipientProps {
   asset: Asset
   amount: number
+  recipient?: Recipient
   onSubmit(address: string, memo: string): void
 }
 
-const SelectRecipient: React.FC<SelectRecipientProps> = ({ asset, amount, onSubmit }) => {
+const SelectRecipient: React.FC<SelectRecipientProps> = ({
+  asset,
+  amount,
+  onSubmit,
+  recipient: defaultRecipient,
+}) => {
   const { t } = useTranslation()
   const { styles, theme } = useStyles(getStyles)
   const { currency } = useSettingsContext()
   const { addRecipient } = useRecipientsContext()
   const price = Number(get(asset, 'worth.amount', 0)) / Number(asset.coin.amount)
-  const [address, setAddress] = React.useState('')
-  const [memo, setMemo] = React.useState('')
+  const [address, setAddress] = React.useState(get(defaultRecipient, 'address', ''))
+  const [memo, setMemo] = React.useState(get(defaultRecipient, 'memo', ''))
   const [isConfirming, setIsConfirming] = React.useState(false)
 
   return (

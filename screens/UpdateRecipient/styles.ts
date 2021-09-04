@@ -33,12 +33,8 @@ export default (theme: Theme) => ({
     height: 24 * theme.baseSpace,
     borderRadius: 12 * theme.baseSpace,
   },
-  buttonsRow: {
-    flexDirection: 'row',
-    marginBottom: theme.bottomSpace,
-  },
   button: {
     margin: 4 * theme.baseSpace,
-    flex: 1,
+    marginBottom: 4 * theme.baseSpace + theme.bottomSpace,
   },
 })

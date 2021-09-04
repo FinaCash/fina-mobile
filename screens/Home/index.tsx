@@ -25,11 +25,13 @@ import Input from '../../components/Input'
 import AssetFilter from '../../components/AssetFilter'
 import { getTransakUrl } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
+import useSendToken from '../../utils/useSendToken'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, send, availableAssets, fetchAssets } = useAssetsContext()
+  const { assets, availableAssets, fetchAssets } = useAssetsContext()
+  const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
   const { currency } = useSettingsContext()
   const { t } = useTranslation()
@@ -45,51 +47,6 @@ const Home: React.FC = () => {
   const [search, setSearch] = React.useState('')
   const [filterAsset, setFilterAsset] = React.useState('overview')
   const [loading, setLoading] = React.useState(false)
-
-  const transferAsset = React.useCallback(
-    (asset: Asset) => {
-      Actions.SelectAmount({
-        asset,
-        onSubmit: (amount: number) =>
-          Actions.SelectRecipient({
-            asset,
-            amount,
-            onSubmit: (address: string, memo: string) =>
-              Actions.Password({
-                title: t('please enter your password'),
-                onSubmit: async (password: string) => {
-                  try {
-                    await send({ denom: asset.coin.denom, amount }, address, memo, password)
-                    Actions.Success({
-                      message: {
-                        type: 'send',
-                        asset,
-                        amount,
-                        address,
-                        memo,
-                      },
-                      onClose: () => Actions.jump('Home'),
-                    })
-                  } catch (err) {
-                    Actions.Success({
-                      message: {
-                        type: 'send',
-                        asset,
-                        amount,
-                        address,
-                        memo,
-                      },
-                      error: err.message,
-                      onClose: () => Actions.popTo('SelectRecipient'),
-                    })
-                  }
-                },
-              }),
-          }),
-      })
-    },
-    [send, t]
-  )
 
   const selectAsset = React.useCallback(
     (asset: Asset) => {
@@ -118,7 +75,7 @@ const Home: React.FC = () => {
             return
           }
           if (asset.type === AssetTypes.Currents && index === 0) {
-            return transferAsset(asset)
+            return sendToken({ asset })
           }
           if (asset.type === AssetTypes.Currents && index === 1) {
             return Actions.CurrencyExchange({ from: asset.coin.denom })
@@ -147,7 +104,7 @@ const Home: React.FC = () => {
         }
       )
     },
-    [t, showActionSheetWithOptions, transferAsset]
+    [t, showActionSheetWithOptions, sendToken, availableAssets]
   )
 
   const refresh = React.useCallback(async () => {
@@ -196,13 +153,7 @@ const Home: React.FC = () => {
             {t('buy ust')}
           </Button>
           <Button
-            onPress={() =>
-              Actions.SelectAsset({
-                onSelect: transferAsset,
-                // TODO: transfer other tokens
-                assets: assets.filter((a) => a.coin.denom.match(/^u/)),
-              })
-            }
+            onPress={() => sendToken()}
             borderRadius={1}
             style={styles.button}
             iconStyle={styles.buttonIcon}

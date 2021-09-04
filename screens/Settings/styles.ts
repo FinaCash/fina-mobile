@@ -25,4 +25,8 @@ export default (theme: Theme) => ({
   arrow: {
     marginLeft: 4 * theme.baseSpace,
   },
+  version: {
+    alignSelf: 'center',
+    marginTop: 4 * theme.baseSpace,
+  },
 })

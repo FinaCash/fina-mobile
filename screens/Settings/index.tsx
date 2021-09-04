@@ -1,6 +1,8 @@
 import React from 'react'
-import { SectionList, TouchableOpacity, View } from 'react-native'
+import { SectionList, TouchableOpacity, View, Alert } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
+import Constants from 'expo-constants'
+import get from 'lodash/get'
 import HeaderBar from '../../components/HeaderBar'
 import Typography from '../../components/Typography'
 import { useAccountsContext } from '../../contexts/AccountsContext'
@@ -54,6 +56,20 @@ const Settings: React.FC = () => {
           icon: 'log-out',
           title: t('logout'),
           value: '',
+          onPress: () => {
+            Alert.alert(t('logout'), t('confirm logout'), [
+              {
+                text: t('cancel'),
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {
+                text: t('confirm'),
+                onPress: logout,
+                style: 'destructive',
+              },
+            ])
+          },
         },
       ],
     },
@@ -75,7 +91,7 @@ const Settings: React.FC = () => {
           </View>
         )}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.itemContainer}>
+          <TouchableOpacity style={styles.itemContainer} onPress={item.onPress}>
             <View style={styles.row}>
               <Icon
                 style={styles.icon}
@@ -96,6 +112,11 @@ const Settings: React.FC = () => {
             </View>
           </TouchableOpacity>
         )}
+        ListFooterComponent={
+          <Typography style={styles.version}>
+            v{get(Constants, 'manifest.version', '0.0.0')}
+          </Typography>
+        }
       />
     </>
   )

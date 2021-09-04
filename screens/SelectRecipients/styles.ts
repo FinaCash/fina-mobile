@@ -5,21 +5,4 @@ export default (theme: Theme) => ({
     backgroundColor: theme.palette.white,
     flex: 1,
   },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
-    paddingVertical: theme.baseSpace * 4,
-    marginHorizontal: theme.baseSpace * 4,
-  },
-  avatar: {
-    width: theme.baseSpace * 10,
-    height: theme.baseSpace * 10,
-    borderRadius: theme.baseSpace * 5,
-    marginRight: theme.baseSpace * 6,
-  },
-  button: {
-    margin: 4 * theme.baseSpace,
-  },
 })

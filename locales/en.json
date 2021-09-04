@@ -88,5 +88,7 @@
   "zh": "中文",
   "light": "Light",
   "dark": "Dark",
-  "system default": "System Default"
+  "system default": "System Default",
+  "edit": "Edit",
+  "confirm logout": "Are you sure to logout? All your data including Recipients and Secret Recovery Phrase will be erased from the device. Please make sure you have backed up your Secret Recovery Phrase before logging out."
 }

@@ -1,14 +1,7 @@
 import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
 import { Recipient } from '../../types/recipients'
-import {
-  TouchableOpacity,
-  View,
-  Image,
-  Alert,
-  ScrollView,
-  KeyboardAvoidingView,
-} from 'react-native'
+import { TouchableOpacity, View, Image, ScrollView, KeyboardAvoidingView } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import Constants from 'expo-constants'
 import * as ImageManipulator from 'expo-image-manipulator'
@@ -26,13 +19,11 @@ import isAddressValid from '../../utils/isAddressValid'
 interface UpdateRecipientProps {
   recipient?: Recipient
   onSave(recipient: Recipient): void
-  onDelete?(recipient: Recipient): void
 }
 
 const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
   recipient: defaultRecipient = { image: '', name: '', address: '' },
   onSave,
-  onDelete,
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useTranslation()
@@ -168,39 +159,14 @@ const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
             }
           />
         </ScrollView>
-        <View style={styles.buttonsRow}>
-          {isNewRecipient ? (
-            <Button
-              style={styles.button}
-              size="Large"
-              disabled={!recipient.name || !recipient.address}
-              onPress={() =>
-                Alert.alert(t('remove'), t('confirm remove recipient'), [
-                  {
-                    text: t('cancel'),
-                    onPress: () => null,
-                    style: 'cancel',
-                  },
-                  {
-                    text: t('confirm'),
-                    onPress: () => onDelete && defaultRecipient && onDelete(defaultRecipient),
-                  },
-                ])
-              }
-              bgColor={theme.palette.red}
-            >
-              {t('remove')}
-            </Button>
-          ) : null}
-          <Button
-            style={styles.button}
-            size="Large"
-            disabled={!recipient.name || !isAddressValid(recipient.address)}
-            onPress={() => onSave(recipient)}
-          >
-            {t('save')}
-          </Button>
-        </View>
+        <Button
+          style={styles.button}
+          size="Large"
+          disabled={!recipient.name || !isAddressValid(recipient.address)}
+          onPress={() => onSave(recipient)}
+        >
+          {t('save')}
+        </Button>
       </KeyboardAvoidingView>
     </>
   )
