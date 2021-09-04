@@ -32,10 +32,14 @@ const usePersistedState = <P>(
   }, [])
 
   React.useEffect(() => {
-    ;(get(options, 'secure', false) ? SecureStore.setItemAsync : AsyncStorage.setItem)(
-      key,
-      JSON.stringify(value)
-    )
+    if (value) {
+      ;(get(options, 'secure', false) ? SecureStore.setItemAsync : AsyncStorage.setItem)(
+        key,
+        JSON.stringify(value)
+      )
+    } else {
+      ;(get(options, 'secure', false) ? SecureStore.deleteItemAsync : AsyncStorage.removeItem)(key)
+    }
   }, [value, key, options])
 
   return [value, setValue, loaded]

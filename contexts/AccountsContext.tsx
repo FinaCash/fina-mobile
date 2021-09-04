@@ -45,7 +45,7 @@ const AccountsProvider: React.FC = ({ children }) => {
     setAddress(initialState.address)
     setEncryptedSecretPhrase(initialState.encryptedSecretPhrase)
     Actions.reset('Login')
-  }, [])
+  }, [setAddress, setEncryptedSecretPhrase])
 
   return (
     <AccountsContext.Provider

@@ -2,9 +2,10 @@ import React from 'react'
 import i18n from 'i18n-js'
 import { Locales } from '../types/misc'
 import usePersistedState from '../utils/usePersistedState'
+import { transformLocale } from '.'
 
 const useTranslation = () => {
-  const [locale, setLocale] = usePersistedState('locale', i18n.locale)
+  const [locale, setLocale] = usePersistedState('locale', transformLocale(i18n.locale))
 
   const changeLocale = React.useCallback(
     (newLocale: Locales) => {

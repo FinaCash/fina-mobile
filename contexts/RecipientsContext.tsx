@@ -1,6 +1,7 @@
 import React from 'react'
 import { Recipient } from '../types/recipients'
 import usePersistedState from '../utils/usePersistedState'
+import { useAccountsContext } from './AccountsContext'
 
 interface RecipientsState {
   recipients: Recipient[]
@@ -19,7 +20,15 @@ const initialState: RecipientsState = {
 const RecipientsContext = React.createContext<RecipientsState>(initialState)
 
 const RecipientsProvider: React.FC = ({ children }) => {
+  const { address } = useAccountsContext()
   const [recipients, setRecipients] = usePersistedState('recipients', initialState.recipients)
+
+  // On logout
+  React.useEffect(() => {
+    if (!address) {
+      setRecipients(initialState.recipients)
+    }
+  }, [address, setRecipients])
 
   return (
     <RecipientsContext.Provider

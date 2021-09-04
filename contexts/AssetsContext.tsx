@@ -292,11 +292,14 @@ const AssetsProvider: React.FC = ({ children }) => {
     [encryptedSecretPhrase, fetchAssets, address]
   )
 
+  // On logout
   React.useEffect(() => {
     if (!address) {
       setAssets(initialState.assets)
+      setAvailableAssets(initialState.availableAssets)
+      setAvailableCurrencies(initialState.availableCurrencies)
     }
-  }, [address])
+  }, [address, setAssets, setAvailableAssets, setAvailableCurrencies])
 
   return (
     <AssetsContext.Provider
