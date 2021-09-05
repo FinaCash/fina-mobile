@@ -3,7 +3,6 @@ import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Actions } from 'react-native-router-flux'
@@ -13,6 +12,7 @@ import { getCurrentAssetDetail, getSavingAssetDetail } from '../../utils/transfo
 import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
 import ConfirmSavingsModal from '../../components/ConfirmModals/ConfirmSavingsModal'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface SavingsProps {
   mode: 'deposit' | 'withdraw'
@@ -22,7 +22,7 @@ interface SavingsProps {
 const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) => {
   const { styles, theme } = useStyles(getStyles)
   const { depositSavings, withdrawSavings, assets } = useAssetsContext()
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const [amount, setAmount] = React.useState('')
   const [apr, setApr] = React.useState(0)
   const [isConfirming, setIsConfirming] = React.useState(false)

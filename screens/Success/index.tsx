@@ -8,10 +8,10 @@ import { View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import AssetItem from '../../components/AssetItem'
 import Typography from '../../components/Typography'
-import useTranslation from '../../locales/useTranslation'
 import { formatCurrency } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface SuccessProps {
   message:
@@ -33,7 +33,7 @@ interface SuccessProps {
 
 const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { recipients } = useRecipientsContext()
   const recipient =
     message.type === 'send' ? recipients.find((r) => r.address === message.address) : undefined

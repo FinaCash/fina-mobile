@@ -10,7 +10,6 @@ import useStyles from '../theme/useStyles'
 import getStyles from './styles'
 import Home from '../screens/Home'
 import Login from '../screens/Login'
-import useTranslation from '../locales/useTranslation'
 import Password from '../screens/Password'
 import Savings from '../screens/Savings'
 import Settings from '../screens/Settings'
@@ -26,6 +25,7 @@ import Recipients from '../screens/Recipients'
 import SelectRecipients from '../screens/SelectRecipients'
 import CurrencyExchange from '../screens/CurrencyExchange'
 import UpdateRecipient from '../screens/UpdateRecipient'
+import { useLocalesContext } from '../contexts/LocalesContext'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -49,7 +49,8 @@ export const TabIcon: React.FC<{
 
 const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
   const { styles } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
+
   return (
     <>
       <Router sceneStyle={styles.scene}>

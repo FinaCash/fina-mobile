@@ -1,13 +1,13 @@
 import React from 'react'
 import { Actions } from 'react-native-router-flux'
 import { useAssetsContext } from '../contexts/AssetsContext'
-import useTranslation from '../locales/useTranslation'
+import { useLocalesContext } from '../contexts/LocalesContext'
 import { Asset } from '../types/assets'
 import { Recipient } from '../types/recipients'
 
 const useSendToken = () => {
   const { assets, send } = useAssetsContext()
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const transferAsset = React.useCallback(
     ({ asset, recipient }: { asset: Asset; recipient?: Recipient }) => {
       Actions.SelectAmount({

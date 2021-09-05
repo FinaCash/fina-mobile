@@ -1,6 +1,8 @@
-export type Locales = 'en' | 'zh'
+export enum ThemeType {
+  Light = 'light',
+  Dark = 'dark',
+}
 
-export type ThemeType = 'light' | 'dark'
 export type FontType = 'H1' | 'H2' | 'H3' | 'H4' | 'H5' | 'H6' | 'Large' | 'Base' | 'Small' | 'Mini'
 
 export interface Font {

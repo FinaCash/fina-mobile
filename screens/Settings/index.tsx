@@ -6,17 +6,23 @@ import get from 'lodash/get'
 import HeaderBar from '../../components/HeaderBar'
 import Typography from '../../components/Typography'
 import { useAccountsContext } from '../../contexts/AccountsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { getCurrencyFromDenom } from '../../utils/transformAssets'
+import { useActionSheet } from '@expo/react-native-action-sheet'
+import { ThemeType } from '../../types/misc'
+import { Actions } from 'react-native-router-flux'
+import { useLocalesContext } from '../../contexts/LocalesContext'
+
+const supportedThemes = Object.values(ThemeType)
 
 const Settings: React.FC = () => {
   const { logout } = useAccountsContext()
-  const { t, locale } = useTranslation()
+  const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
-  const { theme, currency } = useSettingsContext()
+  const { theme, currency, setTheme } = useSettingsContext()
+  const { showActionSheetWithOptions } = useActionSheet()
 
   const sections = [
     {
@@ -26,11 +32,39 @@ const Settings: React.FC = () => {
           icon: theme === 'dark' ? 'moon' : 'sun',
           title: t('theme'),
           value: t(theme),
+          onPress: () => {
+            showActionSheetWithOptions(
+              {
+                options: [...supportedThemes.map((l) => t(l)), t('cancel')],
+                cancelButtonIndex: supportedThemes.length,
+              },
+              (index) => {
+                if (index < supportedThemes.length) {
+                  setTheme(supportedThemes[index])
+                  Actions.jump('Settings')
+                }
+              }
+            )
+          },
         },
         {
           icon: 'globe',
           title: t('language'),
           value: t(locale),
+          onPress: () => {
+            showActionSheetWithOptions(
+              {
+                options: [...supportedLocales.map((l) => t(l)), t('cancel')],
+                cancelButtonIndex: supportedLocales.length,
+              },
+              (index) => {
+                if (index < supportedLocales.length) {
+                  setLocale(supportedLocales[index])
+                  Actions.jump('Settings')
+                }
+              }
+            )
+          },
         },
         {
           icon: 'dollar-sign',

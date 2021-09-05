@@ -10,8 +10,8 @@ import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
 import { AssetsProvider } from './contexts/AssetsContext'
 import { RecipientsProvider } from './contexts/RecipientsContext'
-import './locales'
 import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext'
+import { LocalesProvider } from './contexts/LocalesContext'
 
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)
@@ -39,19 +39,21 @@ const InnerApp: React.FC = () => {
 
 export default function App() {
   return (
-    <ActionSheetProvider>
-      <AccountsProvider>
-        <SettingsProvider>
-          <AssetsProvider>
-            <RecipientsProvider>
-              <RootSiblingParent>
-                <StatusBar style="light" />
-                <InnerApp />
-              </RootSiblingParent>
-            </RecipientsProvider>
-          </AssetsProvider>
-        </SettingsProvider>
-      </AccountsProvider>
-    </ActionSheetProvider>
+    <LocalesProvider>
+      <ActionSheetProvider>
+        <AccountsProvider>
+          <SettingsProvider>
+            <AssetsProvider>
+              <RecipientsProvider>
+                <RootSiblingParent>
+                  <StatusBar style="light" />
+                  <InnerApp />
+                </RootSiblingParent>
+              </RecipientsProvider>
+            </AssetsProvider>
+          </SettingsProvider>
+        </AccountsProvider>
+      </ActionSheetProvider>
+    </LocalesProvider>
   )
 }

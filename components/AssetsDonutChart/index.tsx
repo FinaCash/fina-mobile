@@ -1,8 +1,8 @@
 import React from 'react'
 import { View } from 'react-native'
 import { PieChart } from 'react-native-svg-charts'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
@@ -17,7 +17,7 @@ interface AssetsDonutChartProps {
 const AssetsDonutChart: React.FC<AssetsDonutChartProps> = ({ assets }) => {
   const { styles } = useStyles(getStyles)
   const { currency } = useSettingsContext()
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
 
   const total = React.useMemo(() => assets.map((a) => a.value).reduce((a, b) => a + b, 0), [assets])
   return (

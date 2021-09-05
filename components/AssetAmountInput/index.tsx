@@ -1,6 +1,5 @@
 import React from 'react'
 import get from 'lodash/get'
-import useTranslation from '../../locales/useTranslation'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
 import { Asset, AvailableAsset } from '../../types/assets'
@@ -11,6 +10,7 @@ import Input, { InputProps } from '../../components/Input'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import AvailableAssetItem, { AvailableAssetItemProps } from '../AvailableAssetItem'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface AssetAmountInputProps {
   asset?: Asset
@@ -31,7 +31,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   availableAssetItemProps,
   inputProps,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { currency } = useSettingsContext()
   const price = asset ? Number(get(asset, 'worth.amount', 0)) / Number(asset.coin.amount) : 0

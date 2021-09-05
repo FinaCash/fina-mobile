@@ -1,12 +1,12 @@
 import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
-import useTranslation from '../../locales/useTranslation'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
 import { Asset } from '../../types/assets'
 import { KeyboardAvoidingView } from 'react-native'
 import Button from '../../components/Button'
 import AssetAmountInput from '../../components/AssetAmountInput'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface SelectAmountProps {
   asset: Asset
@@ -14,7 +14,7 @@ interface SelectAmountProps {
 }
 
 const SelectAmount: React.FC<SelectAmountProps> = ({ asset, onSubmit }) => {
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { styles } = useStyles(getStyles)
   const [amount, setAmount] = React.useState('')
 

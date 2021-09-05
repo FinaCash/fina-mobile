@@ -1,13 +1,13 @@
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import { FontAwesome as Icon } from '@expo/vector-icons'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { Asset } from '../../types/assets'
 import { formatCurrency, formatPercentage, getCurrencySymbol } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
 import get from 'lodash/get'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 export interface AssetItemProps extends TouchableOpacityProps {
   asset?: Asset
@@ -24,7 +24,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
 
   return (
     <TouchableOpacity {...props}>

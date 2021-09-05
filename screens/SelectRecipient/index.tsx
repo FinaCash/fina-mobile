@@ -2,7 +2,6 @@ import React from 'react'
 import get from 'lodash/get'
 import * as Clipboard from 'expo-clipboard'
 import HeaderBar from '../../components/HeaderBar'
-import useTranslation from '../../locales/useTranslation'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
 import { Asset } from '../../types/assets'
@@ -21,6 +20,7 @@ import { Actions } from 'react-native-router-flux'
 import { Recipient } from '../../types/recipients'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import Toast from 'react-native-root-toast'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface SelectRecipientProps {
   asset: Asset
@@ -35,7 +35,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
   onSubmit,
   recipient: defaultRecipient,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { currency } = useSettingsContext()
   const { addRecipient } = useRecipientsContext()

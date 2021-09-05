@@ -4,11 +4,11 @@ import AssetItem, { AssetItemProps } from '../../components/AssetItem'
 import AvailableAssetItem, { AvailableAssetItemProps } from '../../components/AvailableAssetItem'
 import HeaderBar from '../../components/HeaderBar'
 import Input from '../../components/Input'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { Asset, AvailableAsset } from '../../types/assets'
 import SearchIcon from '../../assets/images/icons/search.svg'
 import getStyles from './styles'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface SelectAssetProps {
   onSelect(asset: Asset | AvailableAsset): void
@@ -25,7 +25,7 @@ const SelectAsset: React.FC<SelectAssetProps> = ({
   availableAssets,
   availableAssetItemProps,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { styles } = useStyles(getStyles)
   const [search, setSearch] = React.useState('')
 

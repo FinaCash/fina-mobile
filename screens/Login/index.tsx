@@ -1,7 +1,6 @@
 import React from 'react'
 import { Image, View } from 'react-native'
 import Typography from '../../components/Typography'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Button from '../../components/Button'
@@ -11,6 +10,7 @@ import { Actions } from 'react-native-router-flux'
 import { MnemonicKey } from '@terra-money/terra.js'
 import { ScrollView } from 'react-native'
 import { useAccountsContext } from '../../contexts/AccountsContext'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 enum ContentStage {
   Start = 'start',
@@ -22,7 +22,7 @@ interface LoginProps {}
 
 const Login: React.FC<LoginProps> = () => {
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { login } = useAccountsContext()
   const [stage, setStage, back] = useStateHistory(ContentStage.Start)
   const [phraseInput, setPhraseInput] = React.useState('')

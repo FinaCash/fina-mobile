@@ -1,6 +1,6 @@
 import React from 'react'
 import { ScrollView } from 'react-native'
-import useTranslation from '../../locales/useTranslation'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 import useStyles from '../../theme/useStyles'
 import { AssetTypes } from '../../types/assets'
 import Button from '../Button'
@@ -14,7 +14,7 @@ interface AssetFilterProps {
 
 const AssetFilter: React.FC<AssetFilterProps> = ({ currentFilter, onChange, withOverview }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   return (
     <ScrollView
       horizontal

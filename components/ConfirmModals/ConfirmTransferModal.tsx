@@ -11,11 +11,11 @@ import Button from '../Button'
 import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Asset } from '../../types/assets'
-import useTranslation from '../../locales/useTranslation'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface ConfirmTransferModalProps {
   open: boolean
@@ -38,7 +38,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
 }) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { send } = useAssetsContext()
   const { recipients } = useRecipientsContext()
   const recipient = recipients.find((r) => r.address === address)

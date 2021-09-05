@@ -11,10 +11,10 @@ import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../../components/Typography'
 import Button from '../../components/Button'
-import useTranslation from '../../locales/useTranslation'
 import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
 import isAddressValid from '../../utils/isAddressValid'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface UpdateRecipientProps {
   recipient?: Recipient
@@ -26,7 +26,7 @@ const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
   onSave,
 }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
 
   const [recipient, setRecipient] = React.useState(defaultRecipient)
 

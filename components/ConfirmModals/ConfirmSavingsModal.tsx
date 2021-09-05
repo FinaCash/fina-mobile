@@ -11,7 +11,6 @@ import Button from '../Button'
 import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Asset } from '../../types/assets'
-import useTranslation from '../../locales/useTranslation'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
 import {
@@ -20,6 +19,7 @@ import {
   getSymbolFromDenom,
 } from '../../utils/transformAssets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface ConfirmSavingsModalProps {
   open: boolean
@@ -42,7 +42,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
 }) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { depositSavings, withdrawSavings } = useAssetsContext()
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {

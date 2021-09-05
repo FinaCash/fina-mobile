@@ -5,8 +5,8 @@ import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import useTranslation from '../../locales/useTranslation'
 import Input from '../../components/Input'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface PasswordProps {
   isSetting: boolean
@@ -16,7 +16,7 @@ interface PasswordProps {
 
 const Password: React.FC<PasswordProps> = ({ isSetting, onSubmit, confirmationRequired }) => {
   const inputRef = React.useRef(null)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [loading, setLoading] = React.useState(false)

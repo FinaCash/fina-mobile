@@ -6,13 +6,15 @@ import { useAccountsContext } from './AccountsContext'
 interface SettingsState {
   currency: string
   theme: ThemeType
-  setCurrency?: React.Dispatch<React.SetStateAction<string>>
-  setTheme?: React.Dispatch<React.SetStateAction<ThemeType>>
+  setCurrency: React.Dispatch<React.SetStateAction<string>>
+  setTheme: React.Dispatch<React.SetStateAction<ThemeType>>
 }
 
 const initialState: SettingsState = {
   currency: 'uusd',
-  theme: 'light',
+  theme: ThemeType.Light,
+  setCurrency: () => null,
+  setTheme: () => null,
 }
 
 const SettingsContext = React.createContext<SettingsState>(initialState)

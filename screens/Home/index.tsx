@@ -13,7 +13,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import Typography from '../../components/Typography'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import { getCurrencyFromDenom, transformAssetsToDistributions } from '../../utils/transformAssets'
 import getStyles from './styles'
@@ -26,6 +25,7 @@ import AssetFilter from '../../components/AssetFilter'
 import { getTransakUrl } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import useSendToken from '../../utils/useSendToken'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
   const { currency } = useSettingsContext()
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const assetsDistribution = transformAssetsToDistributions(assets)
   assetsDistribution.overview = Object.values(assetsDistribution).reduce((a, b) => a + b, 0)

@@ -6,16 +6,16 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import Button from '../../components/Button'
 import HeaderBar from '../../components/HeaderBar'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Recipient } from '../../types/recipients'
 import { Actions } from 'react-native-router-flux'
 import useSendToken from '../../utils/useSendToken'
 import RecipientItem from '../../components/RecipientItem'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 const Recipients: React.FC = () => {
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const sendToken = useSendToken()
   const { styles, theme } = useStyles(getStyles)

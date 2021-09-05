@@ -8,7 +8,6 @@ import {
   queryTerraswapSimulation,
   queryTerraswapReverseTokenSimulation,
 } from '@anchor-protocol/anchor.js/dist/queries/terraswap'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
@@ -31,6 +30,7 @@ import AssetAmountInput from '../../components/AssetAmountInput'
 import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useAccountsContext } from '../../contexts/AccountsContext'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -46,7 +46,7 @@ type SwapProps =
 
 const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { swap, assets, availableAssets } = useAssetsContext()
   const { address } = useAccountsContext()
   const { currency } = useSettingsContext()

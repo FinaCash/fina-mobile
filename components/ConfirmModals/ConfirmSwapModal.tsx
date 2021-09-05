@@ -11,10 +11,10 @@ import Button from '../Button'
 import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Asset } from '../../types/assets'
-import useTranslation from '../../locales/useTranslation'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface ConfirmSwapModalProps {
   open: boolean
@@ -33,7 +33,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
 }) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { swap } = useAssetsContext()
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {

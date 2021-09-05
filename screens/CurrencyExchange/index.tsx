@@ -3,7 +3,6 @@ import { ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Actions } from 'react-native-router-flux'
@@ -15,6 +14,7 @@ import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
 import { Asset, AssetTypes } from '../../types/assets'
 import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface CurrencyExchangeProps {
   from?: string
@@ -28,7 +28,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
   const { styles, theme } = useStyles(getStyles)
   const { assets, availableCurrencies, swap } = useAssetsContext()
   const { currency } = useSettingsContext()
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
 
   const [from, setFrom] = React.useState(defaultFrom)
   const [fromAmount, setFromAmount] = React.useState('')

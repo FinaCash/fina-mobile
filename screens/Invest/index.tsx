@@ -1,19 +1,19 @@
 import React from 'react'
-import { FlatList, SectionList, View } from 'react-native'
+import { SectionList, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import SearchIcon from '../../assets/images/icons/search.svg'
 import HeaderBar from '../../components/HeaderBar'
 import AvailableAssetItem from '../../components/AvailableAssetItem'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import useTranslation from '../../locales/useTranslation'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Input from '../../components/Input'
 import { groupBy } from 'lodash'
 import Typography from '../../components/Typography'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 const Invest: React.FC = () => {
-  const { t } = useTranslation()
+  const { t } = useLocalesContext()
   const { styles } = useStyles(getStyles)
   const { availableAssets } = useAssetsContext()
   const [search, setSearch] = React.useState('')
