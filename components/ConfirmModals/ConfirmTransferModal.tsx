@@ -68,7 +68,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
           'denom'
         )
       )
-    } catch (err) {
+    } catch (err: any) {
       console.log(err)
     }
   }, [asset, amount, address, memo, send])
@@ -76,7 +76,6 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
   React.useEffect(() => {
     if (open) {
       modalizeRef.current?.open()
-      estimateGasFee()
     } else {
       modalizeRef.current?.close()
     }
@@ -95,6 +94,8 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
         theme.bottomSpace
       }
       onClosed={onClose}
+      onOpened={estimateGasFee}
+      useNativeDriver
     >
       <View style={styles.confirmHeader}>
         <Typography type="H6">{t('confirm transacrtion')}</Typography>

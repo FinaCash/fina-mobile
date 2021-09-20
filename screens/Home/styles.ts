@@ -41,6 +41,7 @@ export default (theme: Theme) => ({
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
     marginTop: theme.statusBarHeight,
+    backgroundColor: theme.palette.white,
   },
   buttonContainer: {
     padding: 4 * theme.baseSpace,

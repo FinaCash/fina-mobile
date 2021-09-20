@@ -66,7 +66,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
           message,
           onClose: () => Actions.jump('Home'),
         })
-      } catch (err) {
+      } catch (err: any) {
         Actions.Success({
           message,
           error: err.message,
@@ -83,7 +83,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
         market: MARKET_DENOMS.UUSD,
       })
       setApr(rate)
-    } catch (err) {
+    } catch (err: any) {
       console.log(err)
     }
   }, [setApr])
@@ -124,7 +124,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
           mode={mode}
           apr={apr}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
+          onConfirm={() => Actions.Password({ onSubmit })}
         />
       ) : null}
     </>

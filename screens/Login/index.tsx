@@ -98,9 +98,9 @@ const Login: React.FC<LoginProps> = () => {
               <Button
                 onPress={() =>
                   Actions.Password({
-                    title: t('please enter password'),
                     onSubmit,
                     confirmationRequired: true,
+                    isSetting: true,
                   })
                 }
                 size="Large"

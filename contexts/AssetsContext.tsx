@@ -1,6 +1,5 @@
 import React from 'react'
 import { Coin, MsgSwap, MnemonicKey, MsgSend, Wallet } from '@terra-money/terra.js'
-import CryptoJS from 'crypto-js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import {
   terraLCDClient as terra,
@@ -56,24 +55,10 @@ const initialState: AssetsState = {
   withdrawSavings: () => null,
 }
 
-const decryptMnemonic = (encryptedSecretPhrase: string, password: string) => {
-  try {
-    const mnemonic = CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(
-      CryptoJS.enc.Utf8
-    )
-    if (!mnemonic) {
-      throw new Error('incorrect password')
-    }
-    return mnemonic
-  } catch (err) {
-    throw new Error('incorrect password')
-  }
-}
-
 const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
-  const { encryptedSecretPhrase, address } = useAccountsContext()
+  const { decryptSecretPhrase, address } = useAccountsContext()
   const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets)
   const [availableAssets, setAvailableAssets] = usePersistedState<AvailableAsset[]>(
     'availableAssets',
@@ -96,7 +81,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       currency
     )
     setAssets(sortBy(result, ['type', 'symbol']))
-  }, [address, setAssets, fetchMirrorBalance, availableAssets, currency])
+  }, [address, setAssets, availableAssets, currency])
 
   React.useEffect(() => {
     if (address && availableAssets) {
@@ -136,7 +121,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       simulate?: boolean
     ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptSecretPhrase(password),
       })
       const wallet = terra.wallet(key)
       const mAssets = availableAssets.filter(
@@ -189,22 +174,20 @@ const AssetsProvider: React.FC = ({ children }) => {
       if (simulate) {
         const tx = await wallet.createTx({
           msgs: [msg as any],
-          gasAdjustment: 1.5,
         })
         return tx
       }
       const tx = await wallet.createAndSignTx({
         msgs: [msg as any],
-        gasAdjustment: 1.5,
       })
       const result = await terra.tx.broadcast(tx)
-      if (result.height === 0) {
+      if (result.height === 0 || !result.raw_log.match(/^\[/)) {
         throw new Error(result.raw_log)
       }
       fetchAssets()
       return result
     },
-    [fetchAssets, encryptedSecretPhrase, availableAssets, address]
+    [fetchAssets, decryptSecretPhrase, availableAssets, address]
   )
 
   const send = React.useCallback(
@@ -215,55 +198,50 @@ const AssetsProvider: React.FC = ({ children }) => {
       password: string,
       simulate?: boolean
     ) => {
-      const msg = new MsgSend(address, toAddress, { [coin.denom]: coin.amount * 10 ** 6 })
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptSecretPhrase(password),
       })
       const wallet = terra.wallet(key)
+      const rawtx = {
+        msgs: [new MsgSend(address, toAddress, { [coin.denom]: coin.amount * 10 ** 6 })],
+        memo,
+      }
       if (simulate) {
-        const tx = await wallet.createTx({
-          msgs: [msg],
-          gasAdjustment: 1.5,
-        })
+        const tx = await wallet.createTx(rawtx)
         return tx
       }
-      const tx = await wallet.createAndSignTx({
-        msgs: [msg],
-        gasAdjustment: 1.5,
-        memo,
-      })
+      const tx = await wallet.createAndSignTx(rawtx)
       const result = await terra.tx.broadcast(tx)
-      if (result.height === 0) {
+      if (result.height === 0 || !result.raw_log.match(/^\[/)) {
         throw new Error(result.raw_log)
       }
       fetchAssets()
       return result
     },
-    [fetchAssets, encryptedSecretPhrase, address]
+    [fetchAssets, decryptSecretPhrase, address]
   )
 
   const depositSavings = React.useCallback(
     async (market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptSecretPhrase(password),
       })
       const wallet = new Wallet(terra, key)
       const ops = anchorClient.earn.depositStable({ market, amount: String(amount) })
       if (simulate) {
         const tx = await wallet.createTx({
           msgs: ops.generateWithAddress(address) as any,
-          gasAdjustment: 1.5,
         })
         return tx
       }
-      const result = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
-      if (result.height === 0) {
+      const result = await ops.execute(wallet as any, {})
+      if (result.height === 0 || !result.raw_log.match(/^\[/)) {
         throw new Error(result.raw_log)
       }
       fetchAssets()
       return result
     },
-    [encryptedSecretPhrase, fetchAssets, address]
+    [decryptSecretPhrase, fetchAssets, address]
   )
 
   const withdrawSavings = React.useCallback(
@@ -271,25 +249,24 @@ const AssetsProvider: React.FC = ({ children }) => {
       const rate = await fetchAassetRate(market)
       const amount = amountInBase / rate
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptMnemonic(encryptedSecretPhrase, password),
+        mnemonic: simulate ? '' : decryptSecretPhrase(password),
       })
       const wallet = new Wallet(terra, key)
       const ops = anchorClient.earn.withdrawStable({ market, amount: String(amount) })
       if (simulate) {
         const tx = await wallet.createTx({
           msgs: ops.generateWithAddress(address) as any,
-          gasAdjustment: 1.5,
         })
         return tx
       }
-      const result = await ops.execute(wallet as any, { gasAdjustment: 1.5 })
-      if (result.height === 0) {
+      const result = await ops.execute(wallet as any, {})
+      if (result.height === 0 || !result.raw_log.match(/^\[/)) {
         throw new Error(result.raw_log)
       }
       fetchAssets()
       return result
     },
-    [encryptedSecretPhrase, fetchAssets, address]
+    [decryptSecretPhrase, fetchAssets, address]
   )
 
   // On logout

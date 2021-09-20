@@ -65,7 +65,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
         ;(which === 'from' ? setToAmount : setFromAmount)(
           (swapped.amount.toNumber() / 10 ** 6).toString()
         )
-      } catch (err) {
+      } catch (err: any) {
         setBaseCurrencyAmount(0)
         ;(which === 'from' ? setToAmount : setFromAmount)('')
       }
@@ -118,7 +118,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
             },
             onClose: () => Actions.jump('Home'),
           })
-        } catch (err) {
+        } catch (err: any) {
           Actions.Success({
             message: {
               type: 'swap',
@@ -202,7 +202,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
           from={fromAssetWithAmount}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
+          onConfirm={() => Actions.Password({ onSubmit })}
         />
       ) : null}
     </>

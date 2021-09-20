@@ -6,7 +6,7 @@ import { Actions } from 'react-native-router-flux'
 
 interface AccountsState {
   address: string
-  encryptedSecretPhrase: string
+  decryptSecretPhrase(password: string): string
   loaded: boolean
   login(secretPhrase: string, password: string): void
   logout(): void
@@ -14,10 +14,10 @@ interface AccountsState {
 
 const initialState: AccountsState = {
   address: '',
-  encryptedSecretPhrase: '',
   loaded: false,
   login: () => null,
   logout: () => null,
+  decryptSecretPhrase: () => '',
 }
 
 const AccountsContext = React.createContext<AccountsState>(initialState)
@@ -43,15 +43,32 @@ const AccountsProvider: React.FC = ({ children }) => {
 
   const logout = React.useCallback(() => {
     setAddress(initialState.address)
-    setEncryptedSecretPhrase(initialState.encryptedSecretPhrase)
+    setEncryptedSecretPhrase('')
     Actions.reset('Login')
   }, [setAddress, setEncryptedSecretPhrase])
+
+  const decryptSecretPhrase = React.useCallback(
+    (password: string) => {
+      try {
+        const secretPhrase = CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(
+          CryptoJS.enc.Utf8
+        )
+        if (!secretPhrase) {
+          throw new Error('incorrect password')
+        }
+        return secretPhrase
+      } catch (err: any) {
+        throw new Error('incorrect password')
+      }
+    },
+    [encryptedSecretPhrase]
+  )
 
   return (
     <AccountsContext.Provider
       value={{
         address,
-        encryptedSecretPhrase,
+        decryptSecretPhrase,
         loaded,
         login,
         logout,

@@ -10,11 +10,17 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 
 interface PasswordProps {
   isSetting: boolean
+  newPassword: boolean
   onSubmit(password: string): void
   confirmationRequired?: boolean
 }
 
-const Password: React.FC<PasswordProps> = ({ isSetting, onSubmit, confirmationRequired }) => {
+const Password: React.FC<PasswordProps> = ({
+  isSetting,
+  newPassword,
+  onSubmit,
+  confirmationRequired,
+}) => {
   const inputRef = React.useRef(null)
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
@@ -37,7 +43,7 @@ const Password: React.FC<PasswordProps> = ({ isSetting, onSubmit, confirmationRe
       }
       setLoading(true)
       await onSubmit(code)
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false)
       setError(t(err.message))
       if (isConfirming) {
@@ -52,6 +58,8 @@ const Password: React.FC<PasswordProps> = ({ isSetting, onSubmit, confirmationRe
   let title = ''
   if (isConfirming) {
     title = t('please confirm password')
+  } else if (newPassword) {
+    title = t('please enter new password')
   } else if (isSetting) {
     title = t('please enter password')
   } else {

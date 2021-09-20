@@ -1,6 +1,9 @@
 import React from 'react'
 import { View } from 'react-native'
 import { Router, Scene, Tabs, Modal, Stack } from 'react-native-router-flux'
+import { Feather as Icon } from '@expo/vector-icons'
+import * as WebBrowser from 'expo-web-browser'
+import get from 'lodash/get'
 import HomeIcon from '../assets/images/icons/home.svg'
 import RecipientsIcon from '../assets/images/icons/recipients.svg'
 import InvestIcon from '../assets/images/icons/invest.svg'
@@ -26,6 +29,7 @@ import SelectRecipients from '../screens/SelectRecipients'
 import CurrencyExchange from '../screens/CurrencyExchange'
 import UpdateRecipient from '../screens/UpdateRecipient'
 import { useLocalesContext } from '../contexts/LocalesContext'
+import History from '../screens/History'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -39,6 +43,7 @@ export const TabIcon: React.FC<{
     <View style={styles.tab}>
       {React.cloneElement(iconSvg, {
         fill: color,
+        color,
       })}
       <Typography style={styles.tabText} type="Mini" color={color}>
         {tabTitle}
@@ -47,8 +52,8 @@ export const TabIcon: React.FC<{
   )
 }
 
-const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
-  const { styles } = useStyles(getStyles)
+const Routes: React.FC<{ address: string }> = ({ address }) => {
+  const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
 
   return (
@@ -57,7 +62,7 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
         <Scene key="root">
           <Modal hideNavBar>
             <Scene key="Login" hideNavBar component={Login} />
-            <Stack hideNavBar key="Main" initial={isLoggedIn}>
+            <Stack hideNavBar key="Main" initial={!!address}>
               <Tabs
                 tabBarPosition="bottom"
                 showLabel={false}
@@ -80,6 +85,14 @@ const Routes: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
                   tabTitle={t('invest')}
                   icon={TabIcon}
                   component={Invest}
+                />
+                <Scene
+                  key="History"
+                  hideNavBar
+                  iconSvg={<Icon name="activity" size={theme.baseSpace * 5} />}
+                  tabTitle={t('history')}
+                  icon={TabIcon}
+                  component={History}
                 />
                 <Scene
                   key="Recipients"

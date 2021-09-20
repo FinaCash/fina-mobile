@@ -10,7 +10,6 @@ import Typography from '../Typography'
 import Button from '../Button'
 import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
-import { Asset } from '../../types/assets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
 import {
@@ -75,7 +74,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
           'denom'
         )
       )
-    } catch (err) {
+    } catch (err: any) {
       console.log(err)
     }
   }, [denom, amount, depositSavings, withdrawSavings, mode])
@@ -83,7 +82,6 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
   React.useEffect(() => {
     if (open) {
       modalizeRef.current?.open()
-      estimateGasFee()
     } else {
       modalizeRef.current?.close()
     }
@@ -102,6 +100,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
         theme.bottomSpace
       }
       onClosed={onClose}
+      onOpened={estimateGasFee}
     >
       <View style={styles.confirmHeader}>
         <Typography type="H6">{t('confirm transacrtion')}</Typography>

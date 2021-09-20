@@ -10,6 +10,9 @@ export default (theme: Theme) => ({
     borderBottomWidth: 1,
     borderColor: theme.palette.grey[1],
     backgroundColor: theme.palette.white,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   searchBarContainer: {
     backgroundColor: theme.palette.white,

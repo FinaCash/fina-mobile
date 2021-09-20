@@ -14,7 +14,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 
 const Invest: React.FC = () => {
   const { t } = useLocalesContext()
-  const { styles } = useStyles(getStyles)
+  const { styles, theme } = useStyles(getStyles)
   const { availableAssets } = useAssetsContext()
   const [search, setSearch] = React.useState('')
 
@@ -48,6 +48,7 @@ const Invest: React.FC = () => {
             <Typography type="Large" bold>
               {title}
             </Typography>
+            <Typography color={theme.palette.grey[7]}>{t('price in usd')}</Typography>
           </View>
         )}
         renderItem={({ item }) => (

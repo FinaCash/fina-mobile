@@ -9,6 +9,9 @@ export default (theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  titleContainer: {
+    alignItems: 'center',
+  },
   leftButton: {
     position: 'absolute',
     left: 6 * theme.baseSpace,

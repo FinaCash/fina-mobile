@@ -90,5 +90,11 @@
   "dark": "Dark",
   "system default": "System Default",
   "edit": "Edit",
-  "confirm logout": "Are you sure to logout? All your data including Recipients and Secret Recovery Phrase will be erased from the device. Please make sure you have backed up your Secret Recovery Phrase before logging out."
+  "confirm logout": "Are you sure to logout? All your data including Recipients and Secret Recovery Phrase will be erased from the device. Please make sure you have backed up your Secret Recovery Phrase before logging out.",
+  "price in usd": "Price in USD",
+  "secret recovery phrase": "Secret Recovery Phrase",
+  "password updated": "Password has been updated",
+  "please enter new password": "Please enter a new password",
+  "history": "History",
+  "powered by terra station": "Powered by Terra Station"
 }

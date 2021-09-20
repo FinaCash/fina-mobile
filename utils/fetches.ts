@@ -60,7 +60,7 @@ export const fetchAvailableMirrorAssets = async () => {
         price: Number(p.price) * 10 ** 6,
       })),
     }))
-  } catch (err) {
+  } catch (err: any) {
     console.log(err)
   }
 }
@@ -95,7 +95,7 @@ export const fetchMirrorBalance = async (address: string) => {
       })
       .filter((a: any) => a)
     return mAssets
-  } catch (err) {
+  } catch (err: any) {
     console.log(err)
   }
 }

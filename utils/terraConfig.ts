@@ -5,6 +5,10 @@ import { LCDClient } from '@terra-money/terra.js'
 export const terraLCDClient = new LCDClient({
   URL: 'https://tequila-lcd.terra.dev',
   chainID: 'tequila-0004',
+  gasPrices: {
+    uusd: 2,
+  },
+  gasAdjustment: 1.5,
 })
 
 export const terraFCDUrl = 'https://tequila-fcd.terra.dev'
@@ -56,6 +60,9 @@ export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvi
 export const anchorApiUrl = 'https://tequila-api.anchorprotocol.com/api'
 
 export const mirrorGraphqlUrl = 'https://tequila-graph.mirror.finance/graphql'
+
+export const terraStationUrl = 'https://station.terra.money'
+export const terraStationChain = 'testnet'
 
 export const mirrorOptions = DEFAULT_TEQUILA_MIRROR_OPTIONS
 

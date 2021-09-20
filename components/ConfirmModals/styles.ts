@@ -5,6 +5,7 @@ export default (theme: Theme) => ({
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
     padding: theme.baseSpace,
+    backgroundColor: theme.palette.white,
   },
   confirmHeader: {
     flexDirection: 'row',

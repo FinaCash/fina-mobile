@@ -1,10 +1,11 @@
 import { Camera } from 'expo-camera'
-import { t } from 'i18n-js'
 import React from 'react'
 import { Actions } from 'react-native-router-flux'
 import HeaderBar from '../../components/HeaderBar'
+import { useLocalesContext } from '../../contexts/LocalesContext'
 
 const ScanQRCode: React.FC<{ onScan: (code: string) => void }> = ({ onScan }) => {
+  const { t } = useLocalesContext()
   const [hasPermission, setHasPermission] = React.useState(false)
 
   React.useEffect(() => {

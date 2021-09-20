@@ -22,7 +22,7 @@ const usePersistedState = <P>(
       const persistedValue = JSON.parse(persistedString)
       setValue(persistedValue)
       setLoaded(true)
-    } catch (err) {
+    } catch (err: any) {
       // Does nothing
     }
   }, [options, key])

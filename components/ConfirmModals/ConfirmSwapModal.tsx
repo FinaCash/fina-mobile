@@ -66,7 +66,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
           'denom'
         )
       )
-    } catch (err) {
+    } catch (err: any) {
       console.log(err)
     }
   }, [from, to, swap])
@@ -74,7 +74,6 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   React.useEffect(() => {
     if (open) {
       modalizeRef.current?.open()
-      estimateGasFee()
     } else {
       modalizeRef.current?.close()
     }
@@ -93,6 +92,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         theme.bottomSpace
       }
       onClosed={onClose}
+      onOpened={estimateGasFee}
     >
       <View style={styles.confirmHeader}>
         <Typography type="H6">{t('confirm transacrtion')}</Typography>

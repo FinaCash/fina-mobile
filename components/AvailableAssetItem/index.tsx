@@ -29,7 +29,7 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({ availableAsset,
         </View>
 
         <View style={styles.rightAligned}>
-          <Typography type="H6">{formatCurrency(availableAsset.price, 'uusd')}</Typography>
+          <Typography type="H6">{formatCurrency(availableAsset.price, 'uusd', true)}</Typography>
           <Typography bold color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}>
             {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
           </Typography>

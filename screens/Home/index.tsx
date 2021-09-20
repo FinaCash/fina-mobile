@@ -148,7 +148,9 @@ const Home: React.FC = () => {
             borderRadius={1}
             style={styles.button}
             iconStyle={styles.buttonIcon}
-            icon={<TransakIcon style={{ transform: [{ scale: 1.5 }] }} />}
+            icon={
+              <TransakIcon fill={theme.palette.white} style={{ transform: [{ scale: 1.5 }] }} />
+            }
           >
             {t('buy ust')}
           </Button>
@@ -157,7 +159,7 @@ const Home: React.FC = () => {
             borderRadius={1}
             style={styles.button}
             iconStyle={styles.buttonIcon}
-            icon={<TransferIcon />}
+            icon={<TransferIcon fill={theme.palette.white} />}
           >
             {t('transfer')}
           </Button>
@@ -166,7 +168,7 @@ const Home: React.FC = () => {
             borderRadius={1}
             style={styles.button}
             iconStyle={styles.buttonIcon}
-            icon={<ReceiveIcon />}
+            icon={<ReceiveIcon fill={theme.palette.white} />}
           >
             {t('receive')}
           </Button>

@@ -126,7 +126,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           10 ** 6
         ).toString()
         ;(which === 'from' ? setToAmount : setFromAmount)(result)
-      } catch (err) {
+      } catch (err: any) {
         console.log(err)
         ;(which === 'from' ? setToAmount : setFromAmount)('')
       }
@@ -188,7 +188,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
             },
             onClose: () => Actions.jump('Home'),
           })
-        } catch (err) {
+        } catch (err: any) {
           Actions.Success({
             message: {
               type: 'swap',
@@ -295,7 +295,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           from={fromAsset as any}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => Actions.Password({ onSubmit, title: t('please enter your password') })}
+          onConfirm={() => Actions.Password({ onSubmit })}
         />
       ) : null}
     </>

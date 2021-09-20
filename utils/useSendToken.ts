@@ -19,7 +19,6 @@ const useSendToken = () => {
             amount,
             onSubmit: (address: string, memo: string) =>
               Actions.Password({
-                title: t('please enter your password'),
                 onSubmit: async (password: string) => {
                   try {
                     await send({ denom: asset.coin.denom, amount }, address, memo, password)

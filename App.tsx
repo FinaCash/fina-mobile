@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import AppLoading from 'expo-app-loading'
 import { RootSiblingParent } from 'react-native-root-siblings'
-import { SettingsProvider } from './contexts/SettingsContext'
+import { SettingsProvider, useSettingsContext } from './contexts/SettingsContext'
 import Routes from './routes'
 import { AssetsProvider } from './contexts/AssetsContext'
 import { RecipientsProvider } from './contexts/RecipientsContext'
@@ -16,6 +16,7 @@ import { LocalesProvider } from './contexts/LocalesContext'
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)
   const { loaded: accountLoaded, address } = useAccountsContext()
+  const { theme } = useSettingsContext()
 
   const initialize = React.useCallback(async () => {
     try {
@@ -25,7 +26,7 @@ const InnerApp: React.FC = () => {
         RobotoRegular: require('./assets/fonts/Roboto-Regular.ttf'),
       })
       setFontLoaded(true)
-    } catch (err) {
+    } catch (err: any) {
       console.log(err)
     }
   }, [setFontLoaded])
@@ -34,7 +35,12 @@ const InnerApp: React.FC = () => {
     initialize()
   }, [])
 
-  return accountLoaded && fontLoaded ? <Routes isLoggedIn={!!address} /> : <AppLoading />
+  return (
+    <>
+      <StatusBar style={theme} />
+      {accountLoaded && fontLoaded ? <Routes address={address} /> : <AppLoading />}
+    </>
+  )
 }
 
 export default function App() {
@@ -46,7 +52,6 @@ export default function App() {
             <AssetsProvider>
               <RecipientsProvider>
                 <RootSiblingParent>
-                  <StatusBar style="light" />
                   <InnerApp />
                 </RootSiblingParent>
               </RecipientsProvider>

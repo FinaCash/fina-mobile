@@ -42,7 +42,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
   const price = Number(get(asset, 'worth.amount', 0)) / Number(asset.coin.amount)
   const [address, setAddress] = React.useState(get(defaultRecipient, 'address', ''))
   const [memo, setMemo] = React.useState(get(defaultRecipient, 'memo', ''))
-  const [isConfirming, setIsConfirming] = React.useState(false)
+  const [isConfirming, setIsConfirming] = React.useState(!!defaultRecipient)
 
   return (
     <>

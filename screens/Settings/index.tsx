@@ -3,6 +3,7 @@ import { SectionList, TouchableOpacity, View, Alert } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import get from 'lodash/get'
+import Toast from 'react-native-root-toast'
 import HeaderBar from '../../components/HeaderBar'
 import Typography from '../../components/Typography'
 import { useAccountsContext } from '../../contexts/AccountsContext'
@@ -18,7 +19,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 const supportedThemes = Object.values(ThemeType)
 
 const Settings: React.FC = () => {
-  const { logout } = useAccountsContext()
+  const { login, logout, decryptSecretPhrase } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
   const { theme, currency, setTheme } = useSettingsContext()
@@ -80,11 +81,47 @@ const Settings: React.FC = () => {
           icon: 'eye',
           title: t('view secret recovery phrase'),
           value: '',
+          onPress: () => {
+            Actions.Password({
+              onSubmit: (password: string) => {
+                const phrase = decryptSecretPhrase(password)
+                if (phrase) {
+                  Alert.alert(t('secret recovery phrase'), phrase, [
+                    {
+                      text: t('close'),
+                      onPress: () => Actions.pop(),
+                      style: 'cancel',
+                    },
+                  ])
+                }
+              },
+            })
+          },
         },
         {
           icon: 'lock',
           title: t('change password'),
           value: '',
+          onPress: () => {
+            Actions.Password({
+              onSubmit: (oldPassword: string) => {
+                const phrase = decryptSecretPhrase(oldPassword)
+                if (phrase) {
+                  Actions.pop()
+                  Actions.Password({
+                    onSubmit: async (password: string) => {
+                      await login(phrase, password)
+                      Actions.jump('Settings')
+                      Toast.show(t('password updated'))
+                    },
+                    confirmationRequired: true,
+                    newPassword: true,
+                    isSetting: true,
+                  })
+                }
+              },
+            })
+          },
         },
         {
           icon: 'log-out',
