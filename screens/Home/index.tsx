@@ -1,9 +1,12 @@
 import React from 'react'
-import { ActivityIndicator, Animated, View } from 'react-native'
+import { ActivityIndicator, Animated, TouchableOpacity, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
 import get from 'lodash/get'
+import { Feather as Icon } from '@expo/vector-icons'
 import * as WebBrowser from 'expo-web-browser'
+import ContactIcon from '../../assets/images/icons/recipients.svg'
+import QRCodeIcon from '../../assets/images/icons/qrcode.svg'
 import SearchIcon from '../../assets/images/icons/search.svg'
 import TransakIcon from '../../assets/images/icons/transak.svg'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
@@ -121,6 +124,29 @@ const Home: React.FC = () => {
       style={styles.parentContainer}
     >
       <View style={styles.header}>
+        <View style={styles.iconButtonsRow}>
+          <TouchableOpacity onPress={() => Actions.History()}>
+            <Icon
+              name="activity"
+              style={styles.iconButton}
+              size={theme.baseSpace * 5}
+              color={theme.palette.white}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Actions.Recipients()}>
+            <ContactIcon style={styles.iconButton} fill={theme.palette.white} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              Actions.ScanQRCode({
+                onScan: (to: string) =>
+                  sendToken({ recipient: { address: to, name: '', image: '' } }),
+              })
+            }
+          >
+            <QRCodeIcon style={styles.iconButton} fill={theme.palette.white} />
+          </TouchableOpacity>
+        </View>
         <AssetFilter withOverview currentFilter={filterAsset} onChange={setFilterAsset} />
         <Typography style={styles.title} color={theme.palette.white} type="Large">
           {t(filterAsset === 'overview' ? 'total balance' : 'equity value', {
@@ -178,7 +204,7 @@ const Home: React.FC = () => {
       <Modalize
         alwaysOpen={
           theme.screenHeight -
-          65 * theme.baseSpace -
+          72 * theme.baseSpace -
           theme.bottomSpace -
           theme.tabBarHeight -
           theme.statusBarHeight -

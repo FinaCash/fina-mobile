@@ -10,11 +10,17 @@ import { useAccountsContext } from '../../contexts/AccountsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { getCurrencyFromDenom } from '../../utils/transformAssets'
+import {
+  getCurrencyFromDenom,
+  getCurrentAssetDetail,
+  getSymbolFromDenom,
+} from '../../utils/transformAssets'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { ThemeType } from '../../types/misc'
 import { Actions } from 'react-native-router-flux'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { useAssetsContext } from '../../contexts/AssetsContext'
+import { Asset } from '../../types/assets'
 
 const supportedThemes = Object.values(ThemeType)
 
@@ -22,7 +28,8 @@ const Settings: React.FC = () => {
   const { login, logout, decryptSecretPhrase } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
-  const { theme, currency, setTheme } = useSettingsContext()
+  const { theme, currency, setTheme, setCurrency } = useSettingsContext()
+  const { availableCurrencies, fetchAssets } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
   const sections = [
@@ -70,7 +77,20 @@ const Settings: React.FC = () => {
         {
           icon: 'dollar-sign',
           title: t('currency'),
-          value: getCurrencyFromDenom(currency),
+          value: `${getSymbolFromDenom(currency)} (${getCurrencyFromDenom(currency)})`,
+          onPress: () =>
+            Actions.SelectAsset({
+              assets: availableCurrencies.map((c) =>
+                getCurrentAssetDetail({ denom: c, amount: '0' })
+              ),
+              assetItemProps: { hideAmount: true },
+              onSelect: (a: Asset) => {
+                setCurrency(a.coin.denom)
+                setTimeout(() => {
+                  Actions.jump('Settings')
+                }, 50)
+              },
+            }),
         },
       ],
     },

@@ -5,7 +5,7 @@ export default (theme: Theme) => ({
     flex: 1,
   },
   title: {
-    marginTop: 9 * theme.baseSpace,
+    marginTop: 6 * theme.baseSpace,
   },
   swipeIndicator: {
     width: '30%',
@@ -22,6 +22,16 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: theme.baseSpace * 4,
+  },
+  iconButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
+    paddingHorizontal: theme.baseSpace * 6,
+    marginBottom: theme.baseSpace * 5,
+  },
+  iconButton: {
+    marginLeft: theme.baseSpace * 8,
   },
   button: {
     backgroundColor: theme.palette.primary + '88',
@@ -49,7 +59,7 @@ export default (theme: Theme) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 3 * theme.baseSpace,
+    marginTop: 4 * theme.baseSpace,
   },
   avgApr: {
     marginLeft: theme.baseSpace * 2,

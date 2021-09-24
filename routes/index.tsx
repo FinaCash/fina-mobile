@@ -1,11 +1,9 @@
 import React from 'react'
 import { View } from 'react-native'
 import { Router, Scene, Tabs, Modal, Stack } from 'react-native-router-flux'
-import { Feather as Icon } from '@expo/vector-icons'
-import * as WebBrowser from 'expo-web-browser'
-import get from 'lodash/get'
 import HomeIcon from '../assets/images/icons/home.svg'
-import RecipientsIcon from '../assets/images/icons/recipients.svg'
+import AnchorIcon from '../assets/images/icons/anchor.svg'
+import ApolloIcon from '../assets/images/icons/apollo.svg'
 import InvestIcon from '../assets/images/icons/invest.svg'
 import SettingsIcon from '../assets/images/icons/settings.svg'
 import Typography from '../components/Typography'
@@ -87,20 +85,20 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
                   component={Invest}
                 />
                 <Scene
-                  key="History"
+                  key="Borrow"
                   hideNavBar
-                  iconSvg={<Icon name="activity" size={theme.baseSpace * 5} />}
-                  tabTitle={t('history')}
+                  iconSvg={<AnchorIcon />}
+                  tabTitle={t('borrow')}
                   icon={TabIcon}
-                  component={History}
+                  component={Invest}
                 />
                 <Scene
-                  key="Recipients"
+                  key="Farm"
                   hideNavBar
-                  iconSvg={<RecipientsIcon />}
-                  tabTitle={t('recipients')}
+                  iconSvg={<ApolloIcon />}
+                  tabTitle={t('farm')}
                   icon={TabIcon}
-                  component={Recipients}
+                  component={Invest}
                 />
                 <Scene
                   key="Settings"
@@ -121,6 +119,8 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="CurrencyExchange" hideNavBar component={CurrencyExchange} />
               <Scene key="Savings" hideNavBar component={Savings} />
               <Scene key="Swap" hideNavBar component={Swap} />
+              <Scene key="History" hideNavBar component={History} />
+              <Scene key="Recipients" hideNavBar component={Recipients} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />

@@ -87,7 +87,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     if (address && availableAssets) {
       fetchAssets()
     }
-  }, [address, availableAssets])
+  }, [address, availableAssets, currency])
 
   React.useEffect(() => {
     fetchAvailableMirrorAssets().then(async (mAssets) => {

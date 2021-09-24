@@ -69,6 +69,7 @@ const Recipients: React.FC = () => {
     <>
       <HeaderBar
         title={t('recipients')}
+        back
         rightButton={{
           icon: <Icon name="user-plus" color={theme.palette.white} size={theme.baseSpace * 5} />,
           onPress: () =>

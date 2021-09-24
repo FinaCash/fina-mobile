@@ -96,5 +96,7 @@
   "password updated": "密碼已更改",
   "please enter new password": "請輸入新密碼",
   "history": "交易紀錄",
-  "powered by terra station": "建立於Terra Station"
+  "powered by terra station": "建立於Terra Station",
+  "borrow": "借貸",
+  "farm": "農場"
 }

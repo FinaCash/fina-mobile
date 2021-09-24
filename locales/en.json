@@ -96,5 +96,7 @@
   "password updated": "Password has been updated",
   "please enter new password": "Please enter a new password",
   "history": "History",
-  "powered by terra station": "Powered by Terra Station"
+  "powered by terra station": "Powered by Terra Station",
+  "borrow": "Borrow",
+  "farm": "Farm"
 }

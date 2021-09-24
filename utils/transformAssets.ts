@@ -83,6 +83,10 @@ export const transformCoinsToAssets = async (
     })
     .filter((a) => a) as Asset[]
   // Calculate asset worth
+  const baseRate =
+    baseCurrency === 'uusd'
+      ? 1
+      : (await terra.market.swapRate(new Coin('uusd', 1), baseCurrency)).amount.toNumber()
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
     if (
@@ -94,7 +98,7 @@ export const transformCoinsToAssets = async (
       asset.worth = {
         denom: baseCurrency,
         amount: (
-          ((availableAsset ? availableAsset.price : 0) * Number(asset.coin.amount)) /
+          (baseRate * ((availableAsset ? availableAsset.price : 0) * Number(asset.coin.amount))) /
           10 ** 6
         ).toString(),
       }
@@ -102,7 +106,7 @@ export const transformCoinsToAssets = async (
       asset.worth = asset.coin
     } else {
       const rate = await terra.market.swapRate(
-        new Coin(asset.coin.denom, asset.coin.amount),
+        new Coin(asset.coin.denom.replace(/^a/, 'u'), asset.coin.amount.split('.')[0]),
         baseCurrency
       )
       asset.worth = {

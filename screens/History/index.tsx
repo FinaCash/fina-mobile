@@ -51,6 +51,7 @@ const History: React.FC = () => {
     <>
       <HeaderBar
         title={t('history')}
+        back
         subtitle={t('powered by terra station')}
         rightButton={{
           icon: <Icon name="refresh-cw" size={theme.baseSpace * 5} color={theme.palette.white} />,

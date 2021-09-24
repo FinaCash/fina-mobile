@@ -4,7 +4,7 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-io',
-  version: '0.3.0',
+  version: '0.4.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
   splash: {
