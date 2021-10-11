@@ -172,9 +172,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         )
       }
       if (simulate) {
-        const tx = await wallet.createTx({
-          msgs: [msg as any],
-        })
+        const tx = await wallet.createTx(
+          {
+            msgs: [msg as any],
+          },
+          address
+        )
         return tx
       }
       const tx = await wallet.createAndSignTx({
@@ -207,7 +210,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         memo,
       }
       if (simulate) {
-        const tx = await wallet.createTx(rawtx)
+        const tx = await wallet.createTx(rawtx, address)
         return tx
       }
       const tx = await wallet.createAndSignTx(rawtx)
@@ -229,9 +232,12 @@ const AssetsProvider: React.FC = ({ children }) => {
       const wallet = new Wallet(terra, key)
       const ops = anchorClient.earn.depositStable({ market, amount: String(amount) })
       if (simulate) {
-        const tx = await wallet.createTx({
-          msgs: ops.generateWithAddress(address) as any,
-        })
+        const tx = await wallet.createTx(
+          {
+            msgs: ops.generateWithAddress(address) as any,
+          },
+          address
+        )
         return tx
       }
       const result = await ops.execute(wallet as any, {})
@@ -254,9 +260,12 @@ const AssetsProvider: React.FC = ({ children }) => {
       const wallet = new Wallet(terra, key)
       const ops = anchorClient.earn.withdrawStable({ market, amount: String(amount) })
       if (simulate) {
-        const tx = await wallet.createTx({
-          msgs: ops.generateWithAddress(address) as any,
-        })
+        const tx = await wallet.createTx(
+          {
+            msgs: ops.generateWithAddress(address) as any,
+          },
+          address
+        )
         return tx
       }
       const result = await ops.execute(wallet as any, {})

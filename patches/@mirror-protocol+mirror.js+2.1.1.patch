@@ -1,0 +1,31 @@
+diff --git a/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.d.ts b/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.d.ts
+index 4e6bd7d..ef85fc3 100644
+--- a/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.d.ts
++++ b/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.d.ts
+@@ -32,7 +32,7 @@ export declare const DEFAULT_MIRROR_OPTIONS: MirrorOptions;
+  * Mirror Tequila Contracts
+  * @see {@link https://github.com/Mirror-Protocol/whitelist/blob/master/tequila.json}
+  */
+-export declare const DEFAULT_TEQUILA_MIRROR_OPTIONS: MirrorOptions;
++export declare const DEFAULT_BOMBAY_MIRROR_OPTIONS: MirrorOptions;
+ export declare class Mirror {
+     lcd?: LCDClient;
+     key: Key;
+diff --git a/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js b/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js
+index c94e745..35d7bd6 100644
+--- a/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js
++++ b/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js
+@@ -204,10 +204,10 @@ exports.DEFAULT_MIRROR_OPTIONS = {
+  * Mirror Tequila Contracts
+  * @see {@link https://github.com/Mirror-Protocol/whitelist/blob/master/tequila.json}
+  */
+-exports.DEFAULT_TEQUILA_MIRROR_OPTIONS = {
++exports.DEFAULT_BOMBAY_MIRROR_OPTIONS = {
+     lcd: new terra_js_1.LCDClient({
+-        URL: 'https://tequila-lcd.terra.dev',
+-        chainID: 'tequila-0004',
++        URL: 'https://bombay-lcd.terra.dev',
++        chainID: 'bombay-12',
+         gasPrices: [
+             new terra_js_1.Coin('uluna', '0.15'),
+             new terra_js_1.Coin('usdr', '0.1018'),

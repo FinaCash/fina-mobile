@@ -1,6 +1,6 @@
 import React from 'react'
 import { Modalize } from 'react-native-modalize'
-import { TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
 import keyBy from 'lodash/keyBy'
 import cloneDeep from 'lodash/cloneDeep'
 import CloseIcon from '../../assets/images/icons/close.svg'
@@ -136,11 +136,15 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
           {t('transaction fee')}
         </Typography>
         <View style={styles.alignRight}>
-          {Object.values(fee).map((f) => (
-            <Typography key={f.denom} type="Large">
-              {formatCurrency(f.amount * 10 ** 6, '')} {getSymbolFromDenom(f.denom)}
-            </Typography>
-          ))}
+          {Object.keys(fee).length ? (
+            Object.values(fee).map((f) => (
+              <Typography key={f.denom} type="Large">
+                {formatCurrency(f.amount * 10 ** 6, '')} {getSymbolFromDenom(f.denom)}
+              </Typography>
+            ))
+          ) : (
+            <ActivityIndicator size="small" />
+          )}
         </View>
       </View>
       <View style={styles.confirmMiodalRow}>

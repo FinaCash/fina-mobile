@@ -1,17 +1,17 @@
-import { Anchor, tequila0004, AddressProviderFromJson } from '@anchor-protocol/anchor.js'
-import { DEFAULT_TEQUILA_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
+import { Anchor, bombay12, AddressProviderFromJson } from '@anchor-protocol/anchor.js'
+import { DEFAULT_BOMBAY_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
 
 export const terraLCDClient = new LCDClient({
-  URL: 'https://tequila-lcd.terra.dev',
-  chainID: 'tequila-0004',
+  URL: 'https://bombay-lcd.terra.dev',
+  chainID: 'bombay-12',
   gasPrices: {
     uusd: 2,
   },
   gasAdjustment: 1.5,
 })
 
-export const terraFCDUrl = 'https://tequila-fcd.terra.dev'
+export const terraFCDUrl = 'https://bombay-fcd.terra.dev'
 
 export const terraUstPairContract = 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff'
 
@@ -53,18 +53,18 @@ export const supportedTokens = {
   },
 }
 
-export const anchorAddressProvider = new AddressProviderFromJson(tequila0004)
+export const anchorAddressProvider = new AddressProviderFromJson(bombay12)
 
 export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvider)
 
-export const anchorApiUrl = 'https://tequila-api.anchorprotocol.com/api'
+export const anchorApiUrl = 'https://api.anchorprotocol.com/api'
 
-export const mirrorGraphqlUrl = 'https://tequila-graph.mirror.finance/graphql'
+export const mirrorGraphqlUrl = 'https://bombay-mirror-graph.terra.dev/graphql'
 
 export const terraStationUrl = 'https://station.terra.money'
 export const terraStationChain = 'testnet'
 
-export const mirrorOptions = DEFAULT_TEQUILA_MIRROR_OPTIONS
+export const mirrorOptions = DEFAULT_BOMBAY_MIRROR_OPTIONS
 
 // TODO: register transak api key
 export const getTransakUrl = (address: string) =>

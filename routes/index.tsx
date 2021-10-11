@@ -2,8 +2,8 @@ import React from 'react'
 import { View } from 'react-native'
 import { Router, Scene, Tabs, Modal, Stack } from 'react-native-router-flux'
 import HomeIcon from '../assets/images/icons/home.svg'
-import AnchorIcon from '../assets/images/icons/anchor.svg'
-import ApolloIcon from '../assets/images/icons/apollo.svg'
+import BorrowIcon from '../assets/images/icons/borrow.svg'
+import FarmIcon from '../assets/images/icons/farm.svg'
 import InvestIcon from '../assets/images/icons/invest.svg'
 import SettingsIcon from '../assets/images/icons/settings.svg'
 import Typography from '../components/Typography'
@@ -28,6 +28,7 @@ import CurrencyExchange from '../screens/CurrencyExchange'
 import UpdateRecipient from '../screens/UpdateRecipient'
 import { useLocalesContext } from '../contexts/LocalesContext'
 import History from '../screens/History'
+import Borrow from '../screens/Borrow'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -42,6 +43,8 @@ export const TabIcon: React.FC<{
       {React.cloneElement(iconSvg, {
         fill: color,
         color,
+        width: theme.baseSpace * 5,
+        height: theme.baseSpace * 5,
       })}
       <Typography style={styles.tabText} type="Mini" color={color}>
         {tabTitle}
@@ -87,15 +90,15 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
                 <Scene
                   key="Borrow"
                   hideNavBar
-                  iconSvg={<AnchorIcon />}
+                  iconSvg={<BorrowIcon />}
                   tabTitle={t('borrow')}
                   icon={TabIcon}
-                  component={Invest}
+                  component={Borrow}
                 />
                 <Scene
                   key="Farm"
                   hideNavBar
-                  iconSvg={<ApolloIcon />}
+                  iconSvg={<FarmIcon />}
                   tabTitle={t('farm')}
                   icon={TabIcon}
                   component={Invest}
