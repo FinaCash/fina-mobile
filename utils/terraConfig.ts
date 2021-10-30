@@ -59,12 +59,17 @@ export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvi
 
 export const anchorApiUrl = 'https://api.anchorprotocol.com/api'
 
-export const mirrorGraphqlUrl = 'https://bombay-mirror-graph.terra.dev/graphql'
+export const mirrorGraphqlUrl = 'https://bombay-graph.mirror.finance/graphql'
 
 export const terraStationUrl = 'https://station.terra.money'
 export const terraStationChain = 'testnet'
 
 export const mirrorOptions = DEFAULT_BOMBAY_MIRROR_OPTIONS
+
+export const collateralsImgs = {
+  BETH: 'https://app.terraswap.io/images/CW20/bETH.png',
+  BLUNA: 'https://app.terraswap.io/images/CW20/bLUNA.png',
+}
 
 // TODO: register transak api key
 export const getTransakUrl = (address: string) =>

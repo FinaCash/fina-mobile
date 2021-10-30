@@ -2,8 +2,8 @@ import { Platform } from 'react-native'
 
 export default {
   palette: {
-    primary: '#f1e1a6',
-    secondary: '#bcd226',
+    primary: '#0E1E59',
+    secondary: '#432DD9',
     green: '#26BD6B',
     red: '#fb5063',
     grey: [
@@ -25,7 +25,7 @@ export default {
     google: '#DB4437',
   },
   gradients: {
-    primary: ['#bcd226', '#d03c00'],
+    primary: ['#432DD9', '#2FC3FF'],
     error: ['#FFAD85', '#FD4E76'],
   },
   baseSpace: 4,

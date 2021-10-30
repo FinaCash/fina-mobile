@@ -8,13 +8,14 @@ import {
   supportedTokens,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
-import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
+import { Asset, AssetTypes, AvailableAsset, BorrowInfo } from '../types/assets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
 import { useSettingsContext } from './SettingsContext'
 import {
   fetchAassetRate,
   fetchAnchorBalances,
+  fetchAnchorCollaterals,
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
@@ -27,6 +28,7 @@ interface AssetsState {
   fetchAssets(): void
   availableAssets: AvailableAsset[]
   availableCurrencies: string[]
+  borrowInfo: BorrowInfo
   swap(
     from: { denom: string; amount: number },
     toDenom: string,
@@ -49,6 +51,13 @@ const initialState: AssetsState = {
   fetchAssets: () => null,
   availableAssets: [],
   availableCurrencies: ['uusd'],
+  borrowInfo: {
+    collateralValue: 0,
+    borrowLimit: 0,
+    borrowedValue: 0,
+    borrowRate: 0,
+    rewardsRate: 0,
+  },
   swap: () => null,
   send: () => null,
   depositSavings: () => null,
@@ -68,6 +77,10 @@ const AssetsProvider: React.FC = ({ children }) => {
     'availableCurrencies',
     initialState.availableCurrencies
   )
+  const [borrowInfo, setBorrowInfo] = usePersistedState<BorrowInfo>(
+    'borrowInfo',
+    initialState.borrowInfo
+  )
 
   const { currency } = useSettingsContext()
 
@@ -75,13 +88,15 @@ const AssetsProvider: React.FC = ({ children }) => {
     const balances = await terra.bank.balance(address)
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
+    const { collaterals, ...borrowInfoResult } = await fetchAnchorCollaterals(address)
     const result = await transformCoinsToAssets(
-      [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances],
+      [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
       availableAssets,
       currency
     )
     setAssets(sortBy(result, ['type', 'symbol']))
-  }, [address, setAssets, availableAssets, currency])
+    setBorrowInfo(borrowInfoResult)
+  }, [address, setAssets, availableAssets, currency, setBorrowInfo])
 
   React.useEffect(() => {
     if (address && availableAssets) {
@@ -294,6 +309,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         fetchAssets,
         availableAssets,
         availableCurrencies,
+        borrowInfo,
         swap,
         send,
         depositSavings,

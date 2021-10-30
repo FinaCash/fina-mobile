@@ -53,7 +53,7 @@ const Home: React.FC = () => {
 
   const selectAsset = React.useCallback(
     (asset: Asset) => {
-      let options = []
+      let options: any = []
       switch (asset.type) {
         case AssetTypes.Currents:
           options = [t('transfer'), t('currency exchange'), t('cancel')]
@@ -241,7 +241,11 @@ const Home: React.FC = () => {
           data: assets.filter(
             (a) =>
               (filterAsset === 'overview' || a.type === filterAsset) &&
-              (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())
+              (a.symbol + a.name).toLowerCase().includes(search.toLowerCase()) &&
+              // Filter empty savings assets on overview tab
+              (filterAsset === 'overview'
+                ? a.type !== AssetTypes.Savings || Number(a.coin.amount) > 0
+                : true)
           ),
           renderItem: ({ item }) => (
             <AssetItem

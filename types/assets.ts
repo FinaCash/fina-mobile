@@ -3,6 +3,7 @@ export enum AssetTypes {
   Savings = 'savings',
   Investments = 'investments',
   Tokens = 'tokens',
+  Collaterals = 'collaterals',
 }
 
 export interface Asset {
@@ -24,6 +25,11 @@ export interface Asset {
   }
   apr?: number
   autoCompound?: boolean
+  // Collateral
+  provided?: number
+  notProvided?: number
+  maxLtv?: number
+  price?: number
 }
 
 export interface AvailableAsset {
@@ -39,4 +45,12 @@ export interface AvailableAsset {
     timestamp: number
     price: number
   }>
+}
+
+export interface BorrowInfo {
+  collateralValue: number
+  borrowLimit: number
+  borrowedValue: number
+  borrowRate: number
+  rewardsRate: number
 }

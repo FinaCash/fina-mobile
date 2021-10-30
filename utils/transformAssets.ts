@@ -1,8 +1,9 @@
 import groupBy from 'lodash/groupBy'
-import { supportedTokens, terraLCDClient as terra } from './terraConfig'
+import { collateralsImgs, supportedTokens, terraLCDClient as terra } from './terraConfig'
 import { Coin } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
+import { UserCollateral } from '@anchor-protocol/anchor.js'
 
 export const getCurrencyFromDenom = (denom: string) => denom.slice(1).toUpperCase()
 export const getSymbolFromDenom = (denom: string) =>
@@ -63,8 +64,38 @@ export const getTokenAssetDetail = (coin: { denom: string; amount: string; apr?:
   }
 }
 
+export const getCollateralAssetDetail = (coin: {
+  denom: string
+  amount: string
+  extra: UserCollateral
+}) => {
+  return {
+    type: AssetTypes.Collaterals,
+    coin: {
+      denom: coin.denom,
+      amount: coin.amount,
+    },
+    name: coin.extra.collateral.name,
+    symbol: coin.extra.collateral.symbol,
+    image: (collateralsImgs as any)[coin.extra.collateral.symbol],
+    worth: {
+      denom: 'uusd',
+      amount: String(Number(coin.amount) * Number(coin.extra.collateral.price)),
+    },
+    provided: Number(coin.extra.balance.provided),
+    notProvided: Number(coin.extra.balance.notProvided),
+    maxLtv: Number(coin.extra.collateral.max_ltv),
+    price: Number(coin.extra.collateral.price),
+  }
+}
+
 export const transformCoinsToAssets = async (
-  coins: Array<{ amount: string; denom: string; apr?: number }>,
+  coins: Array<{
+    amount: string
+    denom: string
+    apr?: number
+    extra?: any // For collateral
+  }>,
   availableAssets: AvailableAsset[],
   baseCurrency: string
 ): Promise<Asset[]> => {
@@ -78,6 +109,9 @@ export const transformCoinsToAssets = async (
       }
       if (coin.denom.match(/^a/)) {
         return getSavingAssetDetail(coin)
+      }
+      if (coin.denom.match(/^B/)) {
+        return getCollateralAssetDetail(coin as any)
       }
       return getMAssetDetail(coin, availableAssets)
     })
@@ -93,7 +127,6 @@ export const transformCoinsToAssets = async (
       asset.type === AssetTypes.Investments ||
       Object.keys(supportedTokens).includes(asset.coin.denom)
     ) {
-      // TODO: this is USD value only
       const availableAsset = availableAssets.find((a) => a.symbol === asset.symbol)
       asset.worth = {
         denom: baseCurrency,
@@ -104,7 +137,7 @@ export const transformCoinsToAssets = async (
       }
     } else if (asset.coin.denom.slice(-3) === baseCurrency.slice(-3)) {
       asset.worth = asset.coin
-    } else {
+    } else if (asset.type === AssetTypes.Savings) {
       const rate = await terra.market.swapRate(
         new Coin(asset.coin.denom.replace(/^a/, 'u'), asset.coin.amount.split('.')[0]),
         baseCurrency
@@ -112,6 +145,11 @@ export const transformCoinsToAssets = async (
       asset.worth = {
         denom: rate.denom,
         amount: rate.amount.toString(),
+      }
+    } else if (asset.type === AssetTypes.Collaterals) {
+      asset.worth = {
+        denom: baseCurrency,
+        amount: String(baseRate * Number(asset.worth!.amount)),
       }
     }
   }

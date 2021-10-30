@@ -102,9 +102,17 @@
   "powered by anchor protocol": "Powered by Anchor Protocol",
   "collateral value": "Collateral Value",
   "borrowed value": "Borrowed Value",
-  "net APR": "Net APR  ⓘ",
+  "net APR": "Net APR ",
   "borrow APR": "Borrow APR",
   "distribution APR": "Distribution APR",
   "LTV": "LTV",
-  "borrow limit": "Borrow Limit: {{amount}}"
+  "borrow limit": "Borrow Limit: {{amount}}",
+  "max ltv": "60% (Max)",
+  "recommended ltv": "45% (Recommended)",
+  "collaterals": "Collaterals",
+  "repay": "Repay",
+  "not provided": "Available",
+  "provided": "Provided",
+  "collateral max ltv": "Max LTV",
+  "borrow APR calculation": "Reward APR - Borrow APR\n{{rewardsRate}} - {{borrowRate}}\n= {{netApr}}"
 }
