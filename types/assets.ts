@@ -29,11 +29,10 @@ export interface Asset {
   provided?: number
   notProvided?: number
   maxLtv?: number
-  price?: number
 }
 
 export interface AvailableAsset {
-  type: AssetTypes.Investments | AssetTypes.Tokens
+  type: AssetTypes.Investments | AssetTypes.Tokens | AssetTypes.Collaterals
   name: string
   symbol: string
   coin: { denom: string }
@@ -41,7 +40,7 @@ export interface AvailableAsset {
   description: string
   price: number
   prevPrice: number
-  priceHistories: Array<{
+  priceHistories?: Array<{
     timestamp: number
     price: number
   }>
@@ -53,4 +52,5 @@ export interface BorrowInfo {
   borrowedValue: number
   borrowRate: number
   rewardsRate: number
+  pendingRewards: number
 }

@@ -2,17 +2,21 @@ import {
   BLOCKS_PER_YEAR,
   MARKET_DENOMS,
   queryInterestModelBorrowRate,
+  queryMarketBorrowerInfo,
   queryMarketEpochState,
   queryMarketState,
+  queryOraclePrices,
+  queryOverseerWhitelist,
 } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
 import { Int } from '@terra-money/terra.js'
 import get from 'lodash/get'
-import { AssetTypes } from '../types/assets'
+import { AssetTypes, AvailableAsset } from '../types/assets'
 import {
   anchorAddressProvider,
   anchorApiUrl,
   anchorClient,
+  collateralsImgs,
   mirrorGraphqlUrl,
   mirrorOptions,
   terraLCDClient,
@@ -136,6 +140,39 @@ export const fetchAnchorBalances = async (address: string) => {
   return result
 }
 
+export const fetchAvailableCollaterals = async (): Promise<AvailableAsset[]> => {
+  const { elems } = await (
+    await queryOverseerWhitelist({ lcd: terraLCDClient, market: MARKET_DENOMS.UUSD })
+  )(anchorAddressProvider)
+
+  const [price, prevPrice] = await fetch(`${anchorApiUrl}/v1/collaterals/1d`).then((r) => r.json())
+  console.log({ price, prevPrice })
+  return elems.map((c) => ({
+    type: AssetTypes.Collaterals,
+    name: c.name,
+    symbol: c.symbol,
+    coin: { denom: c.symbol },
+    image: get(collateralsImgs, c.symbol, ''),
+    description: '',
+    price: Number(
+      get(
+        price.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
+        'price',
+        0
+      ) *
+        10 ** 6
+    ),
+    prevPrice: Number(
+      get(
+        prevPrice.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
+        'price',
+        0
+      ) *
+        10 ** 6
+    ),
+  }))
+}
+
 export const fetchAnchorCollaterals = async (address: string) => {
   const collaterals = await anchorClient.borrow.getCollaterals({
     market: MARKET_DENOMS.UUSD,
@@ -173,6 +210,14 @@ export const fetchAnchorCollaterals = async (address: string) => {
     (r) => r.json()
   )
 
+  const { pending_rewards: pendingRewards } = await (
+    await queryMarketBorrowerInfo({
+      lcd: terraLCDClient,
+      market: MARKET_DENOMS.UUSD,
+      borrower: address,
+    } as any)
+  )(anchorAddressProvider)
+
   return {
     collaterals: collaterals.map((c) => ({
       denom: c.collateral.symbol,
@@ -184,6 +229,7 @@ export const fetchAnchorCollaterals = async (address: string) => {
     borrowedValue: Number(borrowedValue),
     borrowRate: BLOCKS_PER_YEAR * Number(interestModelBorrowRate.rate),
     rewardsRate: Number(rewardsRate),
+    pendingRewards: Number(pendingRewards),
   }
 }
 

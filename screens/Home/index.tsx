@@ -29,6 +29,7 @@ import { getTransakUrl } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import useSendToken from '../../utils/useSendToken'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import CollateralItem from '../../components/CollateralItem'
 
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
@@ -66,6 +67,9 @@ const Home: React.FC = () => {
           break
         case AssetTypes.Tokens:
           options = [t('buy'), t('sell'), t('cancel')]
+          break
+        case AssetTypes.Collaterals:
+          options = [t('buy'), t('sell'), t('provide'), t('withdraw'), t('cancel')]
           break
       }
       showActionSheetWithOptions(
@@ -242,18 +246,22 @@ const Home: React.FC = () => {
             (a) =>
               (filterAsset === 'overview' || a.type === filterAsset) &&
               (a.symbol + a.name).toLowerCase().includes(search.toLowerCase()) &&
-              // Filter empty savings assets on overview tab
+              // Filter empty savings/collateral assets on overview tab
               (filterAsset === 'overview'
-                ? a.type !== AssetTypes.Savings || Number(a.coin.amount) > 0
+                ? (a.type !== AssetTypes.Savings && a.type !== AssetTypes.Collaterals) ||
+                  Number(a.coin.amount) > 0
                 : true)
           ),
-          renderItem: ({ item }) => (
-            <AssetItem
-              asset={item}
-              onPress={() => selectAsset(item)}
-              hideApr={filterAsset === 'overview'}
-            />
-          ),
+          renderItem: ({ item }) =>
+            filterAsset === 'overview' || item.type !== AssetTypes.Collaterals ? (
+              <AssetItem
+                asset={item}
+                onPress={() => selectAsset(item)}
+                hideApr={filterAsset === 'overview'}
+              />
+            ) : (
+              <CollateralItem asset={item} onPress={() => selectAsset(item)} />
+            ),
           keyExtractor: (item, i) => item.denom + '_' + i,
           showsVerticalScrollIndicator: false,
           ListFooterComponent: (

@@ -37,7 +37,9 @@ const AssetItem: React.FC<AssetItemProps> = ({
                 <Typography style={styles.gutterBottom} type="H6">
                   {asset.symbol}
                 </Typography>
-                <Typography color={theme.palette.grey[7]}>{asset.name}</Typography>
+                <Typography type="Small" color={theme.palette.grey[7]}>
+                  {asset.name}
+                </Typography>
               </View>
             </View>
           ) : (
@@ -56,7 +58,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Typography style={styles.gutterBottom} type="H6">
                 {formatCurrency(asset.coin.amount, asset.coin.denom)}
               </Typography>
-              <Typography color={theme.palette.grey[7]}>
+              <Typography type="Small" color={theme.palette.grey[7]}>
                 {asset.worth
                   ? formatCurrency(
                       get(asset, 'worth.amount', 0).toString(),

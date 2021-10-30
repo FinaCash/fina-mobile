@@ -22,7 +22,7 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({ availableAsset,
           <Image source={{ uri: availableAsset.image }} style={styles.avatar} />
           <View>
             <Typography type="H6">{availableAsset.symbol}</Typography>
-            <Typography type="Small" numberOfLines={2}>
+            <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
               {availableAsset.name}
             </Typography>
           </View>
@@ -30,7 +30,11 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({ availableAsset,
 
         <View style={styles.rightAligned}>
           <Typography type="H6">{formatCurrency(availableAsset.price, 'uusd', true)}</Typography>
-          <Typography bold color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}>
+          <Typography
+            bold
+            type="Small"
+            color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
+          >
             {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
           </Typography>
         </View>

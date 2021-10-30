@@ -26,7 +26,7 @@ const baseCurrency = 'uusd'
 const Borrow: React.FC = () => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { assets, borrowInfo } = useAssetsContext()
+  const { assets, availableAssets, borrowInfo } = useAssetsContext()
 
   const collaterals = assets.filter((a) => a.type === AssetTypes.Collaterals)
 
@@ -122,7 +122,11 @@ const Borrow: React.FC = () => {
           {t('collaterals')}
         </Typography>
         {collaterals.map((c) => (
-          <CollateralItem key={c.symbol} asset={c} />
+          <CollateralItem
+            key={c.symbol}
+            asset={c}
+            availableAsset={availableAssets.find((a) => a.symbol === c.symbol)!}
+          />
         ))}
       </ScrollView>
     </>

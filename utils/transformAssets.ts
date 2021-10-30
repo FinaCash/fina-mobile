@@ -85,7 +85,6 @@ export const getCollateralAssetDetail = (coin: {
     provided: Number(coin.extra.balance.provided),
     notProvided: Number(coin.extra.balance.notProvided),
     maxLtv: Number(coin.extra.collateral.max_ltv),
-    price: Number(coin.extra.collateral.price),
   }
 }
 
@@ -137,7 +136,12 @@ export const transformCoinsToAssets = async (
       }
     } else if (asset.coin.denom.slice(-3) === baseCurrency.slice(-3)) {
       asset.worth = asset.coin
-    } else if (asset.type === AssetTypes.Savings) {
+    } else if (asset.type === AssetTypes.Collaterals) {
+      asset.worth = {
+        denom: baseCurrency,
+        amount: String(baseRate * Number(asset.worth!.amount)),
+      }
+    } else {
       const rate = await terra.market.swapRate(
         new Coin(asset.coin.denom.replace(/^a/, 'u'), asset.coin.amount.split('.')[0]),
         baseCurrency
@@ -145,11 +149,6 @@ export const transformCoinsToAssets = async (
       asset.worth = {
         denom: rate.denom,
         amount: rate.amount.toString(),
-      }
-    } else if (asset.type === AssetTypes.Collaterals) {
-      asset.worth = {
-        denom: baseCurrency,
-        amount: String(baseRate * Number(asset.worth!.amount)),
       }
     }
   }

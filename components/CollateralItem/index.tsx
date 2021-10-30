@@ -1,23 +1,30 @@
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import useStyles from '../../theme/useStyles'
-import { Asset } from '../../types/assets'
+import { Asset, AvailableAsset } from '../../types/assets'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
 import get from 'lodash/get'
 import { useLocalesContext } from '../../contexts/LocalesContext'
-import { useSettingsContext } from '../../contexts/SettingsContext'
 
 export interface CollateralItemProps extends TouchableOpacityProps {
   asset: Asset
+  availableAsset?: AvailableAsset
   hideBorder?: boolean
 }
 
-const CollateralItem: React.FC<CollateralItemProps> = ({ asset, hideBorder, ...props }) => {
+const CollateralItem: React.FC<CollateralItemProps> = ({
+  asset,
+  availableAsset,
+  hideBorder,
+  ...props
+}) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { currency } = useSettingsContext()
+  const deltaPercent = availableAsset
+    ? (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
+    : 0
 
   return (
     <TouchableOpacity {...props}>
@@ -27,17 +34,41 @@ const CollateralItem: React.FC<CollateralItemProps> = ({ asset, hideBorder, ...p
             <Image source={{ uri: asset.image }} style={styles.avatar} />
             <View>
               <Typography type="H6">{asset.symbol}</Typography>
-              <Typography type="Small" numberOfLines={2}>
+              <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
                 {asset.name}
               </Typography>
             </View>
           </View>
 
-          <View style={styles.rightAligned}>
-            <Typography type="H6">
-              {formatCurrency(String(asset.price! * 10 ** 6), currency, true)}
-            </Typography>
-          </View>
+          {availableAsset ? (
+            <View style={styles.rightAligned}>
+              <Typography type="H6">
+                {formatCurrency(availableAsset.price, 'uusd', true)}
+              </Typography>
+              <Typography
+                bold
+                type="Small"
+                color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
+              >
+                {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
+              </Typography>
+            </View>
+          ) : (
+            <View style={styles.rightAligned}>
+              <Typography style={styles.gutterBottom} type="H6">
+                {formatCurrency(asset.coin.amount, asset.coin.denom)}
+              </Typography>
+              <Typography type="Small" color={theme.palette.grey[7]}>
+                {asset.worth
+                  ? formatCurrency(
+                      get(asset, 'worth.amount', 0).toString(),
+                      asset.worth.denom,
+                      true
+                    )
+                  : ''}
+              </Typography>
+            </View>
+          )}
         </View>
         {asset ? (
           <View style={styles.aprContainer}>
@@ -64,9 +95,7 @@ const CollateralItem: React.FC<CollateralItemProps> = ({ asset, hideBorder, ...p
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t('collateral max ltv')}
               </Typography>
-              <Typography color={theme.palette.green} bold>
-                {formatPercentage(get(asset, 'maxLtv', 0), 0)}
-              </Typography>
+              <Typography bold>{formatPercentage(get(asset, 'maxLtv', 0), 0)}</Typography>
             </View>
           </View>
         ) : null}

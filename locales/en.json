@@ -114,5 +114,6 @@
   "not provided": "Available",
   "provided": "Provided",
   "collateral max ltv": "Max LTV",
-  "borrow APR calculation": "Reward APR - Borrow APR\n{{rewardsRate}} - {{borrowRate}}\n= {{netApr}}"
+  "borrow APR calculation": "Reward APR - Borrow APR\n{{rewardsRate}} - {{borrowRate}}\n= {{netApr}}",
+  "provide": "Provide"
 }

@@ -16,6 +16,7 @@ import {
   fetchAassetRate,
   fetchAnchorBalances,
   fetchAnchorCollaterals,
+  fetchAvailableCollaterals,
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
@@ -106,6 +107,7 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     fetchAvailableMirrorAssets().then(async (mAssets) => {
+      const availableCollaterals = await fetchAvailableCollaterals()
       const tokens = Object.values(supportedTokens).filter(
         (t) => !mAssets.find((m: any) => m.symbol === t.symbol)
       )
@@ -119,11 +121,13 @@ const AssetsProvider: React.FC = ({ children }) => {
           coin: { denom: tokens[i].denom },
           image: tokens[i].image,
           description: '',
-          priceHistories: [],
+          // priceHistories: [],
           ...result,
         })
       }
-      setAvailableAssets(sortBy([...tokenAssets, ...mAssets], ['-type', 'symbol']))
+      setAvailableAssets(
+        sortBy([...tokenAssets, ...mAssets, ...availableCollaterals], ['-type', 'symbol'])
+      )
     })
     fetchAvailableCurrencies().then(setAvailableCurrencies)
   }, [])
