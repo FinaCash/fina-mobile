@@ -2,7 +2,7 @@ import React from 'react'
 import { Feather as Icon } from '@expo/vector-icons'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
-import { Asset } from '../../types/assets'
+import { Asset, AvailableAsset } from '../../types/assets'
 import useStyles from '../../theme/useStyles'
 import { View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -12,6 +12,8 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import RewardsItem from '../../components/RewardsItem'
+import AvailableAssetItem from '../../components/AvailableAssetItem'
 
 interface SuccessProps {
   message:
@@ -26,6 +28,17 @@ interface SuccessProps {
         type: 'swap'
         from: Asset
         to: Asset
+      }
+    | {
+        type: 'claim'
+        availableAsset: AvailableAsset
+        rewards: number
+        apr: number
+      }
+    | {
+        type: 'provide collateral' | 'withdraw collateral'
+        availableAsset: AvailableAsset
+        amount: number
       }
   error?: string
   onClose(): void
@@ -95,6 +108,28 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 style={styles.arrow}
               />
               <AssetItem asset={message.to} hideBorder hideApr />
+            </>
+          ) : null}
+          {message.type === 'claim' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t('claim')}
+              </Typography>
+              <RewardsItem
+                availableAsset={message.availableAsset}
+                apr={message.apr}
+                rewards={message.rewards}
+                hideValue
+                hideBorder
+              />
+            </>
+          ) : null}
+          {message.type === 'provide collateral' || message.type === 'withdraw collateral' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              <AvailableAssetItem availableAsset={message.availableAsset} amount={message.amount} />
             </>
           ) : null}
         </View>

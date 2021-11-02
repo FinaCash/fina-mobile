@@ -29,6 +29,7 @@ import UpdateRecipient from '../screens/UpdateRecipient'
 import { useLocalesContext } from '../contexts/LocalesContext'
 import History from '../screens/History'
 import Borrow from '../screens/Borrow'
+import ProvideCollateral from '../screens/ProvideCollateral'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -124,6 +125,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="Swap" hideNavBar component={Swap} />
               <Scene key="History" hideNavBar component={History} />
               <Scene key="Recipients" hideNavBar component={Recipients} />
+              <Scene key="ProvideCollateral" hideNavBar component={ProvideCollateral} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />

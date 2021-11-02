@@ -2,7 +2,7 @@ import React from 'react'
 import get from 'lodash/get'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { Asset, AvailableAsset } from '../../types/assets'
+import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
 import { TouchableOpacity, View } from 'react-native'
 import AssetItem, { AssetItemProps } from '../../components/AssetItem'
 import Typography from '../../components/Typography'
@@ -11,6 +11,7 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import AvailableAssetItem, { AvailableAssetItemProps } from '../AvailableAssetItem'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import CollateralItem from '../CollateralItem'
 
 interface AssetAmountInputProps {
   asset?: Asset
@@ -20,6 +21,7 @@ interface AssetAmountInputProps {
   assetItemProps?: Omit<AssetItemProps, 'asset'>
   availableAssetItemProps?: Omit<AvailableAssetItemProps, 'availableAsset'>
   inputProps?: InputProps
+  max?: number
 }
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
@@ -30,6 +32,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   assetItemProps,
   availableAssetItemProps,
   inputProps,
+  max,
 }) => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
@@ -40,6 +43,8 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
     <View style={styles.card}>
       {availableAsset ? (
         <AvailableAssetItem availableAsset={availableAsset} {...availableAssetItemProps} />
+      ) : asset && asset.type === AssetTypes.Collaterals ? (
+        <CollateralItem asset={asset} />
       ) : (
         <AssetItem asset={asset} {...assetItemProps} />
       )}
@@ -60,7 +65,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
                 <Typography bold>{asset.symbol}</Typography>
                 <View style={styles.verticalDivider} />
                 <TouchableOpacity
-                  onPress={() => setAmount(String(Number(asset.coin.amount) / 10 ** 6))}
+                  onPress={() =>
+                    setAmount(
+                      String((max !== undefined ? max : Number(asset.coin.amount)) / 10 ** 6)
+                    )
+                  }
                 >
                   <Typography bold color={theme.palette.secondary}>
                     {t('max')}

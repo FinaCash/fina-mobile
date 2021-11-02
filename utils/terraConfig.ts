@@ -6,7 +6,7 @@ export const terraLCDClient = new LCDClient({
   URL: 'https://bombay-lcd.terra.dev',
   chainID: 'bombay-12',
   gasPrices: {
-    uusd: 2,
+    uusd: 0.15,
   },
   gasAdjustment: 1.5,
 })

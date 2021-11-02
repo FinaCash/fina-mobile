@@ -1,34 +1,34 @@
 import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
-import { Recipient } from '../../types/recipients'
-import {
-  TouchableOpacity,
-  View,
-  Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  Alert,
-} from 'react-native'
+import { TouchableOpacity, View, ScrollView, Alert } from 'react-native'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../../components/Typography'
 import Button from '../../components/Button'
-import { Actions } from 'react-native-router-flux'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { AssetTypes } from '../../types/assets'
+import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
 import CollateralItem from '../../components/CollateralItem'
-import { useSettingsContext } from '../../contexts/SettingsContext'
+import RewardsItem from '../../components/RewardsItem'
+import ConfirmClaimRewardsModal from '../../components/ConfirmModals/ConfirmClaimRewardsModal copy'
+import { Portal } from '@gorhom/portal'
+import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
+import { Actions } from 'react-native-router-flux'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 
 const baseCurrency = 'uusd'
 
 const Borrow: React.FC = () => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { assets, availableAssets, borrowInfo } = useAssetsContext()
+  const { assets, availableAssets, borrowInfo, claimBorrowRewards } = useAssetsContext()
+  const { showActionSheetWithOptions } = useActionSheet()
+
+  const [isClaiming, setIsClaiming] = React.useState(false)
 
   const collaterals = assets.filter((a) => a.type === AssetTypes.Collaterals)
+  const anc = availableAssets.find((a) => a.symbol === 'ANC')
 
   const netApr = borrowInfo.rewardsRate - borrowInfo.borrowRate
   const ltv = borrowInfo.borrowedValue / borrowInfo.collateralValue
@@ -37,6 +37,56 @@ const Borrow: React.FC = () => {
     backgroundColor: theme.palette.green,
     width: formatPercentage(ltv / 0.6, 2),
   }
+
+  const onCollateralPress = React.useCallback(
+    (asset: Asset, availableAsset: AvailableAsset) => {
+      showActionSheetWithOptions(
+        {
+          options: [t('buy'), t('sell'), t('provide'), t('withdraw'), t('cancel')],
+          cancelButtonIndex: 4,
+        },
+        (i) => {
+          if (i === 2 || i === 3) {
+            Actions.ProvideCollateral({
+              asset,
+              availableAsset,
+              mode: i === 2 ? 'provide' : 'withdraw',
+            })
+          }
+        }
+      )
+    },
+    [showActionSheetWithOptions]
+  )
+
+  const onClaim = React.useCallback(
+    async (password: string) => {
+      try {
+        await claimBorrowRewards(MARKET_DENOMS.UUSD, password)
+        Actions.Success({
+          message: {
+            type: 'claim',
+            availableAsset: anc,
+            rewards: borrowInfo.pendingRewards,
+            apr: borrowInfo.rewardsRate,
+          },
+          onClose: () => Actions.jump('Borrow'),
+        })
+      } catch (err: any) {
+        Actions.Success({
+          message: {
+            type: 'claim',
+            availableAsset: anc,
+            rewards: borrowInfo.pendingRewards,
+            apr: borrowInfo.rewardsRate,
+          },
+          error: err.message,
+          onClose: () => Actions.jump('Borrow'),
+        })
+      }
+    },
+    [claimBorrowRewards, anc, borrowInfo]
+  )
 
   return (
     <>
@@ -121,14 +171,48 @@ const Borrow: React.FC = () => {
         <Typography style={styles.title} type="H5">
           {t('collaterals')}
         </Typography>
-        {collaterals.map((c) => (
-          <CollateralItem
-            key={c.symbol}
-            asset={c}
-            availableAsset={availableAssets.find((a) => a.symbol === c.symbol)!}
+        {collaterals.map((c) => {
+          const availableAsset = availableAssets.find((a) => a.symbol === c.symbol)
+          if (!availableAsset) {
+            return null
+          }
+          return (
+            <CollateralItem
+              key={c.symbol}
+              asset={c}
+              availableAsset={availableAsset}
+              onPress={() => onCollateralPress(c, availableAsset)}
+            />
+          )
+        })}
+        <Typography style={styles.title} type="H5">
+          {t('rewards')}
+        </Typography>
+        {anc ? (
+          <RewardsItem
+            availableAsset={anc}
+            rewards={borrowInfo.pendingRewards}
+            apr={borrowInfo.rewardsRate}
+            onPress={() => setIsClaiming(true)}
           />
-        ))}
+        ) : null}
       </ScrollView>
+      {anc ? (
+        <Portal>
+          <ConfirmClaimRewardsModal
+            open={isClaiming}
+            onClose={() => setIsClaiming(false)}
+            onConfirm={() => {
+              Actions.Password({ onSubmit: onClaim })
+              setIsClaiming(false)
+            }}
+            availableAsset={anc}
+            rewards={borrowInfo.pendingRewards}
+            apr={borrowInfo.rewardsRate}
+            denom={MARKET_DENOMS.UUSD}
+          />
+        </Portal>
+      ) : null}
     </>
   )
 }

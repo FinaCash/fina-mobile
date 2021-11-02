@@ -12,6 +12,7 @@ import { AssetsProvider } from './contexts/AssetsContext'
 import { RecipientsProvider } from './contexts/RecipientsContext'
 import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext'
 import { LocalesProvider } from './contexts/LocalesContext'
+import { PortalProvider } from '@gorhom/portal'
 
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)
@@ -52,7 +53,9 @@ export default function App() {
             <AssetsProvider>
               <RecipientsProvider>
                 <RootSiblingParent>
-                  <InnerApp />
+                  <PortalProvider>
+                    <InnerApp />
+                  </PortalProvider>
                 </RootSiblingParent>
               </RecipientsProvider>
             </AssetsProvider>

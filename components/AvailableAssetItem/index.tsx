@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 import useStyles from '../../theme/useStyles'
 import { AvailableAsset } from '../../types/assets'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
@@ -8,10 +9,16 @@ import getStyles from './styles'
 
 export interface AvailableAssetItemProps extends TouchableOpacityProps {
   availableAsset: AvailableAsset
+  amount?: number
 }
 
-const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({ availableAsset, ...props }) => {
+const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
+  availableAsset,
+  amount,
+  ...props
+}) => {
   const { styles, theme } = useStyles(getStyles)
+  const { currency } = useSettingsContext()
 
   const deltaPercent = (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
 
@@ -28,16 +35,27 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({ availableAsset,
           </View>
         </View>
 
-        <View style={styles.rightAligned}>
-          <Typography type="H6">{formatCurrency(availableAsset.price, 'uusd', true)}</Typography>
-          <Typography
-            bold
-            type="Small"
-            color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
-          >
-            {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
-          </Typography>
-        </View>
+        {amount === undefined ? (
+          <View style={styles.rightAligned}>
+            <Typography type="H6">{formatCurrency(availableAsset.price, 'uusd', true)}</Typography>
+            <Typography
+              bold
+              type="Small"
+              color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
+            >
+              {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
+            </Typography>
+          </View>
+        ) : (
+          <View style={styles.rightAligned}>
+            <Typography type="H6">
+              {formatCurrency(amount * 10 ** 6, availableAsset.coin.denom)}
+            </Typography>
+            <Typography type="Small" color={theme.palette.grey[7]}>
+              {formatCurrency(amount * availableAsset.price, currency, true)}
+            </Typography>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   )

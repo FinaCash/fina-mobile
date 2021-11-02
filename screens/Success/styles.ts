@@ -42,6 +42,11 @@ export default (theme: Theme) => ({
     marginTop: 12 * theme.baseSpace,
     textAlign: 'center',
   },
+  title2: {
+    marginTop: 6 * theme.baseSpace,
+    marginBottom: 4 * theme.baseSpace,
+    textAlign: 'center',
+  },
   arrow: {
     alignSelf: 'center',
     // marginVertical: 4 * theme.baseSpace,

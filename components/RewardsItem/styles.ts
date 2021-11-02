@@ -1,19 +1,23 @@
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
+  gutterBottom: {
+    marginBottom: theme.baseSpace,
+  },
   innerContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: theme.palette.grey[1],
+    marginHorizontal: theme.baseSpace * 4,
+    paddingVertical: theme.baseSpace * 4,
+  },
+  topContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
-    paddingVertical: theme.baseSpace * 4,
-    marginHorizontal: theme.baseSpace * 4,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
   },
   avatar: {
     width: theme.baseSpace * 10,
@@ -30,18 +34,16 @@ export default (theme: Theme) => ({
     top: -2 * theme.baseSpace,
     left: theme.baseSpace * 5,
   },
+  rightAligned: {
+    alignItems: 'flex-end',
+  },
   aprContainer: {
     marginTop: 4 * theme.baseSpace,
-    marginLeft: 12 * theme.baseSpace,
-    paddingHorizontal: 4 * theme.baseSpace,
+    marginLeft: 16 * theme.baseSpace,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  rightAligned: {
+  alignRight: {
     alignItems: 'flex-end',
-    width: 150,
-  },
-  longName: {
-    width: '100%',
   },
 })
