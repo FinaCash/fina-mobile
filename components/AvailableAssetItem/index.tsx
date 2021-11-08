@@ -37,7 +37,9 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
 
         {amount === undefined ? (
           <View style={styles.rightAligned}>
-            <Typography type="H6">{formatCurrency(availableAsset.price, 'uusd', true)}</Typography>
+            <Typography type="H6">
+              {formatCurrency(availableAsset.price * 10 ** 6, 'uusd', true)}
+            </Typography>
             <Typography
               bold
               type="Small"

@@ -40,7 +40,7 @@ export default (theme: Theme) => ({
   aprContainer: {
     marginTop: 4 * theme.baseSpace,
     marginLeft: 12 * theme.baseSpace,
-    paddingHorizontal: 4 * theme.baseSpace,
+    paddingLeft: 4 * theme.baseSpace,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

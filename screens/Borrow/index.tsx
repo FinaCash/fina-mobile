@@ -46,7 +46,12 @@ const Borrow: React.FC = () => {
           cancelButtonIndex: 4,
         },
         (i) => {
-          if (i === 2 || i === 3) {
+          if (i === 0 || i === 1) {
+            Actions.Swap({
+              mode: i === 0 ? 'buy' : 'sell',
+              asset,
+            })
+          } else if (i === 2 || i === 3) {
             Actions.ProvideCollateral({
               asset,
               availableAsset,

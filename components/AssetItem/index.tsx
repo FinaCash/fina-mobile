@@ -8,6 +8,7 @@ import Typography from '../Typography'
 import getStyles from './styles'
 import get from 'lodash/get'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 export interface AssetItemProps extends TouchableOpacityProps {
   asset?: Asset
@@ -25,6 +26,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
+  const { currencyRate, currency } = useSettingsContext()
 
   return (
     <TouchableOpacity {...props}>
@@ -53,16 +55,16 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Typography type="H6">{t('select asset')}</Typography>
             </View>
           )}
-          {asset && (!asset.apr || hideApr) && !hideAmount ? (
+          {asset && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
                 {formatCurrency(asset.coin.amount, asset.coin.denom)}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
-                {asset.worth
+                {asset.price
                   ? formatCurrency(
-                      get(asset, 'worth.amount', 0).toString(),
-                      asset.worth.denom,
+                      String(asset.price * Number(asset.coin.amount) * currencyRate),
+                      currency,
                       true
                     )
                   : ''}
@@ -75,19 +77,6 @@ const AssetItem: React.FC<AssetItemProps> = ({
         </View>
         {asset && asset.apr && !hideApr ? (
           <View style={styles.aprContainer}>
-            <View>
-              <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
-                {t('amount (symbol)', {
-                  symbol: getCurrencySymbol(`u${asset.coin.denom.slice(-3)}`),
-                })}
-              </Typography>
-              <Typography bold>
-                {formatCurrency(
-                  get(asset, 'coin.amount', 0).toString(),
-                  get(asset, 'coin.denom', '')
-                )}
-              </Typography>
-            </View>
             <View>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t(asset.autoCompound ? 'apy' : 'apr', {

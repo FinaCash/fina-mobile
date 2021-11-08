@@ -1,3 +1,57 @@
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js
+index 77020b0..be1af04 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js
+@@ -17,6 +17,7 @@ exports.columbus5 = {
+     mmLiquidation: 'terra1w9ky73v4g7v98zzdqpqgf3kjmusnx4d4mvnac6',
+     mmDistributionModel: 'terra14mufqpr5mevdfn92p4jchpkxp7xr46uyknqjwq',
+     aTerra: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
++    terraswapbethUstPair: 'terra1c0afrdc5253tkp5wt7rxhuj42xwyf2lcre0s7c',
+     terraswapblunaLunaPair: 'terra1jxazgm67et0ce260kvrpfv50acuushpjsz2y0p',
+     terraswapblunaLunaLPToken: 'terra1nuy34nwnsh53ygpc4xprlj263cztw7vc99leh2',
+     terraswapAncUstPair: 'terra1gm5p3ner9x9xpwugn9sp6gvhd0lwrtkyrecdn3',
+@@ -47,6 +48,7 @@ exports.bombay12 = {
+     mmLiquidation: 'terra16vc4v9hhntswzkuunqhncs9yy30mqql3gxlqfe',
+     mmDistributionModel: 'terra1u64cezah94sq3ye8y0ung28x3pxc37tv8fth7h',
+     aTerra: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl',
++    terraswapbethUstPair: '',
+     terraswapblunaLunaPair: 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v',
+     terraswapblunaLunaLPToken: 'terra1tj4pavqjqjfm0wh73sh7yy9m4uq3m2cpmgva6n',
+     terraswapAncUstPair: 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz',
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts
+index 00a9e97..9060864 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts
+@@ -15,6 +15,7 @@ export interface AddressMap {
+     mmLiquidation: string;
+     mmDistributionModel: string;
+     aTerra: string;
++    terraswapbethUstPair: string
+     terraswapblunaLunaPair: string;
+     terraswapblunaLunaLPToken: string;
+     terraswapAncUstPair: string;
+@@ -45,6 +46,7 @@ export declare class AddressProviderFromJson implements AddressProvider {
+     oracle(): string;
+     interest(): string;
+     liquidation(): string;
++    terraswapbethUstPair(): string
+     terraswapblunaLunaPair(): string;
+     terraswapblunaLunaLPToken(): string;
+     gov(): string;
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
+index 6dd8d3f..cf73d75 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
+@@ -49,6 +49,9 @@ class AddressProviderFromJson {
+     liquidation() {
+         return this.data.mmLiquidation;
+     }
++    terraswapbethUstPair() {
++        return this.data.terraswapblunaLunaPair;
++    }
+     terraswapblunaLunaPair() {
+         return this.data.terraswapblunaLunaPair;
+     }
 diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts
 index a20ac49..2ca8bf8 100644
 --- a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts

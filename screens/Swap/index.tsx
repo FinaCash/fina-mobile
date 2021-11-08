@@ -58,13 +58,19 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
 
   const [isConfirming, setIsConfirming] = React.useState(false)
 
-  // TODO: currently non current assets can only be traded with UST
-  const currentAsset =
-    assets.find((a) => a.coin.denom === 'uusd') ||
-    getCurrentAssetDetail({
-      denom: 'uusd',
-      amount: (Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6).toString(),
-    })
+  // TODO: currently non current assets can only be traded with UST (except LUNA for bLUNA pair)
+  const currentAsset = React.useMemo(() => {
+    const denom = asset.symbol === 'BLUNA' ? 'uluna' : 'uusd'
+    return (
+      assets.find((a) => a.coin.denom === denom) || {
+        ...(denom === 'uluna' ? getTokenAssetDetail : getCurrentAssetDetail)({
+          denom,
+          amount: (Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6).toString(),
+        })!,
+        price: denom === 'uluna' ? availableAssets.find((a) => a.symbol === 'LUNA')!.price : 1,
+      }
+    )
+  }, [assets, mode, fromAmount, toAmount, availableAssets, asset.symbol])
 
   const changeAmount = React.useCallback(
     async (a: string, which: 'from' | 'to', defaultSymbol?: string) => {
@@ -73,7 +79,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
         let rate
         const isUstBase =
           (which === 'from' && mode === 'buy') || (which === 'to' && mode === 'sell')
-        // LUNA or ANC
+        // LUNA
         if ((defaultSymbol || asset.symbol) === 'LUNA') {
           rate = await (which === 'from'
             ? queryTerraswapNativeSimulation
@@ -83,13 +89,29 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
             denom: isUstBase ? currentAsset.coin.denom : 'uluna',
             amount: a,
           })(anchorAddressProvider)
-        } else if ((defaultSymbol || asset.symbol) === 'ANC') {
+          // ANC / Collateral
+        } else if (
+          (defaultSymbol || asset.symbol) === 'ANC' ||
+          (defaultSymbol || asset.symbol).match(/^B/)
+        ) {
+          let pairContract = ''
+          let contract = ''
+          if ((defaultSymbol || asset.symbol) === 'ANC') {
+            pairContract = anchorAddressProvider.terraswapAncUstPair()
+            contract = anchorAddressProvider.ANC()
+          } else if ((defaultSymbol || asset.symbol) === 'BLUNA') {
+            pairContract = anchorAddressProvider.terraswapblunaLunaPair()
+            contract = anchorAddressProvider.bLunaToken()
+          } else if ((defaultSymbol || asset.symbol) === 'BETH') {
+            pairContract = anchorAddressProvider.terraswapbethUstPair()
+            contract = anchorAddressProvider.bEthToken()
+          }
           if (isUstBase) {
             rate = await (which === 'from'
               ? queryTerraswapNativeSimulation
               : queryTerraswapReverseNativeSimulation)({
               lcd: terraLCDClient as any,
-              pair_contract_address: anchorAddressProvider.terraswapAncUstPair(),
+              pair_contract_address: pairContract,
               denom: currentAsset.coin.denom,
               amount: a,
             })(anchorAddressProvider)
@@ -98,11 +120,10 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
               ? queryTerraswapSimulation
               : queryTerraswapReverseTokenSimulation)({
               lcd: terraLCDClient as any,
-              pair_contract_address: anchorAddressProvider.terraswapAncUstPair(),
-              contractAddr: anchorAddressProvider.ANC(),
+              pair_contract_address: pairContract,
+              contractAddr: contract,
               amount: a,
             })(anchorAddressProvider)
-            console.log(rate)
           }
         } else {
           // M Assets
@@ -146,12 +167,9 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
         denom: mode === 'buy' ? currentAsset.coin.denom : asset.coin.denom,
         amount: String(Number(fromAmount) * 10 ** 6),
       },
-      worth: {
-        denom: currency,
-        amount: String(Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6),
-      },
+      price: mode === 'buy' ? currentAsset.price : asset.price,
     }),
-    [mode, currentAsset, asset, fromAmount, toAmount, availableAssets, currency]
+    [mode, currentAsset, asset, fromAmount, availableAssets]
   )
   const toAsset = React.useMemo(
     () => ({
@@ -160,12 +178,8 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
         denom: mode === 'buy' ? asset.coin.denom : currentAsset.coin.denom,
         amount: String(Number(toAmount) * 10 ** 6),
       },
-      worth: {
-        denom: currency,
-        amount: String(Number(mode === 'buy' ? fromAmount : toAmount) * 10 ** 6),
-      },
     }),
-    [mode, currentAsset, asset, fromAmount, toAmount, currency]
+    [mode, currentAsset, asset, toAmount]
   )
 
   const onSubmit = React.useCallback(
@@ -215,7 +229,13 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
               amount={fromAmount}
               setAmount={(a) => changeAmount(a, 'from')}
               assetItemProps={{
-                disabled: true,
+                // disabled: true,
+                onPress: () => {
+                  Actions.SelectAsset({
+                    assets: [currentAsset],
+                    onSelect: (a: Asset) => Actions.pop(),
+                  })
+                },
               }}
             />
           ) : (
@@ -270,7 +290,13 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
               amount={toAmount}
               setAmount={(a) => changeAmount(a, 'to')}
               assetItemProps={{
-                disabled: true,
+                // disabled: true,
+                onPress: () => {
+                  Actions.SelectAsset({
+                    assets: [currentAsset],
+                    onSelect: (a: Asset) => Actions.pop(),
+                  })
+                },
                 hideAmount: true,
               }}
             />

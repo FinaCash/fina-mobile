@@ -45,7 +45,7 @@ const Home: React.FC = () => {
   const averageSavingsAPR =
     assets
       .filter((a) => a.type === AssetTypes.Savings)
-      .map((a) => get(a, 'worth.amount', 0) * (a.apr || 0))
+      .map((a) => a.price * Number(a.coin.amount) * (a.apr || 0))
       .reduce((a, b) => a + b, 0) / assetsDistribution[AssetTypes.Savings]
 
   const [search, setSearch] = React.useState('')

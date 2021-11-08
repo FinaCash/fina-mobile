@@ -15,10 +15,7 @@ export interface Asset {
     denom: string
     amount: string
   }
-  worth?: {
-    denom: string
-    amount: string
-  }
+  price: number // in USD
   rewards?: {
     denom: string
     amount: string
@@ -38,7 +35,7 @@ export interface AvailableAsset {
   coin: { denom: string }
   image: string
   description: string
-  price: number
+  price: number // in USD
   prevPrice: number
   priceHistories?: Array<{
     timestamp: number

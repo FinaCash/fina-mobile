@@ -1,5 +1,5 @@
 import { Anchor, bombay12, AddressProviderFromJson } from '@anchor-protocol/anchor.js'
-import { DEFAULT_BOMBAY_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
+import { DEFAULT_BOMBAY_MIRROR_OPTIONS, TerraswapPair } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
 
 export const terraLCDClient = new LCDClient({
@@ -26,8 +26,8 @@ export const supportedTokens = {
         (r) => r.json()
       )
       return {
-        price: result.lastPrice * 10 ** 6,
-        prevPrice: (result.lastPrice - Number(result.oneDayVariation)) * 10 ** 6,
+        price: result.lastPrice,
+        prevPrice: result.lastPrice - Number(result.oneDayVariation),
       }
     },
   },
@@ -46,8 +46,8 @@ export const supportedTokens = {
     priceFetcher: async () => {
       const result = await fetch(`${anchorApiUrl}/v1/anc/1d`).then((r) => r.json())
       return {
-        price: Number(result[0].anc_price) * 10 ** 6,
-        prevPrice: Number(result[1].anc_price) * 10 ** 6,
+        price: Number(result[0].anc_price),
+        prevPrice: Number(result[1].anc_price),
       }
     },
   },
@@ -66,9 +66,15 @@ export const terraStationChain = 'testnet'
 
 export const mirrorOptions = DEFAULT_BOMBAY_MIRROR_OPTIONS
 
-export const collateralsImgs = {
-  BETH: 'https://app.terraswap.io/images/CW20/bETH.png',
-  BLUNA: 'https://app.terraswap.io/images/CW20/bLUNA.png',
+TerraswapPair
+
+export const colleteralsInfo = {
+  BETH: {
+    img: 'https://app.terraswap.io/images/CW20/bETH.png',
+  },
+  BLUNA: {
+    img: 'https://app.terraswap.io/images/CW20/bLUNA.png',
+  },
 }
 
 // TODO: register transak api key

@@ -36,8 +36,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
 }) => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
-  const { currency } = useSettingsContext()
-  const price = asset ? Number(get(asset, 'worth.amount', 0)) / Number(asset.coin.amount) : 0
+  const { currency, currencyRate } = useSettingsContext()
 
   return (
     <View style={styles.card}>
@@ -81,7 +80,12 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           {...inputProps}
         />
         <Typography color={theme.palette.grey[7]} type="Small">
-          ~{formatCurrency(Number(amount) * price * 10 ** 6, currency, true)}
+          ~
+          {formatCurrency(
+            Number(amount) * (asset ? asset.price : 0) * 10 ** 6 * currencyRate,
+            currency,
+            true
+          )}
         </Typography>
       </View>
     </View>

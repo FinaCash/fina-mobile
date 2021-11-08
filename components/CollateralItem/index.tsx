@@ -7,6 +7,7 @@ import Typography from '../Typography'
 import getStyles from './styles'
 import get from 'lodash/get'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 export interface CollateralItemProps extends TouchableOpacityProps {
   asset: Asset
@@ -22,6 +23,7 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
+  const { currency, currencyRate } = useSettingsContext()
   const deltaPercent = availableAsset
     ? (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
     : 0
@@ -59,13 +61,11 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
                 {formatCurrency(asset.coin.amount, asset.coin.denom)}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
-                {asset.worth
-                  ? formatCurrency(
-                      get(asset, 'worth.amount', 0).toString(),
-                      asset.worth.denom,
-                      true
-                    )
-                  : ''}
+                {formatCurrency(
+                  String(asset.price * Number(asset.coin.amount) * currencyRate),
+                  currency,
+                  true
+                )}
               </Typography>
             </View>
           )}

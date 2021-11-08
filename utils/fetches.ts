@@ -5,7 +5,6 @@ import {
   queryMarketBorrowerInfo,
   queryMarketEpochState,
   queryMarketState,
-  queryOraclePrices,
   queryOverseerWhitelist,
 } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
@@ -16,7 +15,7 @@ import {
   anchorAddressProvider,
   anchorApiUrl,
   anchorClient,
-  collateralsImgs,
+  colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
   terraLCDClient,
@@ -64,11 +63,11 @@ export const fetchAvailableMirrorAssets = async () => {
       coin: { denom: a.symbol },
       image: `https://whitelist.mirror.finance/icon/${a.symbol.replace(/^m/, '')}.png`,
       description: a.description,
-      price: Number(a.prices.price || a.prices.oraclePrice) * 10 ** 6,
-      prevPrice: Number(a.prices.priceAt || a.prices.oraclePriceAt) * 10 ** 6,
+      price: Number(a.prices.price || a.prices.oraclePrice),
+      prevPrice: Number(a.prices.priceAt || a.prices.oraclePriceAt),
       priceHistories: a.prices.history.map((p: any) => ({
         ...p,
-        price: Number(p.price) * 10 ** 6,
+        price: Number(p.price),
       })),
     }))
   } catch (err: any) {
@@ -144,31 +143,27 @@ export const fetchAvailableCollaterals = async (): Promise<AvailableAsset[]> => 
   const { elems } = await (
     await queryOverseerWhitelist({ lcd: terraLCDClient, market: MARKET_DENOMS.UUSD })
   )(anchorAddressProvider)
-
   const [price, prevPrice] = await fetch(`${anchorApiUrl}/v1/collaterals/1d`).then((r) => r.json())
-  console.log({ price, prevPrice })
   return elems.map((c) => ({
     type: AssetTypes.Collaterals,
     name: c.name,
     symbol: c.symbol,
     coin: { denom: c.symbol },
-    image: get(collateralsImgs, c.symbol, ''),
+    image: get(colleteralsInfo, `${c.symbol}.img`, ''),
     description: '',
     price: Number(
       get(
         price.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
         'price',
         0
-      ) *
-        10 ** 6
+      )
     ),
     prevPrice: Number(
       get(
         prevPrice.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
         'price',
         0
-      ) *
-        10 ** 6
+      )
     ),
   }))
 }

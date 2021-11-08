@@ -80,13 +80,9 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
         ? {
             ...fromAsset,
             coin: { denom: from, amount: String(Number(fromAmount) * 10 ** 6) },
-            worth: {
-              denom: currency,
-              amount: String(baseCurrencyAmount),
-            },
           }
         : undefined,
-    [from, fromAsset, fromAmount, currency, baseCurrencyAmount]
+    [from, fromAsset, fromAmount]
   )
   const toAsset = React.useMemo(
     () =>
@@ -96,13 +92,10 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
               denom: to,
               amount: String(Number(toAmount) * 10 ** 6),
             }),
-            worth: {
-              denom: currency,
-              amount: String(baseCurrencyAmount),
-            },
+            price: baseCurrencyAmount / (Number(toAmount) * 10 ** 6),
           }
         : undefined,
-    [to, toAmount, currency, baseCurrencyAmount]
+    [to, toAmount, baseCurrencyAmount]
   )
 
   const onSubmit = React.useCallback(

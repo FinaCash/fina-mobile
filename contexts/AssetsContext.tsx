@@ -6,10 +6,16 @@ import {
   mirrorOptions,
   anchorClient,
   supportedTokens,
+  anchorAddressProvider,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import { Asset, AssetTypes, AvailableAsset, BorrowInfo } from '../types/assets'
-import { COLLATERAL_DENOMS, MARKET_DENOMS } from '@anchor-protocol/anchor.js'
+import {
+  COLLATERAL_DENOMS,
+  fabricateTerraswapSwapbLuna,
+  fabricateTerraswapSwapLuna,
+  MARKET_DENOMS,
+} from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
 import { useSettingsContext } from './SettingsContext'
 import {
@@ -118,8 +124,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     const { collaterals, ...borrowInfoResult } = await fetchAnchorCollaterals(address)
     const result = await transformCoinsToAssets(
       [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
-      availableAssets,
-      currency
+      availableAssets
     )
     setAssets(sortBy(result, ['type', 'symbol']))
     setBorrowInfo(borrowInfoResult)
@@ -176,8 +181,21 @@ const AssetsProvider: React.FC = ({ children }) => {
         (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
       )
       let msg
-      // Buy ANC
-      if (toDenom === 'ANC') {
+      // Buy Collateral
+      if (toDenom.match(/^B/)) {
+        msg = fabricateTerraswapSwapLuna({
+          address,
+          amount: String(from.amount),
+          denom: from.denom,
+        })(anchorAddressProvider)[0]
+        // Sell Collateral
+      } else if (from.denom.match(/^B/)) {
+        msg = fabricateTerraswapSwapbLuna({
+          address,
+          amount: String(from.amount),
+        })(anchorAddressProvider)[0]
+        // Buy ANC
+      } else if (toDenom === 'ANC') {
         msg = (
           await anchorClient.anchorToken.buyANC(String(from.amount)).generateWithAddress(address)
         )[0]
@@ -212,6 +230,7 @@ const AssetsProvider: React.FC = ({ children }) => {
           {}
         )
         msg.sender = address
+        // Native
       } else {
         msg = new MsgSwap(
           address,
