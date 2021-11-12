@@ -28,8 +28,9 @@ import CurrencyExchange from '../screens/CurrencyExchange'
 import UpdateRecipient from '../screens/UpdateRecipient'
 import { useLocalesContext } from '../contexts/LocalesContext'
 import History from '../screens/History'
-import Borrow from '../screens/Borrow'
+import Loan from '../screens/Loan'
 import ProvideCollateral from '../screens/ProvideCollateral'
+import Borrow from '../screens/Borrow'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -89,12 +90,12 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
                   component={Invest}
                 />
                 <Scene
-                  key="Borrow"
+                  key="Loan"
                   hideNavBar
                   iconSvg={<BorrowIcon />}
-                  tabTitle={t('borrow')}
+                  tabTitle={t('loan')}
                   icon={TabIcon}
-                  component={Borrow}
+                  component={Loan}
                 />
                 <Scene
                   key="Farm"
@@ -126,6 +127,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="History" hideNavBar component={History} />
               <Scene key="Recipients" hideNavBar component={Recipients} />
               <Scene key="ProvideCollateral" hideNavBar component={ProvideCollateral} />
+              <Scene key="Borrow" hideNavBar component={Borrow} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="Success" hideNavBar component={Success} />

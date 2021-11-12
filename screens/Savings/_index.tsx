@@ -1,5 +1,5 @@
 import React from 'react'
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useAssetsContext } from '../../contexts/AssetsContext'
@@ -94,15 +94,32 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
 
   return (
     <>
-      <HeaderBar back title={t(`${mode} savings`)} />
-      <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <AssetAmountInput
-          asset={mode === 'deposit' ? baseAsset : savingAsset}
-          amount={amount}
-          setAmount={setAmount}
-          assetItemProps={{ disabled: true }}
-          inputProps={{ autoFocus: true }}
-        />
+      <HeaderBar title={t(`${mode} savings`)} back />
+      <View style={styles.container}>
+        <ScrollView scrollEnabled={false}>
+          <AssetAmountInput
+            asset={mode === 'deposit' ? baseAsset : savingAsset}
+            amount={amount}
+            setAmount={setAmount}
+            assetItemProps={{
+              disabled: true,
+            }}
+          />
+          <Icon
+            name="arrow-down"
+            size={theme.baseSpace * 8}
+            color={theme.palette.grey[10]}
+            style={styles.arrow}
+          />
+          <AssetAmountInput
+            asset={mode === 'deposit' ? savingAsset : baseAsset}
+            amount={amount}
+            setAmount={setAmount}
+            assetItemProps={{
+              disabled: true,
+            }}
+          />
+        </ScrollView>
         <Button
           disabled={
             !Number(amount) ||
@@ -115,7 +132,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
         >
           {t('next')}
         </Button>
-      </KeyboardAvoidingView>
+      </View>
       {amount ? (
         <ConfirmSavingsModal
           open={isConfirming}

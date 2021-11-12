@@ -40,6 +40,10 @@ interface SuccessProps {
         availableAsset: AvailableAsset
         amount: number
       }
+    | {
+        type: 'borrow' | 'repay'
+        asset: Asset
+      }
   error?: string
   onClose(): void
 }
@@ -130,6 +134,14 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 {t(message.type)}
               </Typography>
               <AvailableAssetItem availableAsset={message.availableAsset} amount={message.amount} />
+            </>
+          ) : null}
+          {message.type === 'borrow' || message.type === 'repay' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              <AssetItem asset={message.asset} hideBorder />
             </>
           ) : null}
         </View>

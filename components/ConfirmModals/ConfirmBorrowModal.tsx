@@ -73,6 +73,7 @@ const ConfirmBorrowModal: React.FC<ConfirmBorrowModalProps> = ({
       modalizeRef.current?.open()
     } else {
       modalizeRef.current?.close()
+      setFee({})
     }
   }, [open])
 

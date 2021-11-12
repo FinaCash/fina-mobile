@@ -120,5 +120,6 @@
   "claim": "Claim",
   "usd value": "Value (USD)",
   "provide collateral": "Provide Collateral",
-  "withdraw collateral": "Withdraw Collateral"
+  "withdraw collateral": "Withdraw Collateral",
+  "loan": "Loan"
 }

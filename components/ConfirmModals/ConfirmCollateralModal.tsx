@@ -2,17 +2,15 @@ import React from 'react'
 import { Modalize } from 'react-native-modalize'
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
 import keyBy from 'lodash/keyBy'
-import cloneDeep from 'lodash/cloneDeep'
 import CloseIcon from '../../assets/images/icons/close.svg'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../Typography'
 import Button from '../Button'
-import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { StdSignMsg } from '@terra-money/terra.js'
-import { getCurrentAssetDetail, getSymbolFromDenom } from '../../utils/transformAssets'
+import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { AvailableAsset } from '../../types/assets'
@@ -71,6 +69,7 @@ const ConfirmCollateralModal: React.FC<ConfirmCollateralModalProps> = ({
       modalizeRef.current?.open()
     } else {
       modalizeRef.current?.close()
+      setFee({})
     }
   }, [open])
 

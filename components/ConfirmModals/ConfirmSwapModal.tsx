@@ -76,6 +76,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
       modalizeRef.current?.open()
     } else {
       modalizeRef.current?.close()
+      setFee({})
     }
   }, [open])
 

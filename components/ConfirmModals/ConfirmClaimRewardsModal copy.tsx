@@ -63,6 +63,7 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
       modalizeRef.current?.open()
     } else {
       modalizeRef.current?.close()
+      setFee({})
     }
   }, [open])
 

@@ -84,6 +84,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
       modalizeRef.current?.open()
     } else {
       modalizeRef.current?.close()
+      setFee({})
     }
   }, [open])
 
