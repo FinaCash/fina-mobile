@@ -108,6 +108,19 @@ const Home: React.FC = () => {
           ) {
             return Actions.Swap({ asset, mode: 'sell' })
           }
+          if (asset.type === AssetTypes.Collaterals && (index === 0 || index === 1)) {
+            Actions.Swap({
+              mode: index === 0 ? 'buy' : 'sell',
+              asset,
+            })
+          }
+          if (asset.type === AssetTypes.Collaterals && (index === 2 || index === 3)) {
+            Actions.ProvideCollateral({
+              asset,
+              availableAsset: availableAssets.find((a) => a.symbol === asset.symbol),
+              mode: index === 2 ? 'provide' : 'withdraw',
+            })
+          }
         }
       )
     },
