@@ -2,7 +2,6 @@ import React from 'react'
 import { ActivityIndicator, Animated, TouchableOpacity, View } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
-import get from 'lodash/get'
 import { Feather as Icon } from '@expo/vector-icons'
 import * as WebBrowser from 'expo-web-browser'
 import ContactIcon from '../../assets/images/icons/recipients.svg'
@@ -57,7 +56,10 @@ const Home: React.FC = () => {
       let options: any = []
       switch (asset.type) {
         case AssetTypes.Currents:
-          options = [t('transfer'), t('currency exchange'), t('cancel')]
+          options =
+            asset.symbol === 'UST'
+              ? [t('transfer'), t('currency exchange'), t('deposit'), t('cancel')]
+              : [t('transfer'), t('currency exchange'), t('cancel')]
           break
         case AssetTypes.Savings:
           options = [t('deposit'), t('withdraw'), t('cancel')]
@@ -86,6 +88,9 @@ const Home: React.FC = () => {
           }
           if (asset.type === AssetTypes.Currents && index === 1) {
             return Actions.CurrencyExchange({ from: asset.coin.denom })
+          }
+          if (asset.type === AssetTypes.Currents && index === 2) {
+            return Actions.Savings({ from: asset.coin.denom, mode: 'deposit' })
           }
           if (asset.type === AssetTypes.Savings && index === 0) {
             return Actions.Savings({ from: asset.coin.denom, mode: 'deposit' })

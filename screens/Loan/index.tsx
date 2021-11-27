@@ -1,6 +1,6 @@
 import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Alert } from 'react-native'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../../components/Typography'
@@ -16,9 +16,11 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { Actions } from 'react-native-router-flux'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import LoanCard from '../../components/LoanCard'
+import TransferIcon from '../../assets/images/icons/transfer.svg'
+import ReceiveIcon from '../../assets/images/icons/receive.svg'
 
 const Loan: React.FC = () => {
-  const { styles } = useStyles(getStyles)
+  const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { assets, availableAssets, borrowInfo, claimBorrowRewards } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
@@ -26,6 +28,7 @@ const Loan: React.FC = () => {
   const [isClaiming, setIsClaiming] = React.useState(false)
 
   const collaterals = assets.filter((a) => a.type === AssetTypes.Collaterals)
+
   const anc = availableAssets.find((a) => a.symbol === 'ANC')
 
   const onCollateralPress = React.useCallback(
@@ -89,10 +92,31 @@ const Loan: React.FC = () => {
       <ScrollView style={styles.container}>
         <LoanCard denom={MARKET_DENOMS.UUSD} />
         <View style={styles.row}>
-          <Button onPress={() => Actions.Borrow({ mode: 'repay' })} style={styles.button}>
+          <Button
+            icon={<TransferIcon fill={theme.palette.white} />}
+            onPress={() => {
+              if (!borrowInfo.borrowedValue) {
+                return Alert.alert(t('no borrow value'), t('you have not borrowed anything yet'))
+              }
+              Actions.Borrow({ mode: 'repay' })
+            }}
+            style={styles.button}
+          >
             {t('repay')}
           </Button>
-          <Button onPress={() => Actions.Borrow({ mode: 'borrow' })} style={styles.button}>
+          <Button
+            icon={<ReceiveIcon fill={theme.palette.white} />}
+            onPress={() => {
+              if (borrowInfo.borrowedValue >= 0.5 * borrowInfo.collateralValue) {
+                return Alert.alert(
+                  t('insufficient collateral'),
+                  t('please provide more collateral')
+                )
+              }
+              Actions.Borrow({ mode: 'borrow' })
+            }}
+            style={styles.button}
+          >
             {t('borrow')}
           </Button>
         </View>

@@ -1,21 +1,29 @@
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
+  top: {
+    padding: theme.baseSpace * 10,
+    paddingTop: theme.baseSpace * 16 + theme.statusBarHeight,
+    marginTop: -(theme.baseSpace * 12 + theme.statusBarHeight),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   card: {
     borderRadius: theme.borderRadius[1],
     borderWidth: 1,
     borderColor: theme.palette.grey[1],
-    padding: 4 * theme.baseSpace,
-    margin: 4 * theme.baseSpace,
+    padding: 6 * theme.baseSpace,
+    marginBottom: 4 * theme.baseSpace,
+    marginTop: -theme.borderRadius[1],
+    backgroundColor: theme.palette.white,
   },
   padded: {
     marginHorizontal: 4 * theme.baseSpace,
   },
   statRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8 * theme.baseSpace,
+    marginBottom: 6 * theme.baseSpace,
   },
   outerBar: {
     backgroundColor: theme.palette.grey[1],
@@ -29,7 +37,7 @@ export default (theme: Theme) => ({
   },
   spacedRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
   row: {
@@ -40,12 +48,11 @@ export default (theme: Theme) => ({
     justifyContent: 'flex-end',
   },
   vertDivider: {
-    height: theme.baseSpace * 6,
+    height: theme.baseSpace * 4,
     width: 1,
     backgroundColor: theme.palette.grey[2],
     alignSelf: 'flex-end',
-    marginTop: theme.baseSpace * 2,
-    marginBottom: theme.baseSpace * -2,
+    marginTop: theme.baseSpace * -3,
   },
   recommendedLtv: {
     position: 'absolute',
@@ -53,12 +60,12 @@ export default (theme: Theme) => ({
   },
   myLtv: {
     position: 'absolute',
-    top: theme.baseSpace * 6,
+    top: theme.baseSpace * -4,
   },
   shortVertDivider: {
     height: theme.baseSpace * 4,
-    width: 2,
-    backgroundColor: theme.palette.grey[6],
+    width: 1,
+    backgroundColor: theme.palette.grey[3],
     alignSelf: 'flex-end',
   },
   amountContainer: {

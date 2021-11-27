@@ -10,8 +10,8 @@ export default (theme: Theme) => ({
   },
   button: {
     flex: 1,
-    marginHorizontal: theme.baseSpace * 4,
-    marginBottom: theme.baseSpace * 4,
+    marginHorizontal: theme.baseSpace * 8,
+    marginBottom: theme.baseSpace * 2,
   },
   title: {
     margin: 4 * theme.baseSpace,

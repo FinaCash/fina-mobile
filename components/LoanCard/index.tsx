@@ -1,6 +1,7 @@
 import React from 'react'
 import { TouchableOpacity, View, Alert, Platform } from 'react-native'
 import Slider from '@ptomasroos/react-native-multi-slider'
+import { LinearGradient } from 'expo-linear-gradient'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../../components/Typography'
@@ -54,7 +55,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
   const netApr = borrowInfo.rewardsRate - borrowInfo.borrowRate
   const ltv =
     (borrowInfo.borrowedValue + (mode === 'borrow' ? 1 : -1) * (Number(amount) || 0)) /
-    borrowInfo.collateralValue
+    (borrowInfo.collateralValue || 1)
 
   const innerBarStyle = {
     backgroundColor: theme.palette.green,
@@ -86,140 +87,156 @@ const LoanCard: React.FC<LoanCardProps> = ({
     )
 
   return (
-    <View style={styles.card}>
-      <View style={styles.statRow}>
+    <>
+      <LinearGradient
+        start={[0, 0]}
+        end={[1, 2.4]}
+        colors={theme.gradients.primary}
+        style={styles.top}
+      >
         <View>
-          <Typography type="Mini">{t('collateral value')}</Typography>
-          <Typography type="Large" bold>
+          <Typography color={theme.palette.white} type="H4">
             {formatCurrency(borrowInfo.collateralValue * 10 ** 6, 'uusd', true)}
           </Typography>
+          <Typography color={theme.palette.white} type="Small">
+            {t('collateral value')}
+          </Typography>
         </View>
         <View>
-          <Typography type="Mini">{t('borrowed value')}</Typography>
-          <Typography type="Large" bold>
+          <Typography color={theme.palette.white} type="H4">
             {formatCurrency(borrowInfo.borrowedValue * 10 ** 6, 'uusd', true)}
           </Typography>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              t('net APR'),
-              t('borrow APR calculation', {
-                rewardsRate: formatPercentage(borrowInfo.rewardsRate, 2),
-                borrowRate: formatPercentage(borrowInfo.borrowRate, 2),
-                netApr: formatPercentage(netApr, 2),
-              })
-            )
-          }}
-        >
-          <Typography type="Mini">{t('net APR')} ⓘ</Typography>
-          <Typography
-            color={netApr > 0 ? theme.palette.green : theme.palette.red}
-            type="Large"
-            bold
-          >
-            {formatPercentage(netApr, 2)}
+          <Typography color={theme.palette.white} type="Small">
+            {t('borrowed value')}
           </Typography>
-        </TouchableOpacity>
-      </View>
-      <View style={withInput ? styles.padded : {}}>
-        <View style={styles.flexEndRow}>
+        </View>
+      </LinearGradient>
+      <View style={styles.card}>
+        <View style={styles.statRow}>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                t('net APR'),
+                t('borrow APR calculation', {
+                  rewardsRate: formatPercentage(borrowInfo.rewardsRate, 2),
+                  borrowRate: formatPercentage(borrowInfo.borrowRate, 2),
+                  netApr: formatPercentage(netApr, 2),
+                })
+              )
+            }}
+          >
+            <Typography color={netApr > 0 ? theme.palette.green : theme.palette.red} type="H3" bold>
+              {formatPercentage(netApr, 2)}
+            </Typography>
+            <Typography type="Small" color={theme.palette.grey[7]}>
+              {t('net APR')} ⓘ
+            </Typography>
+          </TouchableOpacity>
+          <View>
+            <Typography type="Large">
+              {formatCurrency(borrowInfo.borrowLimit * 10 ** 6, denom, true)}
+            </Typography>
+            <Typography type="Small" color={theme.palette.grey[7]}>
+              {t('borrow limit')}
+            </Typography>
+          </View>
+        </View>
+        <View style={withInput ? styles.padded : {}}>
+          <View style={styles.flexEndRow}>
+            <View style={[styles.myLtv, { right: formatPercentage(1 - ltv / 0.6, 2) }]}>
+              <Typography
+                style={ltv < 0.06 ? { marginRight: theme.baseSpace * -8 } : {}}
+                type="Small"
+                bold
+              >
+                {formatPercentage(ltv, 2)}
+              </Typography>
+              {withInput ? null : <View style={styles.shortVertDivider} />}
+            </View>
+          </View>
+          {withInput && !reload ? (
+            <Slider
+              min={0}
+              max={1}
+              sliderLength={theme.screenWidth - 24 * theme.baseSpace}
+              step={0.001 / 0.6}
+              values={[ltv / 0.6]}
+              selectedStyle={{ backgroundColor: innerBarStyle.backgroundColor }}
+              unselectedStyle={{ backgroundColor: theme.palette.grey[1] }}
+              onValuesChange={(v) => {
+                const result =
+                  (mode === 'borrow' ? 1 : -1) *
+                  (borrowInfo.borrowLimit * Math.max(min, Math.min(v[0], max)) -
+                    borrowInfo.borrowedValue)
+                setAmount!(result > 0.005 ? result.toFixed(2) : '')
+                if (v[0] > max || v[0] < min) {
+                  setReload(true)
+                }
+              }}
+            />
+          ) : (
+            <View style={styles.outerBar}>
+              <View style={[styles.innerBar, innerBarStyle]} />
+            </View>
+          )}
+        </View>
+
+        <View style={styles.spacedRow}>
+          <Typography type="Small" color={theme.palette.grey[7]}>
+            {t('LTV')}
+          </Typography>
           <View style={styles.recommendedLtv}>
-            <Typography type="Small">{t('recommended ltv')}</Typography>
             <View style={styles.vertDivider} />
+            <Typography type="Small">{t('recommended ltv')}</Typography>
           </View>
           <View>
-            <Typography type="Small">{t('max ltv')}</Typography>
             <View style={styles.vertDivider} />
+            <Typography type="Small">{t('max ltv')}</Typography>
           </View>
-          <View style={[styles.myLtv, { right: formatPercentage(1 - ltv / 0.6, 2) }]}>
-            <Typography
-              style={ltv < 0.06 ? { marginRight: theme.baseSpace * -8 } : {}}
-              type="Small"
-              bold
-            >
-              {formatPercentage(ltv, 2)}
+        </View>
+        {withInput ? (
+          <View style={styles.amountContainer}>
+            <Typography type="Large" bold>
+              {t('amount')}
             </Typography>
-            {withInput ? null : <View style={styles.shortVertDivider} />}
+            <Input
+              style={styles.amountInput}
+              placeholder="0"
+              size="Large"
+              keyboardType="numeric"
+              value={amount}
+              onChangeText={(a) => {
+                if (Number(a) === NaN) {
+                  return
+                }
+                if (Number(a) > maxValue) {
+                  setAmount!(maxValue.toFixed(2))
+                } else if (Number(a) < minValue) {
+                  setAmount!(minValue.toFixed(2))
+                } else {
+                  setAmount!(a)
+                }
+              }}
+              endAdornment={
+                <View style={styles.row}>
+                  <Typography bold>{getSymbolFromDenom(denom)}</Typography>
+                  <View style={styles.verticalDivider} />
+                  <TouchableOpacity onPress={() => setAmount!(maxValue.toFixed(2))}>
+                    <Typography bold color={theme.palette.secondary}>
+                      {t('max')}
+                    </Typography>
+                  </TouchableOpacity>
+                </View>
+              }
+              {...inputProps}
+            />
+            <Typography color={theme.palette.grey[7]} type="Small">
+              ~{formatCurrency(Number(amount) * 10 ** 6 * currencyRate, currency, true)}
+            </Typography>
           </View>
-        </View>
-        {withInput && !reload ? (
-          <Slider
-            min={0}
-            max={1}
-            sliderLength={theme.screenWidth - 24 * theme.baseSpace}
-            step={0.001 / 0.6}
-            values={[ltv / 0.6]}
-            selectedStyle={{ backgroundColor: innerBarStyle.backgroundColor }}
-            unselectedStyle={{ backgroundColor: theme.palette.grey[1] }}
-            onValuesChange={(v) => {
-              const result =
-                (mode === 'borrow' ? 1 : -1) *
-                (borrowInfo.borrowLimit * Math.max(min, Math.min(v[0], max)) -
-                  borrowInfo.borrowedValue)
-              setAmount!(result > 0.005 ? result.toFixed(2) : '')
-              if (v[0] > max || v[0] < min) {
-                setReload(true)
-              }
-            }}
-          />
-        ) : (
-          <View style={styles.outerBar}>
-            <View style={[styles.innerBar, innerBarStyle]} />
-          </View>
-        )}
+        ) : null}
       </View>
-
-      <View style={styles.spacedRow}>
-        <Typography type="Small">{t('LTV')}</Typography>
-        <Typography type="Small">
-          {t('borrow limit', {
-            amount: formatCurrency(borrowInfo.borrowLimit * 10 ** 6, denom, true),
-          })}
-        </Typography>
-      </View>
-      {withInput ? (
-        <View style={styles.amountContainer}>
-          <Typography type="Large" bold>
-            {t('amount')}
-          </Typography>
-          <Input
-            style={styles.amountInput}
-            placeholder="0"
-            size="Large"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={(a) => {
-              if (Number(a) === NaN) {
-                return
-              }
-              if (Number(a) > maxValue) {
-                setAmount!(maxValue.toFixed(2))
-              } else if (Number(a) < minValue) {
-                setAmount!(minValue.toFixed(2))
-              } else {
-                setAmount!(a)
-              }
-            }}
-            endAdornment={
-              <View style={styles.row}>
-                <Typography bold>{getSymbolFromDenom(denom)}</Typography>
-                <View style={styles.verticalDivider} />
-                <TouchableOpacity onPress={() => setAmount!(maxValue.toFixed(2))}>
-                  <Typography bold color={theme.palette.secondary}>
-                    {t('max')}
-                  </Typography>
-                </TouchableOpacity>
-              </View>
-            }
-            {...inputProps}
-          />
-          <Typography color={theme.palette.grey[7]} type="Small">
-            ~{formatCurrency(Number(amount) * 10 ** 6 * currencyRate, currency, true)}
-          </Typography>
-        </View>
-      ) : null}
-    </View>
+    </>
   )
 }
 

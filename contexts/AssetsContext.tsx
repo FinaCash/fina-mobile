@@ -126,9 +126,27 @@ const AssetsProvider: React.FC = ({ children }) => {
       [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
       availableAssets
     )
-    setAssets(sortBy(result, ['type', 'symbol']))
+    setAssets(
+      sortBy(result, [
+        (r) => {
+          switch (r.type) {
+            case AssetTypes.Currents:
+              return 0
+            case AssetTypes.Savings:
+              return 1
+            case AssetTypes.Tokens:
+              return 2
+            case AssetTypes.Investments:
+              return 3
+            case AssetTypes.Collaterals:
+              return 4
+          }
+        },
+        'symbol',
+      ])
+    )
     setBorrowInfo(borrowInfoResult)
-  }, [address, setAssets, availableAssets, currency, setBorrowInfo])
+  }, [address, setAssets, availableAssets, setBorrowInfo])
 
   const fetchAvailableAssets = React.useCallback(async () => {
     const mAssets = await fetchAvailableMirrorAssets()

@@ -105,8 +105,8 @@
   "net APR": "Net APR ",
   "borrow APR": "Borrow APR",
   "distribution APR": "Distribution APR",
-  "LTV": "LTV",
-  "borrow limit": "Borrow Limit: {{amount}}",
+  "LTV": "Loan To Value",
+  "borrow limit": "Borrow Limit",
   "max ltv": "60% (Max)",
   "recommended ltv": "45% (Recommended)",
   "collaterals": "Collaterals",
@@ -121,5 +121,9 @@
   "usd value": "Value (USD)",
   "provide collateral": "Provide Collateral",
   "withdraw collateral": "Withdraw Collateral",
-  "loan": "Loan"
+  "loan": "Loan",
+  "insufficient collateral": "Insufficient Collateral",
+  "please provide more collateral": "Please provide more collateral",
+  "no borrow value": "No Borrow Value",
+  "you have not borrowed anything yet": "You have not borrowed anything yet"
 }

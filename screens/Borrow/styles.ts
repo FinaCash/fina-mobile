@@ -4,7 +4,6 @@ export default (theme: Theme) => ({
   container: {
     backgroundColor: theme.palette.white,
     paddingBottom: theme.bottomSpace,
-    justifyContent: 'space-between',
     alignItems: 'stretch',
     flex: 1,
   },

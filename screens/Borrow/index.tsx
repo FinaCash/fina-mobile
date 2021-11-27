@@ -2,7 +2,8 @@ import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { KeyboardAvoidingView } from 'react-native'
+import { View, ScrollView } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from '../../components/Button'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import LoanCard from '../../components/LoanCard'
@@ -20,7 +21,7 @@ interface BorrowProps {
 
 const Borrow: React.FC<BorrowProps> = ({ mode }) => {
   const { t } = useLocalesContext()
-  const { styles } = useStyles(getStyles)
+  const { styles, theme } = useStyles(getStyles)
   const { borrow, repay } = useAssetsContext()
   const [amount, setAmount] = React.useState('')
   const [isConfirming, setIsConfirming] = React.useState(false)
@@ -51,24 +52,29 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
   return (
     <>
       <HeaderBar back title={t(mode)} />
-      <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <LoanCard
-          withInput
-          mode={mode}
-          denom={MARKET_DENOMS.UUSD}
-          inputProps={{ autoFocus: true }}
-          amount={amount}
-          setAmount={setAmount}
-        />
+      <KeyboardAwareScrollView
+        extraHeight={theme.baseSpace * 60}
+        contentContainerStyle={styles.container}
+      >
+        <View>
+          <LoanCard
+            withInput
+            mode={mode}
+            denom={MARKET_DENOMS.UUSD}
+            inputProps={{ autoFocus: true }}
+            amount={amount}
+            setAmount={setAmount}
+          />
+        </View>
         <Button
-          disabled={!Number(amount)}
           style={styles.button}
+          disabled={!Number(amount)}
           size="Large"
           onPress={() => setIsConfirming(true)}
         >
           {t('next')}
         </Button>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
       <ConfirmBorrowModal
         open={isConfirming}
         onClose={() => setIsConfirming(false)}
