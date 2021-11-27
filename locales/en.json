@@ -125,5 +125,6 @@
   "insufficient collateral": "Insufficient Collateral",
   "please provide more collateral": "Please provide more collateral",
   "no borrow value": "No Borrow Value",
-  "you have not borrowed anything yet": "You have not borrowed anything yet"
+  "you have not borrowed anything yet": "You have not borrowed anything yet",
+  "connect ledger": "Connect with Ledger"
 }

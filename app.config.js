@@ -7,6 +7,7 @@ export default {
   version: '0.4.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
+  plugins: ['@config-plugins/react-native-ble-plx'],
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
@@ -17,9 +18,11 @@ export default {
   },
   assetBundlePatterns: ['**/*'],
   ios: {
+    bundleIdentifier: 'com.fina.wallet',
     supportsTablet: true,
   },
   android: {
+    package: 'com.fina.wallet',
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',

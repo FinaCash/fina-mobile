@@ -11,6 +11,7 @@ import { MnemonicKey } from '@terra-money/terra.js'
 import { ScrollView } from 'react-native'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import connectLedger from '../../utils/connectLedger'
 
 enum ContentStage {
   Start = 'start',
@@ -47,23 +48,31 @@ const Login: React.FC<LoginProps> = () => {
         {stage === ContentStage.Start ? (
           <>
             <Button
-              onPress={() => setStage(ContentStage.ImportWallet)}
-              size="Large"
-              style={styles.button}
-            >
-              {t('import wallet')}
-            </Button>
-            <Button
               onPress={() => {
                 setStage(ContentStage.CreateWallet)
                 const { mnemonic } = new MnemonicKey()
                 setPhraseInput(mnemonic)
               }}
               size="Large"
+              style={styles.button}
+            >
+              {t('create wallet')}
+            </Button>
+            <Button
+              onPress={() => setStage(ContentStage.ImportWallet)}
+              size="Large"
               style={[styles.button, styles.borderButton]}
               color={theme.palette.primary}
             >
-              {t('create wallet')}
+              {t('import wallet')}
+            </Button>
+            <Button
+              onPress={() => connectLedger()}
+              size="Large"
+              style={[styles.button, styles.borderButton]}
+              color={theme.palette.primary}
+            >
+              {t('connect ledger')}
             </Button>
           </>
         ) : null}
