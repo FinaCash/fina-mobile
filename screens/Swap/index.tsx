@@ -31,6 +31,8 @@ import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import TerraApp from '@terra-money/ledger-terra-js'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -48,7 +50,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { swap, assets, availableAssets } = useAssetsContext()
-  const { address } = useAccountsContext()
+  const { address, type } = useAccountsContext()
   const { currency } = useSettingsContext()
 
   const [asset, setAsset] = React.useState(defaultAsset)
@@ -183,7 +185,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   )
 
   const onSubmit = React.useCallback(
-    async (password: string) => {
+    async (password?: string, terraApp?: TerraApp) => {
       if (fromAmount) {
         try {
           await swap(
@@ -192,7 +194,8 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
               amount: Number(fromAmount),
             },
             mode === 'buy' ? asset.coin.denom : currentAsset.coin.denom,
-            password
+            password,
+            terraApp
           )
           Actions.Success({
             message: {
@@ -321,7 +324,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           from={fromAsset as any}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => Actions.Password({ onSubmit })}
+          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
         />
       ) : null}
     </>

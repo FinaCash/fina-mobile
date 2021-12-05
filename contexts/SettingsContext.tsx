@@ -35,8 +35,8 @@ const SettingsProvider: React.FC = ({ children }) => {
   React.useEffect(() => {
     if (currency !== 'uusd') {
       terraLCDClient.market
-        .swapRate(new Coin('uusd', 1), currency)
-        .then((result) => setCurrencyRate(result.amount.toNumber()))
+        .swapRate(new Coin('uusd', 10 ** 6), currency)
+        .then((result) => setCurrencyRate(result.amount.toNumber() / 10 ** 6))
     } else {
       setCurrencyRate(1)
     }

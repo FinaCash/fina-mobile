@@ -30,6 +30,7 @@ import {
 import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
 import signAndBroadcastTx from '../utils/signAndBroadcastTx'
+import TerraApp from '@terra-money/ledger-terra-js'
 
 interface AssetsState {
   assets: Asset[]
@@ -41,33 +42,66 @@ interface AssetsState {
   swap(
     from: { denom: string; amount: number },
     toDenom: string,
-    password: string,
+    password?: string,
+    terraApp?: TerraApp,
     simulate?: boolean
   ): void
   send(
     coin: { denom: string; amount: number },
     address: string,
     memo: string,
-    password: string,
+    password?: string,
+    terraApp?: TerraApp,
     simulate?: boolean
   ): void
-  depositSavings(market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean): void
-  withdrawSavings(market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean): void
-  borrow(market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean): void
-  repay(market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean): void
-  claimBorrowRewards(market: MARKET_DENOMS, password: string, simulate?: boolean): void
+  depositSavings(
+    market: MARKET_DENOMS,
+    amount: number,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  withdrawSavings(
+    market: MARKET_DENOMS,
+    amount: number,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  borrow(
+    market: MARKET_DENOMS,
+    amount: number,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  repay(
+    market: MARKET_DENOMS,
+    amount: number,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  claimBorrowRewards(
+    market: MARKET_DENOMS,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
   provideCollateral(
     market: MARKET_DENOMS,
     symbol: string,
     amount: number,
-    password: string,
+    password?: string,
+    terraApp?: TerraApp,
     simulate?: boolean
   ): void
   withdrawCollateral(
     market: MARKET_DENOMS,
     symbol: string,
     amount: number,
-    password: string,
+    password?: string,
+    terraApp?: TerraApp,
     simulate?: boolean
   ): void
 }
@@ -100,7 +134,7 @@ const initialState: AssetsState = {
 const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
-  const { decryptSecretPhrase, address } = useAccountsContext()
+  const { decryptSeedPhrase, address, hdPath } = useAccountsContext()
   const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets)
   const [availableAssets, setAvailableAssets] = usePersistedState<AvailableAsset[]>(
     'availableAssets',
@@ -123,7 +157,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     const mAssetsBalances = await fetchMirrorBalance(address)
     const { collaterals, ...borrowInfoResult } = await fetchAnchorCollaterals(address)
     const result = await transformCoinsToAssets(
-      [...JSON.parse(balances.toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
+      [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
       availableAssets
     )
     setAssets(
@@ -189,11 +223,12 @@ const AssetsProvider: React.FC = ({ children }) => {
     async (
       from: { denom: string; amount: number },
       toDenom: string,
-      password: string,
+      password?: string,
+      terraApp?: TerraApp,
       simulate?: boolean
     ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const mAssets = availableAssets.filter(
         (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
@@ -256,11 +291,18 @@ const AssetsProvider: React.FC = ({ children }) => {
           toDenom
         )
       }
-      const result = await signAndBroadcastTx(key, { msgs: [msg as any] }, address, simulate)
+      const result = await signAndBroadcastTx(
+        key,
+        terraApp,
+        hdPath,
+        { msgs: [msg as any] },
+        address,
+        simulate
+      )
       fetchAssets()
       return result
     },
-    [fetchAssets, decryptSecretPhrase, availableAssets, address]
+    [fetchAssets, decryptSeedPhrase, availableAssets, address, hdPath]
   )
 
   const send = React.useCallback(
@@ -268,14 +310,17 @@ const AssetsProvider: React.FC = ({ children }) => {
       coin: { denom: string; amount: number },
       toAddress: string,
       memo: string,
-      password: string,
+      password?: string,
+      terraApp?: TerraApp,
       simulate?: boolean
     ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         {
           msgs: [new MsgSend(address, toAddress, { [coin.denom]: coin.amount * 10 ** 6 })],
           memo,
@@ -286,17 +331,25 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [fetchAssets, decryptSecretPhrase, address]
+    [fetchAssets, decryptSeedPhrase, address, hdPath]
   )
 
   const depositSavings = React.useCallback(
-    async (market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean) => {
+    async (
+      market: MARKET_DENOMS,
+      amount: number,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.earn.depositStable({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -304,19 +357,27 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
   const withdrawSavings = React.useCallback(
-    async (market: MARKET_DENOMS, amountInBase: number, password: string, simulate?: boolean) => {
+    async (
+      market: MARKET_DENOMS,
+      amountInBase: number,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
       const rate = await fetchAassetRate(market)
       const amount = amountInBase / rate
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.earn.withdrawStable({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -324,17 +385,25 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
   const borrow = React.useCallback(
-    async (market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean) => {
+    async (
+      market: MARKET_DENOMS,
+      amount: number,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.borrow.borrow({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -342,17 +411,25 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
   const repay = React.useCallback(
-    async (market: MARKET_DENOMS, amount: number, password: string, simulate?: boolean) => {
+    async (
+      market: MARKET_DENOMS,
+      amount: number,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.borrow.repay({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -360,17 +437,19 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
   const claimBorrowRewards = React.useCallback(
-    async (market: MARKET_DENOMS, password: string, simulate?: boolean) => {
+    async (market: MARKET_DENOMS, password?: string, terraApp?: TerraApp, simulate?: boolean) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.anchorToken.claimUSTBorrowRewards({ market })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -378,7 +457,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address]
   )
 
   const provideCollateral = React.useCallback(
@@ -386,11 +465,12 @@ const AssetsProvider: React.FC = ({ children }) => {
       market: MARKET_DENOMS,
       symbol: string,
       amount: number,
-      password: string,
+      password?: string,
+      terraApp?: TerraApp,
       simulate?: boolean
     ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.borrow.provideCollateral({
         market,
@@ -399,6 +479,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -406,7 +488,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
   const withdrawCollateral = React.useCallback(
@@ -414,11 +496,12 @@ const AssetsProvider: React.FC = ({ children }) => {
       market: MARKET_DENOMS,
       symbol: string,
       amount: number,
-      password: string,
+      password?: string,
+      terraApp?: TerraApp,
       simulate?: boolean
     ) => {
       const key = new MnemonicKey({
-        mnemonic: simulate ? '' : decryptSecretPhrase(password),
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
       const ops = anchorClient.borrow.withdrawCollateral({
         market,
@@ -427,6 +510,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       })
       const result = await signAndBroadcastTx(
         key,
+        terraApp,
+        hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate
@@ -434,7 +519,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       return result
     },
-    [decryptSecretPhrase, fetchAssets, address]
+    [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
   // On logout

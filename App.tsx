@@ -1,4 +1,4 @@
-import 'node-libs-react-native/globals'
+import 'node-libs-expo/globals'
 import 'react-native-get-random-values'
 import React from 'react'
 import * as Font from 'expo-font'

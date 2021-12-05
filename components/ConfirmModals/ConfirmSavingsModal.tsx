@@ -11,7 +11,7 @@ import Button from '../Button'
 import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { StdSignMsg } from '@terra-money/terra.js'
+import { Tx } from '@terra-money/terra.js'
 import {
   getCurrentAssetDetail,
   getSavingAssetDetail,
@@ -63,11 +63,12 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
         denom,
         amount,
         '',
+        undefined,
         true
       )
       setFee(
         keyBy(
-          JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
+          JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
             ...f,
             amount: Number(f.amount) / 10 ** 6,
           })),

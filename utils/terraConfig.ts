@@ -1,10 +1,15 @@
 import { Anchor, bombay12, AddressProviderFromJson } from '@anchor-protocol/anchor.js'
-import { DEFAULT_BOMBAY_MIRROR_OPTIONS, TerraswapPair } from '@mirror-protocol/mirror.js'
+import { DEFAULT_BOMBAY_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
+
+export const deafultHdPath = [44, 330, 0, 0, 0]
+export const defaultPrefix = 'terra'
+
+export const chainID = 'bombay-12'
 
 export const terraLCDClient = new LCDClient({
   URL: 'https://bombay-lcd.terra.dev',
-  chainID: 'bombay-12',
+  chainID,
   gasPrices: {
     uusd: 0.15,
   },
@@ -65,8 +70,6 @@ export const terraStationUrl = 'https://station.terra.money'
 export const terraStationChain = 'testnet'
 
 export const mirrorOptions = DEFAULT_BOMBAY_MIRROR_OPTIONS
-
-TerraswapPair
 
 export const colleteralsInfo = {
   BETH: {

@@ -1,3 +1,5 @@
+export type WalletTypes = 'ledger' | 'seed' | 'private key'
+
 export enum AssetTypes {
   Currents = 'currents',
   Savings = 'savings',

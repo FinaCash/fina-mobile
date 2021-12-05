@@ -12,6 +12,9 @@ import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
 import ConfirmSavingsModal from '../../components/ConfirmModals/ConfirmSavingsModal'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { useAccountsContext } from '../../contexts/AccountsContext'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import TerraApp from '@terra-money/ledger-terra-js'
 
 interface SavingsProps {
   mode: 'deposit' | 'withdraw'
@@ -20,6 +23,7 @@ interface SavingsProps {
 
 const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) => {
   const { styles } = useStyles(getStyles)
+  const { type } = useAccountsContext()
   const { depositSavings, withdrawSavings, assets } = useAssetsContext()
   const { t } = useLocalesContext()
   const [amount, setAmount] = React.useState('')
@@ -41,7 +45,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
     })
 
   const onSubmit = React.useCallback(
-    async (password: string) => {
+    async (password?: string, terraApp?: TerraApp) => {
       const message = {
         type: 'swap',
         from: (mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
@@ -59,7 +63,8 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
         await (mode === 'deposit' ? depositSavings : withdrawSavings)(
           MARKET_DENOMS.UUSD,
           Number(amount),
-          password
+          password,
+          terraApp
         )
         Actions.Success({
           message,
@@ -123,7 +128,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
           mode={mode}
           apr={apr}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => Actions.Password({ onSubmit })}
+          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
         />
       ) : null}
     </>

@@ -11,7 +11,8 @@ import { MnemonicKey } from '@terra-money/terra.js'
 import { ScrollView } from 'react-native'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
-import connectLedger from '../../utils/connectLedger'
+import TerraApp from '@terra-money/ledger-terra-js'
+import { deafultHdPath, defaultPrefix } from '../../utils/terraConfig'
 
 enum ContentStage {
   Start = 'start',
@@ -35,6 +36,14 @@ const Login: React.FC<LoginProps> = () => {
     },
     [phraseInput, login]
   )
+
+  const onConnectLedger = React.useCallback(async (terraApp: TerraApp) => {
+    await terraApp.showAddressAndPubKey(deafultHdPath, defaultPrefix)
+    const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+    await login('', '', result.bech32_address)
+    Actions.pop()
+    Actions.replace('Main')
+  }, [])
 
   return (
     <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
@@ -67,7 +76,11 @@ const Login: React.FC<LoginProps> = () => {
               {t('import wallet')}
             </Button>
             <Button
-              onPress={() => connectLedger()}
+              onPress={() => {
+                Actions.ConnectLedger({
+                  onSubmit: onConnectLedger,
+                })
+              }}
               size="Large"
               style={[styles.button, styles.borderButton]}
               color={theme.palette.primary}
@@ -81,7 +94,7 @@ const Login: React.FC<LoginProps> = () => {
             <Input
               style={styles.phraseInput}
               multiline
-              placeholder={t('enter secret recovery phrase')}
+              placeholder={t('enter seed phrase')}
               autoCapitalize="none"
               value={phraseInput}
               onChangeText={setPhraseInput}

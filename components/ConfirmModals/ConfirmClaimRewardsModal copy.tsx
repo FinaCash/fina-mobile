@@ -9,7 +9,7 @@ import Typography from '../Typography'
 import Button from '../Button'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { StdSignMsg } from '@terra-money/terra.js'
+import { Tx } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { AvailableAsset } from '../../types/assets'
@@ -43,10 +43,10 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await claimBorrowRewards(denom, '', true)
+      const tx = await claimBorrowRewards(denom, '', undefined, true)
       setFee(
         keyBy(
-          JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
+          JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
             ...f,
             amount: Number(f.amount) / 10 ** 6,
           })),

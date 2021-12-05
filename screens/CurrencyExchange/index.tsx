@@ -15,6 +15,9 @@ import AssetAmountInput from '../../components/AssetAmountInput'
 import { Asset, AssetTypes } from '../../types/assets'
 import ConfirmSwapModal from '../../components/ConfirmModals/ConfirmSwapModal'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import { useAccountsContext } from '../../contexts/AccountsContext'
+import TerraApp from '@terra-money/ledger-terra-js'
 
 interface CurrencyExchangeProps {
   from?: string
@@ -27,6 +30,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { assets, availableCurrencies, swap } = useAssetsContext()
+  const { type } = useAccountsContext()
   const { currency } = useSettingsContext()
   const { t } = useLocalesContext()
 
@@ -99,10 +103,10 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
   )
 
   const onSubmit = React.useCallback(
-    async (password: string) => {
+    async (password?: string, terraApp?: TerraApp) => {
       if (from && to) {
         try {
-          await swap({ denom: from, amount: Number(fromAmount) }, to, password)
+          await swap({ denom: from, amount: Number(fromAmount) }, to, password, terraApp)
           Actions.Success({
             message: {
               type: 'swap',
@@ -195,7 +199,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
           from={fromAssetWithAmount}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => Actions.Password({ onSubmit })}
+          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
         />
       ) : null}
     </>

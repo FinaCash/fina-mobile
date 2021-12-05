@@ -33,7 +33,7 @@ import CollateralItem from '../../components/CollateralItem'
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, availableAssets, fetchAssets } = useAssetsContext()
+  const { assets, availableAssets, fetchAssets, fetchAvailableAssets } = useAssetsContext()
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
   const { currency } = useSettingsContext()
@@ -134,9 +134,10 @@ const Home: React.FC = () => {
 
   const refresh = React.useCallback(async () => {
     setLoading(true)
+    await fetchAvailableAssets()
     await fetchAssets()
     setLoading(false)
-  }, [fetchAssets, setLoading])
+  }, [fetchAvailableAssets, fetchAssets, setLoading])
 
   return (
     <LinearGradient

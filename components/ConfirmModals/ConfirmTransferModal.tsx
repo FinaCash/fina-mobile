@@ -12,7 +12,7 @@ import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Asset } from '../../types/assets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { StdSignMsg } from '@terra-money/terra.js'
+import { Tx } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -58,10 +58,10 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await send({ denom: asset.coin.denom, amount }, address, memo, '', true)
+      const tx = await send({ denom: asset.coin.denom, amount }, address, memo, '', undefined, true)
       setFee(
         keyBy(
-          JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
+          JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
             ...f,
             amount: Number(f.amount) / 10 ** 6,
           })),

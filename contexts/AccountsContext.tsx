@@ -3,29 +3,44 @@ import { MnemonicKey } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
+import { deafultHdPath } from '../utils/terraConfig'
+import { WalletTypes } from '../types/assets'
 
 interface AccountsState {
   address: string
-  decryptSecretPhrase(password: string): string
+  hdPath: number[]
+  type: WalletTypes
+  decryptSeedPhrase(password: string): string
   loaded: boolean
-  login(secretPhrase: string, password: string): void
+  login(
+    seedPhrase?: string,
+    password?: string,
+    ledgerAddress?: string,
+    coinType?: number,
+    account?: number,
+    index?: number
+  ): void
   logout(): void
 }
 
 const initialState: AccountsState = {
   address: '',
+  hdPath: deafultHdPath,
+  type: 'seed',
   loaded: false,
   login: () => null,
   logout: () => null,
-  decryptSecretPhrase: () => '',
+  decryptSeedPhrase: () => '',
 }
 
 const AccountsContext = React.createContext<AccountsState>(initialState)
 
 const AccountsProvider: React.FC = ({ children }) => {
   const [address, setAddress, loaded] = usePersistedState('address', initialState.address)
-  const [encryptedSecretPhrase, setEncryptedSecretPhrase] = usePersistedState(
-    'encryptedSecretPhrase',
+  const [type, setType] = usePersistedState('type', initialState.type)
+  const [hdPath, setHdPath] = usePersistedState('hdPath', initialState.hdPath)
+  const [encryptedSeedPhrase, setEncryptedSeedPhrase] = usePersistedState(
+    'encryptedSeedPhrase',
     '',
     {
       secure: true,
@@ -33,42 +48,66 @@ const AccountsProvider: React.FC = ({ children }) => {
   )
 
   const login = React.useCallback(
-    async (secretPhrase: string, password: string) => {
-      const key = new MnemonicKey({ mnemonic: secretPhrase })
-      setAddress(key.accAddress)
-      setEncryptedSecretPhrase(CryptoJS.AES.encrypt(secretPhrase, password).toString())
+    async (
+      seedPhrase: string,
+      password: string,
+      ledgerAddress: string,
+      coinType = initialState.hdPath[1],
+      account = initialState.hdPath[2],
+      index = initialState.hdPath[4]
+    ) => {
+      setHdPath([44, coinType, account, 0, index])
+      if (ledgerAddress) {
+        setType('ledger')
+        setAddress(ledgerAddress)
+        setEncryptedSeedPhrase('')
+      } else {
+        const key = new MnemonicKey({
+          mnemonic: seedPhrase,
+          coinType,
+          account,
+          index,
+        })
+        setType('seed')
+        setAddress(key.accAddress)
+        setEncryptedSeedPhrase(CryptoJS.AES.encrypt(seedPhrase, password).toString())
+      }
     },
-    [setAddress, setEncryptedSecretPhrase]
+    [setAddress, setEncryptedSeedPhrase, setHdPath, setType]
   )
 
   const logout = React.useCallback(() => {
     setAddress(initialState.address)
-    setEncryptedSecretPhrase('')
+    setType(initialState.type)
+    setHdPath(initialState.hdPath)
+    setEncryptedSeedPhrase('')
     Actions.reset('Login')
-  }, [setAddress, setEncryptedSecretPhrase])
+  }, [setAddress, setEncryptedSeedPhrase, setType, setHdPath])
 
-  const decryptSecretPhrase = React.useCallback(
+  const decryptSeedPhrase = React.useCallback(
     (password: string) => {
       try {
-        const secretPhrase = CryptoJS.AES.decrypt(encryptedSecretPhrase, password).toString(
+        const seedPhrase = CryptoJS.AES.decrypt(encryptedSeedPhrase, password).toString(
           CryptoJS.enc.Utf8
         )
-        if (!secretPhrase) {
+        if (!seedPhrase) {
           throw new Error('incorrect password')
         }
-        return secretPhrase
+        return seedPhrase
       } catch (err: any) {
         throw new Error('incorrect password')
       }
     },
-    [encryptedSecretPhrase]
+    [encryptedSeedPhrase]
   )
 
   return (
     <AccountsContext.Provider
       value={{
         address,
-        decryptSecretPhrase,
+        hdPath,
+        type,
+        decryptSeedPhrase,
         loaded,
         login,
         logout,

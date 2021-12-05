@@ -1,13 +1,17 @@
+import TerraApp from '@terra-money/ledger-terra-js'
 import React from 'react'
 import { Actions } from 'react-native-router-flux'
+import { useAccountsContext } from '../contexts/AccountsContext'
 import { useAssetsContext } from '../contexts/AssetsContext'
 import { useLocalesContext } from '../contexts/LocalesContext'
 import { Asset } from '../types/assets'
 import { Recipient } from '../types/recipients'
+import { getPasswordOrLedgerApp } from './signAndBroadcastTx'
 
 const useSendToken = () => {
   const { assets, send } = useAssetsContext()
   const { t } = useLocalesContext()
+  const { type } = useAccountsContext()
   const transferAsset = React.useCallback(
     ({ asset, recipient }: { asset: Asset; recipient?: Recipient }) => {
       Actions.SelectAmount({
@@ -18,35 +22,33 @@ const useSendToken = () => {
             recipient,
             amount,
             onSubmit: (address: string, memo: string) =>
-              Actions.Password({
-                onSubmit: async (password: string) => {
-                  try {
-                    await send({ denom: asset.coin.denom, amount }, address, memo, password)
-                    Actions.Success({
-                      message: {
-                        type: 'send',
-                        asset,
-                        amount,
-                        address,
-                        memo,
-                      },
-                      onClose: () => Actions.jump('Home'),
-                    })
-                  } catch (err: any) {
-                    Actions.Success({
-                      message: {
-                        type: 'send',
-                        asset,
-                        amount,
-                        address,
-                        memo,
-                      },
-                      error: err.message,
-                      onClose: () => Actions.popTo('SelectRecipient'),
-                    })
-                  }
-                },
-              }),
+              getPasswordOrLedgerApp(async (password?: string, terraApp?: TerraApp) => {
+                try {
+                  await send({ denom: asset.coin.denom, amount }, address, memo, password, terraApp)
+                  Actions.Success({
+                    message: {
+                      type: 'send',
+                      asset,
+                      amount,
+                      address,
+                      memo,
+                    },
+                    onClose: () => Actions.jump('Home'),
+                  })
+                } catch (err: any) {
+                  Actions.Success({
+                    message: {
+                      type: 'send',
+                      asset,
+                      amount,
+                      address,
+                      memo,
+                    },
+                    error: err.message,
+                    onClose: () => Actions.popTo('SelectRecipient'),
+                  })
+                }
+              }, type),
           }),
       })
     },

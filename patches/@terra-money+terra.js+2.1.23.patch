@@ -1,0 +1,32 @@
+diff --git a/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.d.ts b/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.d.ts
+index ce955a8..281c030 100644
+--- a/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.d.ts
++++ b/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.d.ts
+@@ -15,7 +15,7 @@ export declare class Wallet {
+     sequence(): Promise<number>;
+     createTx(options: CreateTxOptions & {
+         sequence?: number;
+-    }): Promise<Tx>;
++    }, address?: string): Promise<Tx>;
+     createAndSignTx(options: CreateTxOptions & {
+         sequence?: number;
+         accountNumber?: number;
+diff --git a/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.js b/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.js
+index 1e83cd2..924c53d 100644
+--- a/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.js
++++ b/node_modules/@terra-money/terra.js/dist/client/lcd/Wallet.js
+@@ -61,12 +61,12 @@ var Wallet = /** @class */ (function () {
+             return d.getSequenceNumber();
+         });
+     };
+-    Wallet.prototype.createTx = function (options) {
++    Wallet.prototype.createTx = function (options, address) {
+         return __awaiter(this, void 0, void 0, function () {
+             return __generator(this, function (_a) {
+                 return [2 /*return*/, this.lcd.tx.create([
+                         {
+-                            address: this.key.accAddress,
++                            address: address || this.key.accAddress,
+                             sequenceNumber: options.sequence,
+                             publicKey: this.key.publicKey,
+                         },

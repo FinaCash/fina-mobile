@@ -3,8 +3,8 @@ import { View } from 'react-native'
 import { Router, Scene, Tabs, Modal, Stack } from 'react-native-router-flux'
 import HomeIcon from '../assets/images/icons/home.svg'
 import BorrowIcon from '../assets/images/icons/borrow.svg'
-import FarmIcon from '../assets/images/icons/farm.svg'
-import InvestIcon from '../assets/images/icons/invest.svg'
+import EarnIcon from '../assets/images/icons/earn.svg'
+import TradeIcon from '../assets/images/icons/swap.svg'
 import SettingsIcon from '../assets/images/icons/settings.svg'
 import Typography from '../components/Typography'
 import useStyles from '../theme/useStyles'
@@ -14,7 +14,7 @@ import Login from '../screens/Login'
 import Password from '../screens/Password'
 import Savings from '../screens/Savings'
 import Settings from '../screens/Settings'
-import Invest from '../screens/Invest'
+import Trade from '../screens/Trade'
 import Swap from '../screens/Swap'
 import SelectAsset from '../screens/SelectAsset'
 import SelectAmount from '../screens/SelectAmount'
@@ -31,6 +31,8 @@ import History from '../screens/History'
 import Loan from '../screens/Loan'
 import ProvideCollateral from '../screens/ProvideCollateral'
 import Borrow from '../screens/Borrow'
+import Earn from '../screens/Earn'
+import ConnectLedger from '../screens/ConnectLedger'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -82,12 +84,20 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
                   component={Home}
                 />
                 <Scene
-                  key="Invest"
+                  key="Trade"
                   hideNavBar
-                  iconSvg={<InvestIcon />}
-                  tabTitle={t('invest')}
+                  iconSvg={<TradeIcon />}
+                  tabTitle={t('trade')}
                   icon={TabIcon}
-                  component={Invest}
+                  component={Trade}
+                />
+                <Scene
+                  key="Earn"
+                  hideNavBar
+                  iconSvg={<EarnIcon />}
+                  tabTitle={t('earn')}
+                  icon={TabIcon}
+                  component={Earn}
                 />
                 <Scene
                   key="Loan"
@@ -96,14 +106,6 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
                   tabTitle={t('loan')}
                   icon={TabIcon}
                   component={Loan}
-                />
-                <Scene
-                  key="Farm"
-                  hideNavBar
-                  iconSvg={<FarmIcon />}
-                  tabTitle={t('farm')}
-                  icon={TabIcon}
-                  component={Invest}
                 />
                 <Scene
                   key="Settings"
@@ -130,6 +132,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="Borrow" hideNavBar component={Borrow} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
+            <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />
             <Scene key="Success" hideNavBar component={Success} />
           </Modal>
         </Scene>

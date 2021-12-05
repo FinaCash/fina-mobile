@@ -11,6 +11,9 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import ConfirmCollateralModal from '../../components/ConfirmModals/ConfirmCollateralModal'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import { useAccountsContext } from '../../contexts/AccountsContext'
+import TerraApp from '@terra-money/ledger-terra-js'
 
 interface ProvideCollateralProps {
   availableAsset: AvailableAsset
@@ -21,6 +24,7 @@ interface ProvideCollateralProps {
 const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableAsset, mode }) => {
   const { styles } = useStyles(getStyles)
   const { t } = useLocalesContext()
+  const { type } = useAccountsContext()
   const { provideCollateral, withdrawCollateral } = useAssetsContext()
 
   const [amount, setAmount] = React.useState('')
@@ -28,13 +32,14 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
   const [isConfirming, setIsConfirming] = React.useState(false)
 
   const onSubmit = React.useCallback(
-    async (password: string) => {
+    async (password?: string, terraApp?: TerraApp) => {
       try {
         await (mode === 'provide' ? provideCollateral : withdrawCollateral)(
           MARKET_DENOMS.UUSD,
           availableAsset.symbol,
           Number(amount),
-          password
+          password,
+          terraApp
         )
         Actions.Success({
           message: {
@@ -87,7 +92,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
       <ConfirmCollateralModal
         open={isConfirming}
         onClose={() => setIsConfirming(false)}
-        onConfirm={() => Actions.Password({ onSubmit })}
+        onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
         availableAsset={availableAsset}
         amount={Number(amount)}
         mode={mode}

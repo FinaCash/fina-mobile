@@ -18,10 +18,14 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import LoanCard from '../../components/LoanCard'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
 import ReceiveIcon from '../../assets/images/icons/receive.svg'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import { useAccountsContext } from '../../contexts/AccountsContext'
+import TerraApp from '@terra-money/ledger-terra-js'
 
 const Loan: React.FC = () => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
+  const { type } = useAccountsContext()
   const { assets, availableAssets, borrowInfo, claimBorrowRewards } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
@@ -58,9 +62,9 @@ const Loan: React.FC = () => {
   )
 
   const onClaim = React.useCallback(
-    async (password: string) => {
+    async (password?: string, terraApp?: TerraApp) => {
       try {
-        await claimBorrowRewards(MARKET_DENOMS.UUSD, password)
+        await claimBorrowRewards(MARKET_DENOMS.UUSD, password, terraApp)
         Actions.Success({
           message: {
             type: 'claim',
@@ -68,7 +72,7 @@ const Loan: React.FC = () => {
             rewards: borrowInfo.pendingRewards,
             apr: borrowInfo.rewardsRate,
           },
-          onClose: () => Actions.jump('Borrow'),
+          onClose: () => Actions.jump('Loan'),
         })
       } catch (err: any) {
         Actions.Success({
@@ -79,7 +83,7 @@ const Loan: React.FC = () => {
             apr: borrowInfo.rewardsRate,
           },
           error: err.message,
-          onClose: () => Actions.jump('Borrow'),
+          onClose: () => Actions.jump('Loan'),
         })
       }
     },
@@ -155,7 +159,7 @@ const Loan: React.FC = () => {
             open={isClaiming}
             onClose={() => setIsClaiming(false)}
             onConfirm={() => {
-              Actions.Password({ onSubmit: onClaim })
+              getPasswordOrLedgerApp(onClaim, type)
               setIsClaiming(false)
             }}
             availableAsset={anc}

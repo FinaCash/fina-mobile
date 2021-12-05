@@ -11,10 +11,10 @@ import Button from '../Button'
 import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { StdSignMsg } from '@terra-money/terra.js'
 import { getCurrentAssetDetail, getSymbolFromDenom } from '../../utils/transformAssets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { Tx } from '@terra-money/terra.js'
 
 interface ConfirmBorrowModalProps {
   open: boolean
@@ -53,10 +53,10 @@ const ConfirmBorrowModal: React.FC<ConfirmBorrowModalProps> = ({
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await (mode === 'borrow' ? borrow : repay)(denom, amount, '', true)
+      const tx = await (mode === 'borrow' ? borrow : repay)(denom, amount, '', undefined, true)
       setFee(
         keyBy(
-          JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
+          JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
             ...f,
             amount: Number(f.amount) / 10 ** 6,
           })),

@@ -12,7 +12,7 @@ import AssetItem from '../AssetItem'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { Asset } from '../../types/assets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
-import { StdSignMsg } from '@terra-money/terra.js'
+import { Tx } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 
@@ -55,11 +55,12 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         { denom: from.coin.denom, amount: Number(from.coin.amount) / 10 ** 6 },
         to.coin.denom,
         '',
+        undefined,
         true
       )
       setFee(
         keyBy(
-          JSON.parse((tx as unknown as StdSignMsg).fee.amount.toJSON()).map((f: any) => ({
+          JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
             ...f,
             amount: Number(f.amount) / 10 ** 6,
           })),

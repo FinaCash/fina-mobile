@@ -25,7 +25,7 @@ import { Asset } from '../../types/assets'
 const supportedThemes = Object.values(ThemeType)
 
 const Settings: React.FC = () => {
-  const { login, logout, decryptSecretPhrase } = useAccountsContext()
+  const { login, logout, decryptSeedPhrase, type } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
   const { theme, currency, setTheme, setCurrency } = useSettingsContext()
@@ -97,52 +97,56 @@ const Settings: React.FC = () => {
     {
       title: t('account'),
       data: [
-        {
-          icon: 'eye',
-          title: t('view secret recovery phrase'),
-          value: '',
-          onPress: () => {
-            Actions.Password({
-              onSubmit: (password: string) => {
-                const phrase = decryptSecretPhrase(password)
-                if (phrase) {
-                  Alert.alert(t('secret recovery phrase'), phrase, [
-                    {
-                      text: t('close'),
-                      onPress: () => Actions.pop(),
-                      style: 'cancel',
-                    },
-                  ])
-                }
+        type !== 'ledger'
+          ? {
+              icon: 'eye',
+              title: t('view seed phrase'),
+              value: '',
+              onPress: () => {
+                Actions.Password({
+                  onSubmit: (password: string) => {
+                    const phrase = decryptSeedPhrase(password)
+                    if (phrase) {
+                      Alert.alert(t('seed phrase'), phrase, [
+                        {
+                          text: t('close'),
+                          onPress: () => Actions.pop(),
+                          style: 'cancel',
+                        },
+                      ])
+                    }
+                  },
+                })
               },
-            })
-          },
-        },
-        {
-          icon: 'lock',
-          title: t('change password'),
-          value: '',
-          onPress: () => {
-            Actions.Password({
-              onSubmit: (oldPassword: string) => {
-                const phrase = decryptSecretPhrase(oldPassword)
-                if (phrase) {
-                  Actions.pop()
-                  Actions.Password({
-                    onSubmit: async (password: string) => {
-                      await login(phrase, password)
-                      Actions.jump('Settings')
-                      Toast.show(t('password updated'))
-                    },
-                    confirmationRequired: true,
-                    newPassword: true,
-                    isSetting: true,
-                  })
-                }
+            }
+          : null,
+        type !== 'ledger'
+          ? {
+              icon: 'lock',
+              title: t('change password'),
+              value: '',
+              onPress: () => {
+                Actions.Password({
+                  onSubmit: (oldPassword: string) => {
+                    const phrase = decryptSeedPhrase(oldPassword)
+                    if (phrase) {
+                      Actions.pop()
+                      Actions.Password({
+                        onSubmit: async (password: string) => {
+                          await login(phrase, password)
+                          Actions.jump('Settings')
+                          Toast.show(t('password updated'))
+                        },
+                        confirmationRequired: true,
+                        newPassword: true,
+                        isSetting: true,
+                      })
+                    }
+                  },
+                })
               },
-            })
-          },
-        },
+            }
+          : null,
         {
           icon: 'log-out',
           title: t('logout'),
@@ -162,7 +166,7 @@ const Settings: React.FC = () => {
             ])
           },
         },
-      ],
+      ].filter((a) => a),
     },
   ]
 
@@ -171,7 +175,7 @@ const Settings: React.FC = () => {
       <HeaderBar title={t('settings')} />
       <SectionList
         style={styles.list}
-        keyExtractor={(item) => item.title}
+        keyExtractor={(item) => (item ? item.title : '')}
         sections={sections}
         stickySectionHeadersEnabled={false}
         renderSectionHeader={({ section: { title } }) => (
@@ -181,28 +185,30 @@ const Settings: React.FC = () => {
             </Typography>
           </View>
         )}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.itemContainer} onPress={item.onPress}>
-            <View style={styles.row}>
-              <Icon
-                style={styles.icon}
-                name={item.icon as any}
-                size={6 * themeStyle.baseSpace}
-                color={themeStyle.palette.grey[10]}
-              />
-              <Typography>{item.title}</Typography>
-            </View>
-            <View style={styles.row}>
-              <Typography>{item.value}</Typography>
-              <Icon
-                style={styles.arrow}
-                name="chevron-right"
-                size={6 * themeStyle.baseSpace}
-                color={themeStyle.palette.grey[10]}
-              />
-            </View>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) =>
+          item ? (
+            <TouchableOpacity style={styles.itemContainer} onPress={item.onPress}>
+              <View style={styles.row}>
+                <Icon
+                  style={styles.icon}
+                  name={item.icon as any}
+                  size={6 * themeStyle.baseSpace}
+                  color={themeStyle.palette.grey[10]}
+                />
+                <Typography>{item.title}</Typography>
+              </View>
+              <View style={styles.row}>
+                <Typography>{item.value}</Typography>
+                <Icon
+                  style={styles.arrow}
+                  name="chevron-right"
+                  size={6 * themeStyle.baseSpace}
+                  color={themeStyle.palette.grey[10]}
+                />
+              </View>
+            </TouchableOpacity>
+          ) : null
+        }
         ListFooterComponent={
           <Typography style={styles.version}>
             v{get(Constants, 'manifest.version', '0.0.0')}

@@ -14,7 +14,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { getMAssetDetail } from '../../utils/transformAssets'
 
-const Invest: React.FC = () => {
+const Stake: React.FC = () => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { availableAssets, assets } = useAssetsContext()
@@ -32,7 +32,6 @@ const Invest: React.FC = () => {
 
   return (
     <>
-      <HeaderBar title={t('invest')} />
       <View style={styles.searchBarContainer}>
         <Input
           placeholder={t('search')}
@@ -79,4 +78,4 @@ const Invest: React.FC = () => {
   )
 }
 
-export default Invest
+export default Stake

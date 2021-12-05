@@ -60,7 +60,9 @@ const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       {...props}
     >
-      {loading ? <ActivityIndicator size={theme.fonts[size].fontSize} /> : null}
+      {loading ? (
+        <ActivityIndicator size={theme.fonts[size].fontSize} color={color || theme.palette.white} />
+      ) : null}
       {icon && !loading ? (
         <View style={[styles.iconContainer, iconStyle]}>
           {React.cloneElement(icon, {

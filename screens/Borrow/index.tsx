@@ -2,7 +2,7 @@ import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { View, ScrollView } from 'react-native'
+import { View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from '../../components/Button'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -12,6 +12,9 @@ import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { Actions } from 'react-native-router-flux'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { getCurrentAssetDetail } from '../../utils/transformAssets'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import TerraApp from '@terra-money/ledger-terra-js'
+import { useAccountsContext } from '../../contexts/AccountsContext'
 
 const denom = MARKET_DENOMS.UUSD
 
@@ -23,17 +26,23 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { borrow, repay } = useAssetsContext()
+  const { type } = useAccountsContext()
   const [amount, setAmount] = React.useState('')
   const [isConfirming, setIsConfirming] = React.useState(false)
 
   const onSubmit = React.useCallback(
-    async (password: string) => {
+    async (password?: string, terraApp?: TerraApp) => {
       const message = {
         type: mode,
         asset: getCurrentAssetDetail({ denom, amount: String(Number(amount) * 10 ** 6) }),
       }
       try {
-        await (mode === 'borrow' ? borrow : repay)(MARKET_DENOMS.UUSD, Number(amount), password)
+        await (mode === 'borrow' ? borrow : repay)(
+          MARKET_DENOMS.UUSD,
+          Number(amount),
+          password,
+          terraApp
+        )
         Actions.Success({
           message,
           onClose: () => Actions.jump('Loan'),
@@ -81,7 +90,7 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
         mode={mode}
         denom={denom}
         amount={Number(amount)}
-        onConfirm={() => Actions.Password({ onSubmit })}
+        onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
       />
     </>
   )

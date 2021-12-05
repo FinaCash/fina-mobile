@@ -129,15 +129,15 @@ export const transformCoinsToAssets = async (
     } else if (coin.denom.match(/^u/)) {
       const rate =
         coin.denom === 'uusd'
-          ? new Coin('uusd', 1)
-          : await terra.market.swapRate(new Coin(coin.denom.replace(/^a/, 'u'), 1), 'uusd')
-      asset = getCurrentAssetDetail(coin, rate.amount.toNumber())
+          ? new Coin('uusd', 10 ** 6)
+          : await terra.market.swapRate(new Coin(coin.denom.replace(/^a/, 'u'), 10 ** 6), 'uusd')
+      asset = getCurrentAssetDetail(coin, rate.amount.toNumber() / 10 ** 6)
     } else if (coin.denom.match(/^a/)) {
       const rate =
         coin.denom === 'ausd'
-          ? new Coin('uusd', 1)
-          : await terra.market.swapRate(new Coin(coin.denom.replace(/^a/, 'u'), 1), 'uusd')
-      asset = getSavingAssetDetail(coin, rate.amount.toNumber())
+          ? new Coin('uusd', 10 ** 6)
+          : await terra.market.swapRate(new Coin(coin.denom.replace(/^a/, 'u'), 10 ** 6), 'uusd')
+      asset = getSavingAssetDetail(coin, rate.amount.toNumber() / 10 ** 6)
     } else if (coin.denom.match(/^B/)) {
       asset = getCollateralAssetDetail(coin as any)
     } else {
