@@ -9,7 +9,6 @@ const connectLedger = () =>
   new Promise<TerraApp>(async (resolve, reject) => {
     if (terraApp) {
       const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
-      console.log(result)
       if (result.bech32_address) {
         resolve(terraApp)
       }

@@ -1,6 +1,5 @@
 import React from 'react'
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view'
-import { LinearGradient } from 'expo-linear-gradient'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -30,23 +29,12 @@ const Earn: React.FC = () => {
         onIndexChange={setIndex}
         initialLayout={{ width: theme.screenWidth }}
         renderTabBar={(props) => (
-          <LinearGradient
-            start={[0, 0]}
-            end={[1, 3.65]}
-            colors={theme.gradients.primary}
-            style={styles.tabs}
-          >
-            <TabBar
-              {...props}
-              style={{ backgroundColor: 'transparent' }}
-              labelStyle={{
-                ...theme.fonts.Large,
-                color: theme.palette.white,
-                textTransform: 'none',
-              }}
-              indicatorStyle={{ backgroundColor: theme.palette.white, height: theme.baseSpace }}
-            />
-          </LinearGradient>
+          <TabBar
+            {...props}
+            style={styles.tabbar}
+            labelStyle={styles.tabLabel}
+            indicatorStyle={styles.tabIndicator}
+          />
         )}
       />
     </>

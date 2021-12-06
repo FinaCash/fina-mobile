@@ -1,10 +1,13 @@
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
-  tabs: {
-    paddingTop: theme.baseSpace * 9 + theme.statusBarHeight,
-    marginTop: -(theme.baseSpace * 12 + theme.statusBarHeight),
+  tabbar: { backgroundColor: theme.palette.white },
+  tabLabel: {
+    ...theme.fonts.Large,
+    color: theme.palette.primary,
+    textTransform: 'none',
   },
+  tabIndicator: { backgroundColor: theme.palette.primary, height: theme.baseSpace / 2 },
   list: {
     backgroundColor: theme.palette.white,
   },

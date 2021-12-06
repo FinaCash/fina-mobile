@@ -29,7 +29,7 @@ const Settings: React.FC = () => {
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
   const { theme, currency, setTheme, setCurrency } = useSettingsContext()
-  const { availableCurrencies, fetchAssets } = useAssetsContext()
+  const { availableCurrencies } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
   const sections = [

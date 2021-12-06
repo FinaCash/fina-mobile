@@ -2,12 +2,10 @@
 # yarn lockfile v1
 
 
-"@anchor-protocol/anchor.js@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@anchor-protocol/anchor.js/-/anchor.js-1.2.0.tgz#066edcb22e2374806f3ee2e1488951b479d0b483"
-  integrity sha512-xUDO0njY31ye+dNT8IwTOFc/84B6onNpDzq+CAaWwt46p8o3Y1DfDG5GX0kGu7Zb/2g9TyFydsawyTDQmbVg6g==
-  dependencies:
-    "@terra-money/terra.js" "^2.0.14"
+"@anchor-protocol/anchor.js@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@anchor-protocol/anchor.js/-/anchor.js-2.0.0.tgz#91f1d84d16ee2168b38053e3cf5e873d2d24037c"
+  integrity sha512-bfPU5NaMoMgFCMXZ7xAYsPa/uFrH++4k6AIDpTaEFN69ye+qx+UqqjI0lcs8IEEwon0q1SgMkN9SK7W2kPtWDQ==
 
 "@babel/code-frame@7.10.4", "@babel/code-frame@~7.10.4":
   version "7.10.4"
@@ -2345,10 +2343,10 @@
     rxjs "6"
     uuid "^3.4.0"
 
-"@mirror-protocol/mirror.js@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@mirror-protocol/mirror.js/-/mirror.js-2.1.1.tgz#970d2b9573cdf1201e7a02eb99c6e6c0987f445c"
-  integrity sha512-cO8DqxaMxZj5Ixdk4XS1UEjaby9yR07513L+5Cmc+NdTbBgYB6SSa8keyaDDBHHZKhQ0k3ShNq94z9jZpGHcXA==
+"@mirror-protocol/mirror.js@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@mirror-protocol/mirror.js/-/mirror.js-2.1.4.tgz#17ccd21a053e8991ccba0fc04a6e89d95b4d0a5a"
+  integrity sha512-0h94FlUOnwtwYPaA0GZ7I7aQSoW8p/yOwBeOfERbrLsdg/MCgnoLKLhtCLwqf8YtbD4Sa4JdeDwBKivzDtlddQ==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2721,31 +2719,13 @@
     bech32 "^1.1.3"
     ripemd160 "^2.0.2"
 
-"@terra-money/terra.js@^2.0.14":
-  version "2.0.14"
-  resolved "https://registry.yarnpkg.com/@terra-money/terra.js/-/terra.js-2.0.14.tgz#3195ed184524f926196b0b0ef15ae177ece148d1"
-  integrity sha512-GeMadRIPaOedODa5a0pJ2+76l7MeFSIfSJZ2vvWPRco6MRIQLw/k0cZpPKMLm2Zo54li/oY1mrR+r3uxLM7q3Q==
-  dependencies:
-    axios "^0.21.1"
-    bech32 "^2.0.0"
-    bip32 "^2.0.6"
-    bip39 "^3.0.3"
-    bufferutil "^4.0.3"
-    decimal.js "^10.2.1"
-    jscrypto "^1.0.1"
-    readable-stream "^3.6.0"
-    secp256k1 "^4.0.2"
-    tmp "^0.2.1"
-    utf-8-validate "^5.0.5"
-    ws "^7.4.2"
-
-"@terra-money/terra.js@^2.1.23":
-  version "2.1.23"
-  resolved "https://registry.yarnpkg.com/@terra-money/terra.js/-/terra.js-2.1.23.tgz#6e7ee7477b8cc5895ddcb2e4eb0446e71bb0e575"
-  integrity sha512-nSAR35zqjKUn1Jzqevf30s47XRlW/VXU01YgK3n9ndmX15lkdlgFvqaV7UezK0xAmCpm+7xWIrtBTMmZpVBkMQ==
+"@terra-money/terra.js@^3.0.0":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@terra-money/terra.js/-/terra.js-3.0.1.tgz#5f1db735273717828232d9a6476637f44d428bf4"
+  integrity sha512-bzWHGc70mCw3P9phattEnP/+Dhtf+49iw2bBZdagwovoGS/nzFlY+ESwLu3vQglHM9CDPQYaWtn3giytaAileQ==
   dependencies:
     "@terra-money/terra.proto" "^0.1.7"
-    axios "^0.21.1"
+    axios "^0.24.0"
     bech32 "^2.0.0"
     bip32 "^2.0.6"
     bip39 "^3.0.3"
@@ -2756,7 +2736,7 @@
     secp256k1 "^4.0.2"
     tmp "^0.2.1"
     utf-8-validate "^5.0.5"
-    ws "^7.4.2"
+    ws "^7.5.5"
 
 "@terra-money/terra.proto@^0.1.7":
   version "0.1.7"
@@ -3711,12 +3691,12 @@ axe-core@^4.0.2:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.2.0.tgz#6594db4ee62f78be79e32a7295d21b099b60668d"
   integrity sha512-1uIESzroqpaTzt9uX48HO+6gfnKu3RwvWdCcWSrX4csMInJfCo1yvKPNXCwXFRpJqRW25tiASb6No0YH57PXqg==
 
-axios@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
-  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+axios@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
+  integrity sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
   dependencies:
-    follow-redirects "^1.10.0"
+    follow-redirects "^1.14.4"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -6739,10 +6719,10 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.10.0:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
-  integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
+follow-redirects@^1.14.4:
+  version "1.14.5"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.5.tgz#f09a5848981d3c772b5392309778523f8d85c381"
+  integrity sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==
 
 fontfaceobserver@^2.1.0:
   version "2.1.0"
@@ -13086,10 +13066,15 @@ ws@^1.1.0, ws@^1.1.5:
     options ">=0.0.5"
     ultron "1.0.x"
 
-ws@^7, ws@^7.4.2:
+ws@^7:
   version "7.4.5"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.5.tgz#a484dd851e9beb6fdb420027e3885e8ce48986c1"
   integrity sha512-xzyu3hFvomRfXKH8vOFMU3OguG6oOvhXMo3xsGy3xWExqaM2dxBbVxuD99O7m3ZUFMvvscsZDqxfgMaRr/Nr1g==
+
+ws@^7.5.5:
+  version "7.5.6"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.6.tgz#e59fc509fb15ddfb65487ee9765c5a51dec5fe7b"
+  integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
 
 xcode@^2.0.0:
   version "2.1.0"

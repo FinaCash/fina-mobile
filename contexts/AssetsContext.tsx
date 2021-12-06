@@ -35,7 +35,6 @@ import TerraApp from '@terra-money/ledger-terra-js'
 interface AssetsState {
   assets: Asset[]
   fetchAssets(): void
-  fetchAvailableAssets(): void
   availableAssets: AvailableAsset[]
   availableCurrencies: string[]
   borrowInfo: BorrowInfo
@@ -109,7 +108,6 @@ interface AssetsState {
 const initialState: AssetsState = {
   assets: [],
   fetchAssets: () => null,
-  fetchAvailableAssets: () => null,
   availableAssets: [],
   availableCurrencies: ['uusd'],
   borrowInfo: {
@@ -149,16 +147,42 @@ const AssetsProvider: React.FC = ({ children }) => {
     initialState.borrowInfo
   )
 
-  const { currency } = useSettingsContext()
-
   const fetchAssets = React.useCallback(async () => {
+    // Fetch available assets
+    const mAssets = await fetchAvailableMirrorAssets()
+    const availableCollaterals = await fetchAvailableCollaterals()
+    const tokens = Object.values(supportedTokens).filter(
+      (t) => !mAssets.find((m: any) => m.symbol === t.symbol)
+    )
+    const tokenAssets = []
+    for (let i = 0; i < tokens.length; i += 1) {
+      const result = await tokens[i].priceFetcher()
+      tokenAssets.push({
+        type: AssetTypes.Tokens,
+        name: tokens[i].name,
+        symbol: tokens[i].symbol,
+        coin: { denom: tokens[i].denom },
+        image: tokens[i].image,
+        description: '',
+        // priceHistories: [],
+        ...result,
+      })
+    }
+    const availableResult = sortBy(
+      [...tokenAssets, ...mAssets, ...availableCollaterals],
+      ['-type', 'symbol']
+    )
+    setAvailableAssets(availableResult)
+    const currenciesResult = await fetchAvailableCurrencies()
+    setAvailableCurrencies(currenciesResult)
+    // Fetch my assets
     const balances = await terra.bank.balance(address)
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
     const { collaterals, ...borrowInfoResult } = await fetchAnchorCollaterals(address)
     const result = await transformCoinsToAssets(
       [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
-      availableAssets
+      availableResult
     )
     setAssets(
       sortBy(result, [
@@ -180,44 +204,20 @@ const AssetsProvider: React.FC = ({ children }) => {
       ])
     )
     setBorrowInfo(borrowInfoResult)
-  }, [address, setAssets, availableAssets, setBorrowInfo])
-
-  const fetchAvailableAssets = React.useCallback(async () => {
-    const mAssets = await fetchAvailableMirrorAssets()
-    const availableCollaterals = await fetchAvailableCollaterals()
-    const tokens = Object.values(supportedTokens).filter(
-      (t) => !mAssets.find((m: any) => m.symbol === t.symbol)
-    )
-    const tokenAssets = []
-    for (let i = 0; i < tokens.length; i += 1) {
-      const result = await tokens[i].priceFetcher()
-      tokenAssets.push({
-        type: AssetTypes.Tokens,
-        name: tokens[i].name,
-        symbol: tokens[i].symbol,
-        coin: { denom: tokens[i].denom },
-        image: tokens[i].image,
-        description: '',
-        // priceHistories: [],
-        ...result,
-      })
-    }
-    setAvailableAssets(
-      sortBy([...tokenAssets, ...mAssets, ...availableCollaterals], ['-type', 'symbol'])
-    )
-    const result = await fetchAvailableCurrencies()
-    setAvailableCurrencies(result)
-  }, [setAvailableAssets, setAvailableCurrencies])
+  }, [
+    address,
+    setAssets,
+    availableAssets,
+    setBorrowInfo,
+    setAvailableAssets,
+    setAvailableCurrencies,
+  ])
 
   React.useEffect(() => {
-    if (address && availableAssets) {
+    if (address) {
       fetchAssets()
     }
-  }, [address, availableAssets, currency])
-
-  React.useEffect(() => {
-    fetchAvailableAssets()
-  }, [currency])
+  }, [address])
 
   const swap = React.useCallback(
     async (
@@ -539,7 +539,6 @@ const AssetsProvider: React.FC = ({ children }) => {
         availableCurrencies,
         borrowInfo,
         fetchAssets,
-        fetchAvailableAssets,
         swap,
         send,
         depositSavings,
