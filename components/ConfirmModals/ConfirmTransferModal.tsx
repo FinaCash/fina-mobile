@@ -104,7 +104,7 @@ const ConfirmTransferModal: React.FC<ConfirmTransferModalProps> = ({
           <CloseIcon fill={theme.palette.grey[9]} />
         </TouchableOpacity>
       </View>
-      <AssetItem asset={asset} hideAmount hideApr />
+      <AssetItem disabled asset={asset} hideAmount hideApr />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('amount')}

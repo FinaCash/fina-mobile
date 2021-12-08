@@ -31,50 +31,39 @@ const Stake: React.FC = () => {
   }))
 
   return (
-    <>
-      <View style={styles.searchBarContainer}>
-        <Input
-          placeholder={t('search')}
-          icon={<SearchIcon />}
-          value={search}
-          onChangeText={setSearch}
-        />
-      </View>
-      <SectionList
-        style={styles.list}
-        keyExtractor={(item) => item.symbol}
-        sections={sections}
-        stickySectionHeadersEnabled={false}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.titleContainer}>
-            <Typography type="Large" bold>
-              {title}
-            </Typography>
-            <Typography color={theme.palette.grey[7]}>{t('price in usd')}</Typography>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <AvailableAssetItem
-            availableAsset={item}
-            onPress={() =>
-              showActionSheetWithOptions(
-                { options: [t('buy'), t('sell'), t('cancel')], cancelButtonIndex: 2 },
-                (i) => {
-                  if (i === 0) {
-                    Actions.Swap({ mode: 'buy', asset: item })
-                  } else {
-                    const asset =
-                      assets.find((a) => a.symbol === item.symbol) ||
-                      getMAssetDetail({ denom: item.coin.denom, amount: '0' }, availableAssets)
-                    Actions.Swap({ mode: 'sell', asset })
-                  }
+    <SectionList
+      style={styles.list}
+      keyExtractor={(item) => item.symbol}
+      sections={sections}
+      stickySectionHeadersEnabled={false}
+      renderSectionHeader={({ section: { title } }) => (
+        <View style={styles.titleContainer}>
+          <Typography type="Large" bold>
+            {title}
+          </Typography>
+        </View>
+      )}
+      renderItem={({ item }) => (
+        <AvailableAssetItem
+          availableAsset={item}
+          onPress={() =>
+            showActionSheetWithOptions(
+              { options: [t('buy'), t('sell'), t('cancel')], cancelButtonIndex: 2 },
+              (i) => {
+                if (i === 0) {
+                  Actions.Swap({ mode: 'buy', asset: item })
+                } else {
+                  const asset =
+                    assets.find((a) => a.symbol === item.symbol) ||
+                    getMAssetDetail({ denom: item.coin.denom, amount: '0' }, availableAssets)
+                  Actions.Swap({ mode: 'sell', asset })
                 }
-              )
-            }
-          />
-        )}
-      />
-    </>
+              }
+            )
+          }
+        />
+      )}
+    />
   )
 }
 

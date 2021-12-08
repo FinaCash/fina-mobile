@@ -114,6 +114,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
         {t('from')}
       </Typography>
       <AssetItem
+        disabled
         asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
           denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
           amount: String(amount * 10 ** 6),
@@ -124,6 +125,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
         {t('to')}
       </Typography>
       <AssetItem
+        disabled
         asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
           denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
           amount: String(amount * 10 ** 6),

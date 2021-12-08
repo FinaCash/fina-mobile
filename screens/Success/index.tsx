@@ -72,7 +72,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
           </LinearGradient>
           {message.type === 'send' ? (
             <>
-              <AssetItem asset={message.asset} hideAmount hideBorder />
+              <AssetItem disabled asset={message.asset} hideAmount hideBorder />
               <View style={[styles.row, styles.borderBottom]}>
                 <Typography type="Large" color={theme.palette.grey[7]}>
                   {t('amount')}
@@ -104,7 +104,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
           ) : null}
           {message.type === 'swap' ? (
             <>
-              <AssetItem asset={message.from} hideBorder hideApr />
+              <AssetItem disabled asset={message.from} hideBorder hideApr />
               <Icon
                 name="arrow-down"
                 size={theme.baseSpace * 8}
@@ -120,6 +120,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 {t('claim')}
               </Typography>
               <RewardsItem
+                disabled
                 availableAsset={message.availableAsset}
                 apr={message.apr}
                 rewards={message.rewards}
@@ -133,7 +134,11 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               <Typography type="H6" style={styles.title2}>
                 {t(message.type)}
               </Typography>
-              <AvailableAssetItem availableAsset={message.availableAsset} amount={message.amount} />
+              <AvailableAssetItem
+                disabled
+                availableAsset={message.availableAsset}
+                amount={message.amount}
+              />
             </>
           ) : null}
           {message.type === 'borrow' || message.type === 'repay' ? (
@@ -141,7 +146,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               <Typography type="H6" style={styles.title2}>
                 {t(message.type)}
               </Typography>
-              <AssetItem asset={message.asset} hideBorder />
+              <AssetItem disabled asset={message.asset} hideBorder />
             </>
           ) : null}
         </View>

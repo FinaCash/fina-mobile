@@ -1,5 +1,14 @@
 import React from 'react'
-import { Coin, MsgSwap, MnemonicKey, MsgSend } from '@terra-money/terra.js'
+import {
+  Coin,
+  MsgSwap,
+  MnemonicKey,
+  MsgSend,
+  MsgDelegate,
+  MsgUndelegate,
+  MsgBeginRedelegate,
+  MsgWithdrawDelegatorReward,
+} from '@terra-money/terra.js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import {
   terraLCDClient as terra,
@@ -17,7 +26,6 @@ import {
   MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
-import { useSettingsContext } from './SettingsContext'
 import {
   fetchAassetRate,
   fetchAnchorBalances,
@@ -103,6 +111,34 @@ interface AssetsState {
     terraApp?: TerraApp,
     simulate?: boolean
   ): void
+  stake(
+    coin: { denom: string; amount: number },
+    validator: string,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  redelegate(
+    coin: { denom: string; amount: number },
+    fromValidator: string,
+    toValidator: string,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  unstake(
+    coin: { denom: string; amount: number },
+    validator: string,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
+  claimStakingRewards(
+    validators: string[],
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
 }
 
 const initialState: AssetsState = {
@@ -127,6 +163,10 @@ const initialState: AssetsState = {
   claimBorrowRewards: () => null,
   provideCollateral: () => null,
   withdrawCollateral: () => null,
+  stake: () => null,
+  unstake: () => null,
+  redelegate: () => null,
+  claimStakingRewards: () => null,
 }
 
 const AssetsContext = React.createContext<AssetsState>(initialState)
@@ -204,14 +244,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       ])
     )
     setBorrowInfo(borrowInfoResult)
-  }, [
-    address,
-    setAssets,
-    availableAssets,
-    setBorrowInfo,
-    setAvailableAssets,
-    setAvailableCurrencies,
-  ])
+  }, [address, setAssets, setBorrowInfo, setAvailableAssets, setAvailableCurrencies])
 
   React.useEffect(() => {
     if (address) {
@@ -522,6 +555,112 @@ const AssetsProvider: React.FC = ({ children }) => {
     [decryptSeedPhrase, fetchAssets, address, hdPath]
   )
 
+  const stake = React.useCallback(
+    async (
+      coin: { denom: string; amount: number },
+      validator: string,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
+      const key = new MnemonicKey({
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
+      })
+      const result = await signAndBroadcastTx(
+        key,
+        terraApp,
+        hdPath,
+        { msgs: [new MsgDelegate(address, validator, new Coin(coin.denom, coin.amount))] },
+        address,
+        simulate
+      )
+      fetchAssets()
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath]
+  )
+
+  const unstake = React.useCallback(
+    async (
+      coin: { denom: string; amount: number },
+      validator: string,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
+      const key = new MnemonicKey({
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
+      })
+      const result = await signAndBroadcastTx(
+        key,
+        terraApp,
+        hdPath,
+        { msgs: [new MsgUndelegate(address, validator, new Coin(coin.denom, coin.amount))] },
+        address,
+        simulate
+      )
+      fetchAssets()
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath]
+  )
+
+  const redelegate = React.useCallback(
+    async (
+      coin: { denom: string; amount: number },
+      fromValidator: string,
+      toValidator: string,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
+      const key = new MnemonicKey({
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
+      })
+      const result = await signAndBroadcastTx(
+        key,
+        terraApp,
+        hdPath,
+        {
+          msgs: [
+            new MsgBeginRedelegate(
+              address,
+              fromValidator,
+              toValidator,
+              new Coin(coin.denom, coin.amount)
+            ),
+          ],
+        },
+        address,
+        simulate
+      )
+      fetchAssets()
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath]
+  )
+
+  const claimStakingRewards = React.useCallback(
+    async (validators: string[], password?: string, terraApp?: TerraApp, simulate?: boolean) => {
+      const key = new MnemonicKey({
+        mnemonic: !password ? '' : decryptSeedPhrase(password),
+      })
+      const result = await signAndBroadcastTx(
+        key,
+        terraApp,
+        hdPath,
+        {
+          msgs: validators.map((validator) => new MsgWithdrawDelegatorReward(address, validator)),
+        },
+        address,
+        simulate
+      )
+      fetchAssets()
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath]
+  )
+
   // On logout
   React.useEffect(() => {
     if (!address) {
@@ -548,6 +687,10 @@ const AssetsProvider: React.FC = ({ children }) => {
         claimBorrowRewards,
         provideCollateral,
         withdrawCollateral,
+        stake,
+        unstake,
+        redelegate,
+        claimStakingRewards,
       }}
     >
       {children}

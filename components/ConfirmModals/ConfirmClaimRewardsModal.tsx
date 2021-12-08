@@ -88,7 +88,7 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('claim')}
       </Typography>
-      <RewardsItem availableAsset={availableAsset} rewards={rewards} apr={apr} />
+      <RewardsItem disabled availableAsset={availableAsset} rewards={rewards} apr={apr} />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('transaction fee')}

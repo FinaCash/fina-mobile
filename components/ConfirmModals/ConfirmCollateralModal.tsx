@@ -95,7 +95,7 @@ const ConfirmCollateralModal: React.FC<ConfirmCollateralModalProps> = ({
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t(mode + ' collateral')}
       </Typography>
-      <AvailableAssetItem availableAsset={availableAsset} amount={amount} />
+      <AvailableAssetItem disabled availableAsset={availableAsset} amount={amount} />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('transaction fee')}

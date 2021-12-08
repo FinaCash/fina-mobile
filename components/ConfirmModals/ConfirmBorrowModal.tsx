@@ -102,6 +102,7 @@ const ConfirmBorrowModal: React.FC<ConfirmBorrowModalProps> = ({
         {t(mode)}
       </Typography>
       <AssetItem
+        disabled
         asset={getCurrentAssetDetail({
           denom,
           amount: String(amount * 10 ** 6),

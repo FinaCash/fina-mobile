@@ -105,11 +105,11 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('from')}
       </Typography>
-      <AssetItem asset={from} hideApr />
+      <AssetItem disabled asset={from} hideApr />
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('to')}
       </Typography>
-      <AssetItem asset={to} hideApr />
+      <AssetItem disabled asset={to} hideApr />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('transaction fee')}

@@ -18,10 +18,15 @@ export interface Asset {
     amount: string
   }
   price: number // in USD
-  rewards?: {
-    denom: string
-    amount: string
-  }
+  staked?: number
+  unbonding?: [{ amount: number; delivery: number }]
+  redelegating?: [{ amount: number; delivery: number }]
+  rewards?: [
+    {
+      denom: string
+      amount: string
+    }
+  ]
   apr?: number
   autoCompound?: boolean
   // Collateral
