@@ -8,26 +8,47 @@ let deviceId: string
 const connectLedger = () =>
   new Promise<TerraApp>(async (resolve, reject) => {
     if (terraApp) {
+      console.log(1)
       const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+      console.log(2, result)
       if (result.bech32_address) {
         resolve(terraApp)
+        return
+      } else if (deviceId) {
+        console.log(3)
+        const transport = await TransportBLE.open(deviceId)
+        console.log(4)
+        terraApp = new TerraApp(transport)
+        console.log(5)
+        const result2 = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+        console.log(6, result2)
+        if (result2.bech32_address) {
+          resolve(terraApp)
+          return
+        }
       }
     }
+    console.log(7)
     const observe = TransportBLE.observeState({
       next: (e: any) => {
-        console.log(e)
+        console.log(8, e)
         observe.unsubscribe()
         if (!e.available) {
           reject(e)
         } else {
           const subscription = TransportBLE.listen({
             next: async (e: any) => {
+              console.log(9, e)
               subscription.unsubscribe()
               if (e.type === 'add') {
                 try {
-                  const transport = await TransportBLE.open(e.descriptor.id)
+                  deviceId = e.descriptor.id
+                  const transport = await TransportBLE.open(deviceId)
+                  console.log(10)
                   terraApp = new TerraApp(transport)
+                  console.log(11)
                   const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+                  console.log(12, result)
                   if (!result.bech32_address) {
                     throw new Error(result.error_message)
                   }

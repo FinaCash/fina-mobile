@@ -18,7 +18,14 @@ import {
   anchorAddressProvider,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
-import { Asset, AssetTypes, AvailableAsset, BorrowInfo } from '../types/assets'
+import {
+  Asset,
+  AssetTypes,
+  AvailableAsset,
+  BorrowInfo,
+  Validator,
+  StakingInfo,
+} from '../types/assets'
 import {
   COLLATERAL_DENOMS,
   fabricateTerraswapSwapbLuna,
@@ -34,6 +41,7 @@ import {
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
+  fetchStakingInfo,
 } from '../utils/fetches'
 import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
@@ -46,6 +54,8 @@ interface AssetsState {
   availableAssets: AvailableAsset[]
   availableCurrencies: string[]
   borrowInfo: BorrowInfo
+  stakingInfo: StakingInfo
+  validators: Validator[]
   swap(
     from: { denom: string; amount: number },
     toDenom: string,
@@ -154,6 +164,14 @@ const initialState: AssetsState = {
     rewardsRate: 0,
     pendingRewards: 0,
   },
+  stakingInfo: {
+    delegated: [],
+    redelegating: [],
+    unbonding: [],
+    rewards: [],
+    totalRewards: 0,
+  },
+  validators: [],
   swap: () => null,
   send: () => null,
   depositSavings: () => null,
@@ -186,6 +204,11 @@ const AssetsProvider: React.FC = ({ children }) => {
     'borrowInfo',
     initialState.borrowInfo
   )
+  const [stakingInfo, setStakingInfo] = usePersistedState<StakingInfo>(
+    'stakingInfo',
+    initialState.stakingInfo
+  )
+  const [validators, setValidators] = React.useState<Validator[]>(initialState.validators)
 
   const fetchAssets = React.useCallback(async () => {
     // Fetch available assets
@@ -224,6 +247,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
       availableResult
     )
+
     setAssets(
       sortBy(result, [
         (r) => {
@@ -244,7 +268,17 @@ const AssetsProvider: React.FC = ({ children }) => {
       ])
     )
     setBorrowInfo(borrowInfoResult)
-  }, [address, setAssets, setBorrowInfo, setAvailableAssets, setAvailableCurrencies])
+    const stakingResult = await fetchStakingInfo(address)
+    setValidators(stakingResult.validators)
+    setStakingInfo(stakingResult.stakingInfo)
+  }, [
+    address,
+    setAssets,
+    setBorrowInfo,
+    setAvailableAssets,
+    setAvailableCurrencies,
+    setStakingInfo,
+  ])
 
   React.useEffect(() => {
     if (address) {
@@ -676,7 +710,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         assets,
         availableAssets,
         availableCurrencies,
+        validators,
         borrowInfo,
+        stakingInfo,
         fetchAssets,
         swap,
         send,

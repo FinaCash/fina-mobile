@@ -8,9 +8,10 @@ import {
   queryOverseerWhitelist,
 } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
-import { Int } from '@terra-money/terra.js'
+import { Coin, Int } from '@terra-money/terra.js'
 import get from 'lodash/get'
-import { AssetTypes, AvailableAsset } from '../types/assets'
+import flatten from 'lodash/flatten'
+import { AssetTypes, AvailableAsset, StakingInfo, Validator } from '../types/assets'
 import {
   anchorAddressProvider,
   anchorApiUrl,
@@ -18,6 +19,7 @@ import {
   colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
+  terraFCDUrl,
   terraLCDClient,
 } from './terraConfig'
 
@@ -237,4 +239,52 @@ export const fetchAassetRate = async (market: MARKET_DENOMS) => {
 export const fetchAvailableCurrencies = async () => {
   const result = await terraLCDClient.oracle.activeDenoms()
   return result
+}
+
+export const fetchStakingInfo = async (address: string) => {
+  const stakingResult = await fetch(`${terraFCDUrl}/v1/staking/${address}`).then((r) => r.json())
+  const validators: Validator[] = stakingResult.validators.map((v: any) => ({
+    address: v.operatorAddress,
+    name: v.description.moniker,
+    image: v.description.profileIcon,
+    commission: Number(v.commissionInfo.rate),
+    votingPower: Number(v.votingPower.weight),
+    active: v.status === 'active',
+  }))
+  const delegated = stakingResult.myDelegations
+    .filter((d: any) => Number(d.amountDelegated) > 0)
+    .map((d: any) => ({
+      validator: validators.find((v) => v.address === d.validatorAddress),
+      amount: Number(d.amountDelegated),
+    }))
+  const redelegating = flatten(
+    stakingResult.redelegations.map((r: any) =>
+      r.entries.map((e: any) => ({ ...e, redelegation: r.redelegation }))
+    )
+  ).map((r: any) => ({
+    fromValidator: validators.find((v) => v.address === r.redelegation.validator_src_address)!,
+    toValidator: validators.find((v) => v.address === r.redelegation.validator_dst_address)!,
+    amount: Number(r.balance),
+    completion: new Date(r.redelegation_entry.completion_time).getTime(),
+  }))
+  const unbonding = stakingResult.undelegations.map((u: any) => ({
+    validator: validators.find((v) => v.address === u.validatorAddress),
+    amount: Number(u.amount),
+    completion: new Date(u.releaseTime).getTime(),
+  }))
+  const rewards = stakingResult.rewards.denoms.map((r: any) => ({ ...r, amount: Number(r.amount) }))
+  const total = await terraLCDClient.market.swapRate(
+    new Coin('uluna', Number(stakingResult.rewards.total)),
+    'uusd'
+  )
+  const totalRewards = total.amount.toNumber()
+
+  const stakingInfo: StakingInfo = {
+    delegated,
+    redelegating,
+    unbonding,
+    rewards,
+    totalRewards,
+  }
+  return { stakingInfo, validators }
 }

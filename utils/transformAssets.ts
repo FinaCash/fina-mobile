@@ -1,5 +1,10 @@
 import groupBy from 'lodash/groupBy'
-import { colleteralsInfo, supportedTokens, terraLCDClient as terra } from './terraConfig'
+import {
+  colleteralsInfo,
+  supportedTokens,
+  terraLCDClient as terra,
+  terraLCDClient,
+} from './terraConfig'
 import { Coin } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import { Asset, AssetTypes, AvailableAsset } from '../types/assets'

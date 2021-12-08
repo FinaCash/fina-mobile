@@ -1,5 +1,5 @@
 import React from 'react'
-import { KeyboardAvoidingView } from 'react-native'
+import { Keyboard, KeyboardAvoidingView } from 'react-native'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Asset, AvailableAsset } from '../../types/assets'
@@ -47,7 +47,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
             availableAsset,
             amount: Number(amount),
           },
-          onClose: () => Actions.jump('Borrow'),
+          onClose: () => Actions.jump('Loan'),
         })
       } catch (err: any) {
         Actions.Success({
@@ -57,7 +57,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
             amount: Number(amount),
           },
           error: err.message,
-          onClose: () => Actions.popTo('Borrow'),
+          onClose: () => Actions.popTo('ProvideCollateral'),
         })
       }
     },
@@ -84,7 +84,10 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
           }
           style={styles.button}
           size="Large"
-          onPress={() => setIsConfirming(true)}
+          onPress={() => {
+            setIsConfirming(true)
+            Keyboard.dismiss()
+          }}
         >
           {t('next')}
         </Button>

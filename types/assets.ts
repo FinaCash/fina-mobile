@@ -8,6 +8,15 @@ export enum AssetTypes {
   Collaterals = 'collaterals',
 }
 
+export interface Validator {
+  address: string
+  name: string
+  image: string
+  active: boolean
+  commission: number
+  votingPower: number
+}
+
 export interface Asset {
   type: AssetTypes
   name: string
@@ -17,16 +26,7 @@ export interface Asset {
     denom: string
     amount: string
   }
-  price: number // in USD
-  staked?: number
-  unbonding?: [{ amount: number; delivery: number }]
-  redelegating?: [{ amount: number; delivery: number }]
-  rewards?: [
-    {
-      denom: string
-      amount: string
-    }
-  ]
+  price: number // In USD
   apr?: number
   autoCompound?: boolean
   // Collateral
@@ -42,7 +42,7 @@ export interface AvailableAsset {
   coin: { denom: string }
   image: string
   description: string
-  price: number // in USD
+  price: number // In USD
   prevPrice: number
   priceHistories?: Array<{
     timestamp: number
@@ -57,4 +57,27 @@ export interface BorrowInfo {
   borrowRate: number
   rewardsRate: number
   pendingRewards: number
+}
+
+export interface StakingInfo {
+  delegated: {
+    validator: Validator
+    amount: number
+  }[]
+  redelegating: {
+    fromValidator: Validator
+    toValidator: Validator
+    amount: number
+    completion: number // Timestamp
+  }[]
+  unbonding: {
+    validator: Validator
+    amount: number
+    completion: number // Timestamp
+  }[]
+  rewards: {
+    amount: number
+    denom: string
+  }[]
+  totalRewards: number // In USD
 }
