@@ -11,6 +11,7 @@ import { Mirror } from '@mirror-protocol/mirror.js'
 import { Coin, Int } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import flatten from 'lodash/flatten'
+import last from 'lodash/last'
 import { AssetTypes, AvailableAsset, StakingInfo, Validator } from '../types/assets'
 import {
   anchorAddressProvider,
@@ -237,12 +238,16 @@ export const fetchAassetRate = async (market: MARKET_DENOMS) => {
 }
 
 export const fetchAvailableCurrencies = async () => {
-  const result = await terraLCDClient.oracle.activeDenoms()
-  return result
+  const result = await terraLCDClient.oracle.exchangeRates()
+  const usd = result.get('uusd')!
+  return result.map((r) => ({ denom: r.denom, price: usd.amount.toNumber() / r.amount.toNumber() }))
 }
 
 export const fetchStakingInfo = async (address: string) => {
   const stakingResult = await fetch(`${terraFCDUrl}/v1/staking/${address}`).then((r) => r.json())
+  const stakingReturn = await fetch(`${terraFCDUrl}/v1/dashboard/staking_return`).then((r) =>
+    r.json()
+  )
   const validators: Validator[] = stakingResult.validators.map((v: any) => ({
     address: v.operatorAddress,
     name: v.description.moniker,
@@ -285,6 +290,7 @@ export const fetchStakingInfo = async (address: string) => {
     unbonding,
     rewards,
     totalRewards,
+    stakingApr: Number((last(stakingReturn) as any).annualizedReturn),
   }
   return { stakingInfo, validators }
 }

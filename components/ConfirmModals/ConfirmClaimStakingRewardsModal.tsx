@@ -13,37 +13,37 @@ import { Tx } from '@terra-money/terra.js'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { AvailableAsset } from '../../types/assets'
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import RewardsItem from '../RewardsItem'
 
-interface ConfirmClaimRewardsModalProps {
+interface ConfirmClaimStakingRewardsModalProps {
   open: boolean
   onClose(): void
-  denom: MARKET_DENOMS
   availableAsset: AvailableAsset
-  rewards: number
+  rewards: { amount: number; denom: string }[]
+  totalRewards: number
+  more?: number
   apr: number
   onConfirm(): void
 }
 
-const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
+const ConfirmClaimStakingRewardsModal: React.FC<ConfirmClaimStakingRewardsModalProps> = ({
   open,
   onClose,
-  denom,
-  availableAsset,
   rewards,
+  availableAsset,
+  totalRewards,
   apr,
   onConfirm,
 }) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { claimBorrowRewards } = useAssetsContext()
+  const { claimStakingRewards } = useAssetsContext()
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await claimBorrowRewards(denom, '', undefined, true)
+      const tx = await claimStakingRewards('', undefined, true)
       setFee(
         keyBy(
           JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
@@ -56,7 +56,7 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
     } catch (err: any) {
       console.log(err)
     }
-  }, [claimBorrowRewards, denom])
+  }, [claimStakingRewards])
 
   React.useEffect(() => {
     if (open) {
@@ -66,6 +66,8 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
       setFee({})
     }
   }, [open])
+
+  const lunaRewards = rewards.find((r) => r.denom === 'uluna')
 
   return (
     <Modalize
@@ -88,7 +90,14 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('claim')}
       </Typography>
-      <RewardsItem disabled availableAsset={availableAsset} rewards={rewards} apr={apr} />
+      <RewardsItem
+        disabled
+        availableAsset={availableAsset}
+        rewardsValue={totalRewards}
+        rewards={lunaRewards ? lunaRewards.amount : 0}
+        more={rewards.length - 1}
+        apr={apr}
+      />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('transaction fee')}
@@ -112,4 +121,4 @@ const ConfirmClaimRewardsModal: React.FC<ConfirmClaimRewardsModalProps> = ({
   )
 }
 
-export default ConfirmClaimRewardsModal
+export default ConfirmClaimStakingRewardsModal

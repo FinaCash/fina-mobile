@@ -80,4 +80,5 @@ export interface StakingInfo {
     denom: string
   }[]
   totalRewards: number // In USD
+  stakingApr: number
 }

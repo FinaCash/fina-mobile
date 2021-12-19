@@ -81,7 +81,7 @@ const Settings: React.FC = () => {
           onPress: () =>
             Actions.SelectAsset({
               assets: availableCurrencies.map((c) =>
-                getCurrentAssetDetail({ denom: c, amount: '0' })
+                getCurrentAssetDetail({ denom: c.denom, amount: '0' })
               ),
               assetItemProps: { hideAmount: true },
               onSelect: (a: Asset) => {

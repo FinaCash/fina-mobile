@@ -64,7 +64,7 @@ export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvi
 
 export const anchorApiUrl = 'https://api.anchorprotocol.com/api'
 
-export const mirrorGraphqlUrl = 'https://bombay-graph.mirror.finance/graphql'
+export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'
 
 export const terraStationUrl = 'https://station.terra.money'
 export const terraStationChain = 'testnet'

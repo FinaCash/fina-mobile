@@ -26,4 +26,21 @@ export default (theme: Theme) => ({
     paddingHorizontal: 4 * theme.baseSpace,
     paddingTop: 4 * theme.baseSpace,
   },
+  splitRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    margin: 4 * theme.baseSpace,
+    marginTop: 6 * theme.baseSpace,
+  },
+  buttonsRow: {
+    flexDirection: 'row',
+  },
+  stakingButton: {
+    flex: 1,
+    marginHorizontal: theme.baseSpace * 8,
+    marginBottom: theme.baseSpace * 2,
+  },
+  centered: {
+    alignItems: 'center',
+  },
 })

@@ -52,7 +52,7 @@ interface AssetsState {
   assets: Asset[]
   fetchAssets(): void
   availableAssets: AvailableAsset[]
-  availableCurrencies: string[]
+  availableCurrencies: { denom: string; price: number }[]
   borrowInfo: BorrowInfo
   stakingInfo: StakingInfo
   validators: Validator[]
@@ -143,19 +143,14 @@ interface AssetsState {
     terraApp?: TerraApp,
     simulate?: boolean
   ): void
-  claimStakingRewards(
-    validators: string[],
-    password?: string,
-    terraApp?: TerraApp,
-    simulate?: boolean
-  ): void
+  claimStakingRewards(password?: string, terraApp?: TerraApp, simulate?: boolean): void
 }
 
 const initialState: AssetsState = {
   assets: [],
   fetchAssets: () => null,
   availableAssets: [],
-  availableCurrencies: ['uusd'],
+  availableCurrencies: [{ denom: 'uusd', price: 1 }],
   borrowInfo: {
     collateralValue: 0,
     borrowLimit: 0,
@@ -170,6 +165,7 @@ const initialState: AssetsState = {
     unbonding: [],
     rewards: [],
     totalRewards: 0,
+    stakingApr: 0,
   },
   validators: [],
   swap: () => null,
@@ -196,10 +192,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     'availableAssets',
     initialState.availableAssets
   )
-  const [availableCurrencies, setAvailableCurrencies] = usePersistedState<string[]>(
-    'availableCurrencies',
-    initialState.availableCurrencies
-  )
+  const [availableCurrencies, setAvailableCurrencies] = usePersistedState<
+    { denom: string; price: number }[]
+  >('availableCurrencies', initialState.availableCurrencies)
   const [borrowInfo, setBorrowInfo] = usePersistedState<BorrowInfo>(
     'borrowInfo',
     initialState.borrowInfo
@@ -245,7 +240,8 @@ const AssetsProvider: React.FC = ({ children }) => {
     const { collaterals, ...borrowInfoResult } = await fetchAnchorCollaterals(address)
     const result = await transformCoinsToAssets(
       [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
-      availableResult
+      availableResult,
+      currenciesResult
     )
 
     setAssets(
@@ -366,7 +362,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, availableAssets, address, hdPath]
@@ -395,7 +393,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath]
@@ -421,7 +421,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -449,7 +451,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -475,7 +479,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -501,7 +507,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -521,7 +529,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address]
@@ -552,7 +562,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -583,7 +595,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -608,7 +622,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath]
@@ -633,7 +649,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath]
@@ -668,14 +686,16 @@ const AssetsProvider: React.FC = ({ children }) => {
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath]
   )
 
   const claimStakingRewards = React.useCallback(
-    async (validators: string[], password?: string, terraApp?: TerraApp, simulate?: boolean) => {
+    async (password?: string, terraApp?: TerraApp, simulate?: boolean) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
       })
@@ -684,15 +704,19 @@ const AssetsProvider: React.FC = ({ children }) => {
         terraApp,
         hdPath,
         {
-          msgs: validators.map((validator) => new MsgWithdrawDelegatorReward(address, validator)),
+          msgs: stakingInfo.delegated.map(
+            (d) => new MsgWithdrawDelegatorReward(address, d.validator.address)
+          ),
         },
         address,
         simulate
       )
-      fetchAssets()
+      if (!simulate) {
+        fetchAssets()
+      }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, stakingInfo]
   )
 
   // On logout

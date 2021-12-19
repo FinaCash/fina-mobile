@@ -1,29 +1,28 @@
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
+import { FontAwesome as Icon } from '@expo/vector-icons'
 import useStyles from '../../theme/useStyles'
-import { AvailableAsset } from '../../types/assets'
+import { Validator } from '../../types/assets'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 
-export interface RewardsItemProps extends TouchableOpacityProps {
-  rewards: number
-  availableAsset: AvailableAsset
-  apr: number
-  more?: number
-  rewardsValue?: number
+export interface StakingItemProps extends TouchableOpacityProps {
+  validator: Validator
+  amount: number
+  symbol: string
+  price: number
   hideBorder?: boolean
   hideValue?: boolean
 }
 
-const RewardsItem: React.FC<RewardsItemProps> = ({
-  rewards,
-  availableAsset,
-  apr,
-  more,
-  rewardsValue,
+const StakingItem: React.FC<StakingItemProps> = ({
+  validator,
+  amount,
+  symbol,
+  price,
   hideBorder,
   hideValue,
   ...props
@@ -31,49 +30,46 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { currency, currencyRate } = useSettingsContext()
-  const deltaPercent = availableAsset
-    ? (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
-    : 0
 
   return (
     <TouchableOpacity {...props}>
       <View style={[styles.innerContainer, hideBorder ? { borderBottomWidth: 0 } : {}]}>
         <View style={styles.topContainer}>
           <View style={styles.row}>
-            <Image source={{ uri: availableAsset.image }} style={styles.avatar} />
+            {validator.image ? (
+              <Image source={{ uri: validator.image }} style={styles.avatar} />
+            ) : (
+              <Icon
+                name="user-circle"
+                style={styles.avatar}
+                size={styles.avatar.width}
+                color={theme.palette.grey[5]}
+              />
+            )}
             <View>
-              <Typography type="H6">
-                {availableAsset.symbol}{' '}
-                {more ? (
-                  <Typography color={theme.palette.green} type="H6">
-                    {' '}
-                    +{more}
-                  </Typography>
-                ) : null}
-              </Typography>
+              <Typography type="H6">{validator.name}</Typography>
               <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
-                {availableAsset.name}
+                {t('validator commission and vp', {
+                  commission: formatPercentage(validator.commission),
+                  votingPower: formatPercentage(validator.votingPower),
+                })}
               </Typography>
             </View>
           </View>
 
           {hideValue ? null : (
             <View style={styles.rightAligned}>
-              <Typography type="H6">
-                {formatCurrency(availableAsset.price * 10 ** 6, 'uusd', true)}
+              <Typography style={styles.gutterBottom} type="H6">
+                {formatCurrency(amount, symbol)}
               </Typography>
-              <Typography
-                bold
-                type="Small"
-                color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
-              >
-                {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
+              <Typography type="Small" color={theme.palette.grey[7]}>
+                {price ? formatCurrency(price * amount * currencyRate, currency, true) : ''}
               </Typography>
             </View>
           )}
         </View>
 
-        <View style={styles.aprContainer}>
+        {/* <View style={styles.aprContainer}>
           <View>
             <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
               {t('apr')}
@@ -84,15 +80,7 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
             <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
               {t('pending rewards')}
             </Typography>
-            <Typography bold>
-              {formatCurrency(rewards, '')}
-              {more ? (
-                <Typography color={theme.palette.green} bold>
-                  {' '}
-                  +{more}
-                </Typography>
-              ) : null}
-            </Typography>
+            <Typography bold>{formatCurrency(rewards, '')}</Typography>
           </View>
           {hideValue ? null : (
             <View style={styles.alignRight}>
@@ -100,18 +88,14 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
                 {t('usd value')}
               </Typography>
               <Typography bold>
-                {formatCurrency(
-                  (rewardsValue || rewards * availableAsset.price) * currencyRate,
-                  currency,
-                  true
-                )}
+                {formatCurrency(rewards * availableAsset.price, 'uusd', true)}
               </Typography>
             </View>
           )}
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   )
 }
 
-export default RewardsItem
+export default StakingItem

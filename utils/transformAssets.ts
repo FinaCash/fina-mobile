@@ -1,11 +1,5 @@
 import groupBy from 'lodash/groupBy'
-import {
-  colleteralsInfo,
-  supportedTokens,
-  terraLCDClient as terra,
-  terraLCDClient,
-} from './terraConfig'
-import { Coin } from '@terra-money/terra.js'
+import { colleteralsInfo, supportedTokens } from './terraConfig'
 import get from 'lodash/get'
 import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
 import { UserCollateral } from '@anchor-protocol/anchor.js'
@@ -123,7 +117,8 @@ export const transformCoinsToAssets = async (
     apr?: number
     extra?: any // For collateral
   }>,
-  availableAssets: AvailableAsset[]
+  availableAssets: AvailableAsset[],
+  availableCurrencies: { denom: string; price: number }[]
 ): Promise<Asset[]> => {
   const assets: Asset[] = []
   for (let i = 0; i < coins.length; i += 1) {
@@ -132,17 +127,11 @@ export const transformCoinsToAssets = async (
     if (Object.keys(supportedTokens).includes(coin.denom)) {
       asset = getTokenAssetDetail(coin, availableAssets)
     } else if (coin.denom.match(/^u/)) {
-      const rate =
-        coin.denom === 'uusd'
-          ? new Coin('uusd', 10 ** 6)
-          : await terra.market.swapRate(new Coin(coin.denom.replace(/^a/, 'u'), 10 ** 6), 'uusd')
-      asset = getCurrentAssetDetail(coin, rate.amount.toNumber() / 10 ** 6)
+      const rate = availableCurrencies.find((a) => a.denom === coin.denom)!
+      asset = getCurrentAssetDetail(coin, rate.price)
     } else if (coin.denom.match(/^a/)) {
-      const rate =
-        coin.denom === 'ausd'
-          ? new Coin('uusd', 10 ** 6)
-          : await terra.market.swapRate(new Coin(coin.denom.replace(/^a/, 'u'), 10 ** 6), 'uusd')
-      asset = getSavingAssetDetail(coin, rate.amount.toNumber() / 10 ** 6)
+      const rate = availableCurrencies.find((a) => a.denom === coin.denom.replace(/^a/, 'u'))!
+      asset = getSavingAssetDetail(coin, rate.price)
     } else if (coin.denom.match(/^B/)) {
       asset = getCollateralAssetDetail(coin as any)
     } else {

@@ -34,6 +34,8 @@ interface SuccessProps {
         availableAsset: AvailableAsset
         rewards: number
         apr: number
+        more?: number
+        rewardsValue?: number
       }
     | {
         type: 'provide collateral' | 'withdraw collateral'
@@ -119,14 +121,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               <Typography type="H6" style={styles.title2}>
                 {t('claim')}
               </Typography>
-              <RewardsItem
-                disabled
-                availableAsset={message.availableAsset}
-                apr={message.apr}
-                rewards={message.rewards}
-                hideValue
-                hideBorder
-              />
+              <RewardsItem disabled hideValue hideBorder {...message} />
             </>
           ) : null}
           {message.type === 'provide collateral' || message.type === 'withdraw collateral' ? (

@@ -10,7 +10,7 @@ import { useAssetsContext } from '../../contexts/AssetsContext'
 import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
 import CollateralItem from '../../components/CollateralItem'
 import RewardsItem from '../../components/RewardsItem'
-import ConfirmClaimRewardsModal from '../../components/ConfirmModals/ConfirmClaimRewardsModal'
+import ConfirmClaimBorrowRewardsModal from '../../components/ConfirmModals/ConfirmClaimBorrowRewardsModal'
 import { Portal } from '@gorhom/portal'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { Actions } from 'react-native-router-flux'
@@ -155,7 +155,7 @@ const Loan: React.FC = () => {
       </ScrollView>
       {anc ? (
         <Portal>
-          <ConfirmClaimRewardsModal
+          <ConfirmClaimBorrowRewardsModal
             open={isClaiming}
             onClose={() => setIsClaiming(false)}
             onConfirm={() => {

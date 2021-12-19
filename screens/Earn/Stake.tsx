@@ -1,69 +1,202 @@
 import React from 'react'
-import { Alert, SectionList, View } from 'react-native'
-import { Actions } from 'react-native-router-flux'
-import SearchIcon from '../../assets/images/icons/search.svg'
-import HeaderBar from '../../components/HeaderBar'
-import AvailableAssetItem from '../../components/AvailableAssetItem'
+import { SectionList, View } from 'react-native'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import Input from '../../components/Input'
-import { groupBy } from 'lodash'
+import keyBy from 'lodash/keyBy'
+import EarnIcon from '../../assets/images/icons/earn.svg'
+import ReceiveIcon from '../../assets/images/icons/receive.svg'
 import Typography from '../../components/Typography'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import { getMAssetDetail } from '../../utils/transformAssets'
+import { getCurrentAssetDetail, getTokenAssetDetail } from '../../utils/transformAssets'
+import AssetItem from '../../components/AssetItem'
+import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
+import { useSettingsContext } from '../../contexts/SettingsContext'
+import StakingItem from '../../components/StakingItem'
+import Button from '../../components/Button'
+import ConfirmClaimStakingRewardsModal from '../../components/ConfirmModals/ConfirmClaimStakingRewardsModal'
+import { Portal } from '@gorhom/portal'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import { useAccountsContext } from '../../contexts/AccountsContext'
+import TerraApp from '@terra-money/ledger-terra-js'
+import { Actions } from 'react-native-router-flux'
 
 const Stake: React.FC = () => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
-  const { availableAssets, assets } = useAssetsContext()
+  const { type } = useAccountsContext()
+  const { assets, availableAssets, availableCurrencies, stakingInfo, claimStakingRewards } =
+    useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
-  const [search, setSearch] = React.useState('')
-
-  const groupedAssets = groupBy(
-    availableAssets.filter((a) => (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())),
-    'type'
+  const availableCurrenciesMap = React.useMemo(
+    () => keyBy(availableCurrencies, 'denom'),
+    [availableCurrencies]
   )
-  const sections = Object.keys(groupedAssets).map((k) => ({
-    title: t(k),
-    data: groupedAssets[k],
-  }))
+  const { currency, currencyRate } = useSettingsContext()
+  const lunaAvailableAsset = availableAssets.find((a) => a.coin.denom === 'uluna')
+  let luna = assets.filter((a) => a.coin.denom === 'uluna')
+  if (luna.length === 0 && lunaAvailableAsset) {
+    luna = [getTokenAssetDetail({ denom: 'uluna', amount: '0' }, availableAssets)!]
+  }
 
-  return (
-    <SectionList
-      style={styles.list}
-      keyExtractor={(item) => item.symbol}
-      sections={sections}
-      stickySectionHeadersEnabled={false}
-      renderSectionHeader={({ section: { title } }) => (
-        <View style={styles.titleContainer}>
-          <Typography type="Large" bold>
-            {title}
-          </Typography>
-        </View>
-      )}
-      renderItem={({ item }) => (
-        <AvailableAssetItem
-          availableAsset={item}
-          onPress={() =>
-            showActionSheetWithOptions(
-              { options: [t('buy'), t('sell'), t('cancel')], cancelButtonIndex: 2 },
-              (i) => {
-                if (i === 0) {
-                  Actions.Swap({ mode: 'buy', asset: item })
-                } else {
-                  const asset =
-                    assets.find((a) => a.symbol === item.symbol) ||
-                    getMAssetDetail({ denom: item.coin.denom, amount: '0' }, availableAssets)
-                  Actions.Swap({ mode: 'sell', asset })
-                }
-              }
-            )
+  const totalDelegated = stakingInfo.delegated.map((d) => d.amount).reduce((a, b) => a + b, 0)
+
+  const sections = [
+    {
+      title: t('available'),
+      data: luna,
+      renderItem: ({ item }: any) => <AssetItem asset={item} disabled />,
+    },
+    {
+      title: t('delegated'),
+      data: stakingInfo.delegated,
+      renderItem: ({ item }: any) => (
+        <StakingItem
+          validator={item.validator}
+          amount={item.amount}
+          symbol={luna[0].symbol}
+          price={luna[0].price}
+        />
+      ),
+    },
+    {
+      title: t('redelegating'),
+      data: stakingInfo.redelegating,
+      renderItem: ({ item }: any) => null,
+    },
+    {
+      title: t('unbonding'),
+      data: stakingInfo.unbonding,
+      renderItem: ({ item }: any) => null,
+    },
+    {
+      title: t('rewards'),
+      data: stakingInfo.rewards,
+      renderItem: ({ item }: any) => (
+        <AssetItem
+          disabled
+          asset={
+            item.denom === 'uluna'
+              ? { ...luna[0], coin: item }
+              : getCurrentAssetDetail(item, availableCurrenciesMap[item.denom].price)
           }
         />
-      )}
-    />
+      ),
+    },
+  ].filter((s) => s.data.length)
+
+  const [claimingRewards, setClaimingRewards] = React.useState(false)
+
+  const onClaim = React.useCallback(
+    async (password?: string, terraApp?: TerraApp) => {
+      const lunaRewards = stakingInfo.rewards.find((r) => r.denom === 'uluna')
+      try {
+        await claimStakingRewards(password, terraApp)
+        Actions.Success({
+          message: {
+            type: 'claim',
+            availableAsset: lunaAvailableAsset,
+            rewards: lunaRewards ? lunaRewards.amount : 0,
+            apr: stakingInfo.stakingApr,
+            more: stakingInfo.rewards.length - 1,
+            rewardsValue: stakingInfo.totalRewards,
+          },
+          onClose: () => Actions.jump('Earn'),
+        })
+      } catch (err: any) {
+        Actions.Success({
+          message: {
+            type: 'claim',
+            availableAsset: lunaAvailableAsset,
+            rewards: lunaRewards ? lunaRewards.amount : 0,
+            apr: stakingInfo.stakingApr,
+            more: stakingInfo.rewards.length - 1,
+            rewardsValue: stakingInfo.totalRewards,
+          },
+          error: err.message,
+          onClose: () => Actions.jump('Earn'),
+        })
+      }
+    },
+    [claimStakingRewards, lunaAvailableAsset, stakingInfo]
+  )
+
+  return (
+    <>
+      <SectionList
+        style={styles.list}
+        keyExtractor={(item, index) => String(index)}
+        sections={sections as any}
+        stickySectionHeadersEnabled={false}
+        ListHeaderComponent={
+          <>
+            <View style={styles.splitRow}>
+              <View style={styles.centered}>
+                <Typography type="Small" color={theme.palette.grey[7]}>
+                  {t('staking apr')}
+                </Typography>
+                <Typography color={theme.palette.green} type="H4">
+                  {formatPercentage(stakingInfo.stakingApr, 2)}
+                </Typography>
+              </View>
+              <View style={styles.centered}>
+                <Typography type="Small" color={theme.palette.grey[7]}>
+                  {t('total delegated')}
+                </Typography>
+                <Typography type="H4">{formatCurrency(totalDelegated, luna[0].symbol)}</Typography>
+                <Typography type="Small" color={theme.palette.grey[7]}>
+                  {formatCurrency(totalDelegated * luna[0].price * currencyRate, currency, true)}
+                </Typography>
+              </View>
+              <View style={styles.centered}>
+                <Typography type="Small" color={theme.palette.grey[7]}>
+                  {t('pending rewards')}
+                </Typography>
+                <Typography type="H4">
+                  {formatCurrency(stakingInfo.totalRewards * currencyRate, currency, true)}
+                </Typography>
+              </View>
+            </View>
+            <View style={styles.buttonsRow}>
+              <Button icon={<EarnIcon fill={theme.palette.white} />} style={styles.stakingButton}>
+                {t('delegate')}
+              </Button>
+              <Button
+                icon={<ReceiveIcon fill={theme.palette.white} />}
+                style={styles.stakingButton}
+                onPress={() => setClaimingRewards(true)}
+              >
+                {t('claim')}
+              </Button>
+            </View>
+          </>
+        }
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.titleContainer}>
+            <Typography type="Large" bold>
+              {title}
+            </Typography>
+          </View>
+        )}
+      />
+      {lunaAvailableAsset ? (
+        <Portal>
+          <ConfirmClaimStakingRewardsModal
+            open={claimingRewards}
+            onClose={() => setClaimingRewards(false)}
+            availableAsset={lunaAvailableAsset}
+            totalRewards={stakingInfo.totalRewards}
+            rewards={stakingInfo.rewards}
+            apr={stakingInfo.stakingApr}
+            onConfirm={() => {
+              getPasswordOrLedgerApp(onClaim, type)
+              setClaimingRewards(false)
+            }}
+          />
+        </Portal>
+      ) : null}
+    </>
   )
 }
 

@@ -137,5 +137,13 @@
   "connect": "Connect",
   "stake": "Stake",
   "airdrop": "Airdrop",
-  "farm": "Farm"
+  "farm": "Farm",
+  "available": "Available",
+  "delegated": "Delegated",
+  "redelegating": "Redelegating",
+  "unbonding": "Unbonding",
+  "staking apr": "Staking APR",
+  "validator commission and vp": "Commission: {{commission}} | VP: {{votingPower}}",
+  "total delegated": "Total Delegated",
+  "delegate": "Delegate"
 }
