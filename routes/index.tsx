@@ -33,6 +33,10 @@ import ProvideCollateral from '../screens/ProvideCollateral'
 import Borrow from '../screens/Borrow'
 import Earn from '../screens/Earn'
 import ConnectLedger from '../screens/ConnectLedger'
+import Delegate from '../screens/Staking/Delegate'
+import SelectValidator from '../screens/SelectValidator'
+import Undelegate from '../screens/Staking/Undelegate'
+import Redelegate from '../screens/Staking/Redelegate'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -130,6 +134,10 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="Recipients" hideNavBar component={Recipients} />
               <Scene key="ProvideCollateral" hideNavBar component={ProvideCollateral} />
               <Scene key="Borrow" hideNavBar component={Borrow} />
+              <Scene key="Delegate" hideNavBar component={Delegate} />
+              <Scene key="Undelegate" hideNavBar component={Undelegate} />
+              <Scene key="Redelegate" hideNavBar component={Redelegate} />
+              <Scene key="SelectValidator" hideNavBar component={SelectValidator} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />

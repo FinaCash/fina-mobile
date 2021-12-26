@@ -8,12 +8,14 @@ import Typography from '../Typography'
 import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { format } from 'date-fns'
 
 export interface StakingItemProps extends TouchableOpacityProps {
   validator: Validator
   amount: number
   symbol: string
   price: number
+  completion?: number
   hideBorder?: boolean
   hideValue?: boolean
 }
@@ -23,6 +25,7 @@ const StakingItem: React.FC<StakingItemProps> = ({
   amount,
   symbol,
   price,
+  completion,
   hideBorder,
   hideValue,
   ...props
@@ -49,10 +52,12 @@ const StakingItem: React.FC<StakingItemProps> = ({
             <View>
               <Typography type="H6">{validator.name}</Typography>
               <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
-                {t('validator commission and vp', {
-                  commission: formatPercentage(validator.commission),
-                  votingPower: formatPercentage(validator.votingPower),
-                })}
+                {completion
+                  ? t('complete at', { completion: format(completion, 'yyyy-MM-dd, HH:mm') })
+                  : t('validator commission and vp', {
+                      commission: formatPercentage(validator.commission, 2),
+                      votingPower: formatPercentage(validator.votingPower, 2),
+                    })}
               </Typography>
             </View>
           </View>
@@ -68,31 +73,6 @@ const StakingItem: React.FC<StakingItemProps> = ({
             </View>
           )}
         </View>
-
-        {/* <View style={styles.aprContainer}>
-          <View>
-            <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
-              {t('apr')}
-            </Typography>
-            <Typography bold>{formatPercentage(apr, 2)}</Typography>
-          </View>
-          <View style={styles.alignRight}>
-            <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
-              {t('pending rewards')}
-            </Typography>
-            <Typography bold>{formatCurrency(rewards, '')}</Typography>
-          </View>
-          {hideValue ? null : (
-            <View style={styles.alignRight}>
-              <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
-                {t('usd value')}
-              </Typography>
-              <Typography bold>
-                {formatCurrency(rewards * availableAsset.price, 'uusd', true)}
-              </Typography>
-            </View>
-          )}
-        </View> */}
       </View>
     </TouchableOpacity>
   )

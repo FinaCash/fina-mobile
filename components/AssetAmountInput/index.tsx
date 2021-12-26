@@ -1,8 +1,7 @@
 import React from 'react'
-import get from 'lodash/get'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
+import { Asset, AssetTypes, AvailableAsset, Validator } from '../../types/assets'
 import { TouchableOpacity, View } from 'react-native'
 import AssetItem, { AssetItemProps } from '../../components/AssetItem'
 import Typography from '../../components/Typography'
@@ -12,27 +11,34 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import AvailableAssetItem, { AvailableAssetItemProps } from '../AvailableAssetItem'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import CollateralItem from '../CollateralItem'
+import StakingItem from '../StakingItem'
 
 interface AssetAmountInputProps {
   asset?: Asset
   availableAsset?: AvailableAsset
+  validator?: Validator
+  stakedAmount?: number
   amount: string
   setAmount(amount: string): void
   assetItemProps?: Omit<AssetItemProps, 'asset'>
   availableAssetItemProps?: Omit<AvailableAssetItemProps, 'availableAsset'>
   inputProps?: InputProps
   max?: number
+  bottomElement?: React.ReactNode
 }
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   asset,
   availableAsset,
+  validator,
+  stakedAmount,
   amount,
   setAmount,
   assetItemProps,
   availableAssetItemProps,
   inputProps,
   max,
+  bottomElement,
 }) => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
@@ -40,7 +46,14 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
 
   return (
     <View style={styles.card}>
-      {availableAsset ? (
+      {validator && availableAsset && stakedAmount !== undefined ? (
+        <StakingItem
+          validator={validator}
+          amount={stakedAmount * 10 ** 6}
+          symbol={availableAsset.symbol}
+          price={availableAsset.price}
+        />
+      ) : availableAsset ? (
         <AvailableAssetItem availableAsset={availableAsset} {...availableAssetItemProps} />
       ) : asset && asset.type === AssetTypes.Collaterals ? (
         <CollateralItem asset={asset} />
@@ -59,14 +72,20 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           value={amount}
           onChangeText={setAmount}
           endAdornment={
-            asset ? (
+            asset || (availableAsset && stakedAmount) ? (
               <View style={styles.row}>
-                <Typography bold>{asset.symbol}</Typography>
+                <Typography bold>{asset ? asset.symbol : availableAsset?.symbol}</Typography>
                 <View style={styles.verticalDivider} />
                 <TouchableOpacity
                   onPress={() =>
                     setAmount(
-                      String((max !== undefined ? max : Number(asset.coin.amount)) / 10 ** 6)
+                      String(
+                        max !== undefined
+                          ? max / 10 ** 6
+                          : asset
+                          ? Number(asset.coin.amount) / 10 ** 6
+                          : stakedAmount
+                      )
                     )
                   }
                 >
@@ -88,6 +107,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           )}
         </Typography>
       </View>
+      {bottomElement || null}
     </View>
   )
 }

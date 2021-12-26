@@ -618,7 +618,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         key,
         terraApp,
         hdPath,
-        { msgs: [new MsgDelegate(address, validator, new Coin(coin.denom, coin.amount))] },
+        {
+          msgs: [new MsgDelegate(address, validator, new Coin(coin.denom, coin.amount * 10 ** 6))],
+        },
         address,
         simulate
       )
@@ -645,7 +647,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         key,
         terraApp,
         hdPath,
-        { msgs: [new MsgUndelegate(address, validator, new Coin(coin.denom, coin.amount))] },
+        {
+          msgs: [
+            new MsgUndelegate(address, validator, new Coin(coin.denom, coin.amount * 10 ** 6)),
+          ],
+        },
         address,
         simulate
       )
@@ -679,7 +685,7 @@ const AssetsProvider: React.FC = ({ children }) => {
               address,
               fromValidator,
               toValidator,
-              new Coin(coin.denom, coin.amount)
+              new Coin(coin.denom, coin.amount * 10 ** 6)
             ),
           ],
         },

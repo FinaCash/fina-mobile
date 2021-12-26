@@ -145,5 +145,10 @@
   "staking apr": "Staking APR",
   "validator commission and vp": "Commission: {{commission}} | VP: {{votingPower}}",
   "total delegated": "Total Delegated",
-  "delegate": "Delegate"
+  "delegate": "Delegate",
+  "validator": "Validator",
+  "select validator": "Select Validator",
+  "undelegate": "Undelegate",
+  "redelegate": "Redelegate",
+  "complete at": "Complete at: {{completion}}"
 }

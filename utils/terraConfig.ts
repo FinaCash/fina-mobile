@@ -80,6 +80,8 @@ export const colleteralsInfo = {
   },
 }
 
+export const defaultValidatorAddress = 'terravaloper1qxqrtvg3smlfdfhvwcdzh0huh4f50kfs6gdt4x'
+
 // TODO: register transak api key
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`

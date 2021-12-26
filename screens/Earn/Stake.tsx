@@ -57,6 +57,21 @@ const Stake: React.FC = () => {
           amount={item.amount}
           symbol={luna[0].symbol}
           price={luna[0].price}
+          onPress={() => {
+            showActionSheetWithOptions(
+              {
+                options: [t('undelegate'), t('redelegate'), t('cancel')],
+                cancelButtonIndex: 2,
+              },
+              (i) => {
+                if (i === 0) {
+                  Actions.Undelegate(item)
+                } else if (i === 1) {
+                  Actions.Redelegate(item)
+                }
+              }
+            )
+          }}
         />
       ),
     },
@@ -68,7 +83,15 @@ const Stake: React.FC = () => {
     {
       title: t('unbonding'),
       data: stakingInfo.unbonding,
-      renderItem: ({ item }: any) => null,
+      renderItem: ({ item }: any) => (
+        <StakingItem
+          validator={item.validator}
+          amount={item.amount}
+          completion={item.completion}
+          symbol={luna[0].symbol}
+          price={luna[0].price}
+        />
+      ),
     },
     {
       title: t('rewards'),
@@ -91,29 +114,23 @@ const Stake: React.FC = () => {
   const onClaim = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
       const lunaRewards = stakingInfo.rewards.find((r) => r.denom === 'uluna')
+      const message = {
+        type: 'claim',
+        availableAsset: lunaAvailableAsset,
+        rewards: lunaRewards ? lunaRewards.amount : 0,
+        apr: stakingInfo.stakingApr,
+        more: stakingInfo.rewards.length - 1,
+        rewardsValue: stakingInfo.totalRewards,
+      }
       try {
         await claimStakingRewards(password, terraApp)
         Actions.Success({
-          message: {
-            type: 'claim',
-            availableAsset: lunaAvailableAsset,
-            rewards: lunaRewards ? lunaRewards.amount : 0,
-            apr: stakingInfo.stakingApr,
-            more: stakingInfo.rewards.length - 1,
-            rewardsValue: stakingInfo.totalRewards,
-          },
+          message,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {
         Actions.Success({
-          message: {
-            type: 'claim',
-            availableAsset: lunaAvailableAsset,
-            rewards: lunaRewards ? lunaRewards.amount : 0,
-            apr: stakingInfo.stakingApr,
-            more: stakingInfo.rewards.length - 1,
-            rewardsValue: stakingInfo.totalRewards,
-          },
+          message,
           error: err.message,
           onClose: () => Actions.jump('Earn'),
         })
@@ -159,7 +176,12 @@ const Stake: React.FC = () => {
               </View>
             </View>
             <View style={styles.buttonsRow}>
-              <Button icon={<EarnIcon fill={theme.palette.white} />} style={styles.stakingButton}>
+              <Button
+                disabled={Number(luna[0].coin.amount) === 0}
+                icon={<EarnIcon fill={theme.palette.white} />}
+                style={styles.stakingButton}
+                onPress={() => Actions.Delegate()}
+              >
                 {t('delegate')}
               </Button>
               <Button

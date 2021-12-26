@@ -2,7 +2,7 @@ import React from 'react'
 import { Feather as Icon } from '@expo/vector-icons'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
-import { Asset, AvailableAsset } from '../../types/assets'
+import { Asset, AvailableAsset, Validator } from '../../types/assets'
 import useStyles from '../../theme/useStyles'
 import { View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -14,6 +14,7 @@ import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import RewardsItem from '../../components/RewardsItem'
 import AvailableAssetItem from '../../components/AvailableAssetItem'
+import StakingItem from '../../components/StakingItem'
 
 interface SuccessProps {
   message:
@@ -45,6 +46,13 @@ interface SuccessProps {
     | {
         type: 'borrow' | 'repay'
         asset: Asset
+      }
+    | {
+        type: 'delegate' | 'undelegate'
+        amount: number
+        validator: Validator
+        symbol: string
+        price: number
       }
   error?: string
   onClose(): void
@@ -142,6 +150,19 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 {t(message.type)}
               </Typography>
               <AssetItem disabled asset={message.asset} hideBorder />
+            </>
+          ) : null}
+          {message.type === 'delegate' || message.type === 'undelegate' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              <StakingItem
+                validator={message.validator}
+                amount={message.amount * 10 ** 6}
+                symbol={message.symbol}
+                price={message.price}
+              />
             </>
           ) : null}
         </View>
