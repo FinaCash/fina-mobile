@@ -21,6 +21,8 @@ export interface Theme {
     overlay: string
     facebook: string
     google: string
+    background: string
+    border: string
   }
   gradients: {
     primary: string[]

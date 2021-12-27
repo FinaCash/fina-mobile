@@ -2,7 +2,7 @@ import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
   container: {
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
     flex: 1,
   },
   row: {

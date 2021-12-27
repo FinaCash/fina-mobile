@@ -6,7 +6,7 @@ export default (theme: Theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
+    borderBottomColor: theme.palette.border,
     paddingVertical: theme.baseSpace * 4,
     marginHorizontal: theme.baseSpace * 4,
   },

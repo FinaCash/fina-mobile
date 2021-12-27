@@ -2,14 +2,14 @@ import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
   list: {
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
   },
   itemContainer: {
     marginHorizontal: 4 * theme.baseSpace,
     paddingVertical: 4 * theme.baseSpace,
     borderBottomWidth: 1,
-    borderColor: theme.palette.grey[1],
-    backgroundColor: theme.palette.white,
+    borderColor: theme.palette.border,
+    backgroundColor: theme.palette.background,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

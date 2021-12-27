@@ -11,7 +11,7 @@ export default (theme: Theme) => ({
     width: '30%',
     alignSelf: 'center',
     height: theme.baseSpace,
-    backgroundColor: theme.palette.grey[2],
+    backgroundColor: theme.palette.border,
     borderRadius: theme.borderRadius[1],
     marginVertical: 3 * theme.baseSpace,
   },
@@ -51,7 +51,7 @@ export default (theme: Theme) => ({
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
     marginTop: theme.statusBarHeight,
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
   },
   buttonContainer: {
     padding: 4 * theme.baseSpace,

@@ -11,11 +11,11 @@ export default (theme: Theme) => ({
   card: {
     borderRadius: theme.borderRadius[1],
     borderWidth: 1,
-    borderColor: theme.palette.grey[1],
+    borderColor: theme.palette.border,
     padding: 6 * theme.baseSpace,
     marginBottom: 4 * theme.baseSpace,
     marginTop: -theme.borderRadius[1],
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
   },
   padded: {
     marginHorizontal: 4 * theme.baseSpace,

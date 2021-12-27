@@ -45,7 +45,7 @@ export const TabIcon: React.FC<{
   navigation: { state: { key: string } }
 }> = ({ focused, iconSvg, tabTitle }) => {
   const { theme, styles } = useStyles(getStyles)
-  const color = focused ? theme.palette.primary : theme.palette.grey[6]
+  const color = focused ? theme.palette.active : theme.palette.grey[6]
   return (
     <View style={styles.tab}>
       {React.cloneElement(iconSvg, {

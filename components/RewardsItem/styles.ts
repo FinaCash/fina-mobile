@@ -6,7 +6,7 @@ export default (theme: Theme) => ({
   },
   innerContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
+    borderBottomColor: theme.palette.border,
     marginHorizontal: theme.baseSpace * 4,
     paddingVertical: theme.baseSpace * 4,
   },

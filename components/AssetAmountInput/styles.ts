@@ -4,7 +4,7 @@ export default (theme: Theme) => ({
   card: {
     borderRadius: theme.borderRadius[1],
     borderWidth: 1,
-    borderColor: theme.palette.grey[1],
+    borderColor: theme.palette.border,
   },
   amountContainer: {
     marginTop: theme.baseSpace,

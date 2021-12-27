@@ -5,7 +5,7 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
+    borderBottomColor: theme.palette.border,
     paddingVertical: theme.baseSpace * 4,
     marginHorizontal: theme.baseSpace * 4,
     overflow: 'hidden',

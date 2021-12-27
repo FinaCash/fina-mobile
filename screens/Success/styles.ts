@@ -2,7 +2,7 @@ import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
   container: {
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
     paddingHorizontal: theme.baseSpace * 8,
     paddingTop: theme.baseSpace * 28 + theme.statusBarHeight,
     paddingBottom: theme.baseSpace * 8 + theme.bottomSpace,
@@ -36,7 +36,7 @@ export default (theme: Theme) => ({
   },
   borderBottom: {
     borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
+    borderBottomColor: theme.palette.border,
   },
   title: {
     marginTop: 12 * theme.baseSpace,

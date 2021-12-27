@@ -5,7 +5,7 @@ export default (theme: Theme) => ({
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
     padding: theme.baseSpace,
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
   },
   confirmHeader: {
     flexDirection: 'row',
@@ -21,7 +21,7 @@ export default (theme: Theme) => ({
   },
   borderBottom: {
     borderBottomWidth: 1,
-    borderBottomColor: theme.palette.grey[1],
+    borderBottomColor: theme.palette.border,
   },
   alignRight: {
     alignItems: 'flex-end',

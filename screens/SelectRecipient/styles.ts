@@ -2,7 +2,7 @@ import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
   container: {
-    backgroundColor: theme.palette.white,
+    backgroundColor: theme.palette.background,
     padding: 4 * theme.baseSpace,
     justifyContent: 'space-between',
     alignItems: 'stretch',
@@ -24,7 +24,7 @@ export default (theme: Theme) => ({
   card: {
     borderRadius: theme.borderRadius[1],
     borderWidth: 1,
-    borderColor: theme.palette.grey[1],
+    borderColor: theme.palette.border,
     padding: 3 * theme.baseSpace,
     marginTop: 8 * theme.baseSpace,
   },
