@@ -16,7 +16,7 @@ import { formatPercentage } from '../../utils/formatNumbers'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import TerraApp from '@terra-money/ledger-terra-js'
-import ConfirmDelegateModal from '../../components/ConfirmModals/ConfirmDelegateModal'
+import ConfirmRedelegateModal from '../../components/ConfirmModals/ConfirmRedelegateModal'
 
 interface RedelegateProps {
   validator: Validator
@@ -28,7 +28,7 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
   const { type } = useAccountsContext()
   const { availableAssets, validators, redelegate } = useAssetsContext()
   const { styles, theme } = useStyles(getStyles)
-  const [confirmDelegationModalOpen, setConfirmDelegationModalOpen] = React.useState(false)
+  const [confirmRedelegationModalOpen, setConfirmRedelegationModalOpen] = React.useState(false)
   const [amount, setAmount] = React.useState('')
   const [toValidator, setToValidator] = React.useState(
     validators.find((v) => v.address === defaultValidatorAddress)
@@ -41,7 +41,8 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
       const message = {
         type: 'redelegate',
         amount: Number(amount),
-        validator,
+        fromValidator: validator,
+        toValidator,
         symbol: availableAsset.symbol,
         price: availableAsset.price,
       }
@@ -69,10 +70,10 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
   )
 
   React.useEffect(() => {
-    if (confirmDelegationModalOpen) {
+    if (confirmRedelegationModalOpen) {
       Keyboard.dismiss()
     }
-  }, [confirmDelegationModalOpen])
+  }, [confirmRedelegationModalOpen])
 
   return (
     <>
@@ -81,7 +82,7 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
         <ScrollView>
           <AssetAmountInput
             validator={validator}
-            stakedAmount={totalAmount}
+            stakedAmount={totalAmount / 10 ** 6}
             availableAsset={availableAsset}
             amount={amount}
             setAmount={setAmount}
@@ -143,17 +144,18 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
           disabled={!Number(amount) || Number(amount) * 10 ** 6 > totalAmount || !toValidator}
           style={styles.button}
           size="Large"
-          onPress={() => setConfirmDelegationModalOpen(true)}
+          onPress={() => setConfirmRedelegationModalOpen(true)}
         >
           {t('next')}
         </Button>
       </KeyboardAvoidingView>
-      {validator ? (
-        <ConfirmDelegateModal
-          open={confirmDelegationModalOpen}
-          onClose={() => setConfirmDelegationModalOpen(false)}
+      {toValidator ? (
+        <ConfirmRedelegateModal
+          open={confirmRedelegationModalOpen}
+          onClose={() => setConfirmRedelegationModalOpen(false)}
           amount={Number(amount)}
-          validator={validator}
+          fromValidator={validator}
+          toValidator={toValidator}
           onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
         />
       ) : null}

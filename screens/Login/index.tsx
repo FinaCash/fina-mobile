@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, View } from 'react-native'
+import { validateMnemonic } from 'bip39'
 import Typography from '../../components/Typography'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -18,6 +19,7 @@ enum ContentStage {
   Start = 'start',
   CreateWallet = 'create wallet',
   ImportWallet = 'import wallet',
+  SelectHDPath = 'select hd path',
 }
 
 interface LoginProps {}
@@ -26,24 +28,63 @@ const Login: React.FC<LoginProps> = () => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { login } = useAccountsContext()
-  const [stage, setStage, back] = useStateHistory(ContentStage.Start)
+  const [stage, setStage, back, isPrevAvailable, prevStage] = useStateHistory(ContentStage.Start)
   const [phraseInput, setPhraseInput] = React.useState('')
+  const [error, setError] = React.useState('')
+  // HD Path
+  const [account, setAccount] = React.useState('0')
+  const [index, setIndex] = React.useState('0')
 
   const onSubmit = React.useCallback(
     async (password: string) => {
-      await login(phraseInput, password)
-      Actions.replace('Main')
+      try {
+        await login(
+          phraseInput,
+          password,
+          undefined,
+          undefined,
+          Number(account) || 0,
+          Number(index) || 0
+        )
+        Actions.replace('Main')
+      } catch (err: any) {
+        setError(err.message)
+      }
     },
-    [phraseInput, login]
+    [phraseInput, login, account, index]
   )
 
-  const onConnectLedger = React.useCallback(async (terraApp: TerraApp) => {
-    await terraApp.showAddressAndPubKey(deafultHdPath, defaultPrefix)
-    const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
-    await login('', '', result.bech32_address)
-    Actions.pop()
-    Actions.replace('Main')
-  }, [])
+  const onConnectLedger = React.useCallback(
+    async (terraApp: TerraApp) => {
+      const hdPath = [
+        deafultHdPath[0],
+        deafultHdPath[1],
+        Number(account) || 0,
+        deafultHdPath[3],
+        Number(index) || 0,
+      ]
+      await terraApp.showAddressAndPubKey(hdPath, defaultPrefix)
+      const result = await terraApp.getAddressAndPubKey(hdPath, defaultPrefix)
+      await login(
+        '',
+        '',
+        result.bech32_address,
+        undefined,
+        Number(account) || 0,
+        Number(index) || 0
+      )
+      Actions.pop()
+      Actions.replace('Main')
+    },
+    [login, account, index]
+  )
+
+  React.useEffect(() => {
+    if (stage === ContentStage.Start) {
+      setError('')
+      setPhraseInput('')
+    }
+  }, [stage])
 
   return (
     <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
@@ -53,9 +94,9 @@ const Login: React.FC<LoginProps> = () => {
           {t('slogan')}
         </Typography>
       </View>
-      <View style={styles.contentContainer}>
+      <View>
         {stage === ContentStage.Start ? (
-          <>
+          <View style={styles.contentContainer}>
             <Button
               onPress={() => {
                 setStage(ContentStage.CreateWallet)
@@ -77,9 +118,7 @@ const Login: React.FC<LoginProps> = () => {
             </Button>
             <Button
               onPress={() => {
-                Actions.ConnectLedger({
-                  onSubmit: onConnectLedger,
-                })
+                setStage(ContentStage.SelectHDPath)
               }}
               size="Large"
               style={[styles.button, styles.borderButton]}
@@ -87,7 +126,7 @@ const Login: React.FC<LoginProps> = () => {
             >
               {t('connect ledger')}
             </Button>
-          </>
+          </View>
         ) : null}
         {stage === ContentStage.ImportWallet || stage === ContentStage.CreateWallet ? (
           <>
@@ -99,7 +138,9 @@ const Login: React.FC<LoginProps> = () => {
               value={phraseInput}
               onChangeText={setPhraseInput}
               editable={stage === ContentStage.ImportWallet}
+              error={error}
             />
+            <View style={{ height: theme.baseSpace * 8 }} />
             {stage === ContentStage.CreateWallet ? (
               <Typography type="Small" style={styles.securityReminder}>
                 {t('store phrase securely')}
@@ -107,10 +148,7 @@ const Login: React.FC<LoginProps> = () => {
             ) : null}
             <View style={styles.row}>
               <Button
-                onPress={() => {
-                  back()
-                  setPhraseInput('')
-                }}
+                onPress={back}
                 size="Large"
                 style={[styles.rowButton, styles.borderButton]}
                 color={theme.palette.primary}
@@ -118,13 +156,84 @@ const Login: React.FC<LoginProps> = () => {
                 {t('back')}
               </Button>
               <Button
-                onPress={() =>
-                  Actions.Password({
-                    onSubmit,
-                    confirmationRequired: true,
-                    isSetting: true,
-                  })
+                onPress={() => {
+                  if (!validateMnemonic(phraseInput)) {
+                    setError(t('invalid seed phrase'))
+                  } else {
+                    Actions.Password({
+                      onSubmit,
+                      confirmationRequired: true,
+                      isSetting: true,
+                    })
+                  }
+                }}
+                size="Large"
+                style={styles.rowButton}
+              >
+                {t('confirm')}
+              </Button>
+            </View>
+            <Button
+              onPress={() => {
+                if (!validateMnemonic(phraseInput)) {
+                  setError(t('invalid seed phrase'))
+                } else {
+                  setStage(ContentStage.SelectHDPath)
                 }
+              }}
+              bgColor="transparent"
+              color={theme.palette.lightPrimary}
+            >
+              {t('custom hd path')}
+            </Button>
+          </>
+        ) : null}
+        {stage === ContentStage.SelectHDPath ? (
+          <>
+            <View style={styles.hdContainer}>
+              <Typography style={{ marginBottom: theme.baseSpace }}>{t('hd path')}</Typography>
+              <View style={styles.row}>
+                <Typography type="H6">m/44/330/</Typography>
+                <Input
+                  style={styles.numberInput}
+                  textStyle={{ textAlign: 'center' }}
+                  keyboardType="numeric"
+                  value={account}
+                  onChangeText={setAccount}
+                />
+                <Typography type="H6">/0/</Typography>
+                <Input
+                  style={styles.numberInput}
+                  textStyle={{ textAlign: 'center' }}
+                  keyboardType="numeric"
+                  value={index}
+                  onChangeText={setIndex}
+                />
+              </View>
+            </View>
+            <View style={styles.row}>
+              <Button
+                onPress={back}
+                size="Large"
+                style={[styles.rowButton, styles.borderButton]}
+                color={theme.palette.primary}
+              >
+                {t('back')}
+              </Button>
+              <Button
+                onPress={() => {
+                  if (prevStage === ContentStage.Start) {
+                    Actions.ConnectLedger({
+                      onSubmit: onConnectLedger,
+                    })
+                  } else {
+                    Actions.Password({
+                      onSubmit,
+                      confirmationRequired: true,
+                      isSetting: true,
+                    })
+                  }
+                }}
                 size="Large"
                 style={styles.rowButton}
               >

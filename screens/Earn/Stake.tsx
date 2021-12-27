@@ -78,7 +78,16 @@ const Stake: React.FC = () => {
     {
       title: t('redelegating'),
       data: stakingInfo.redelegating,
-      renderItem: ({ item }: any) => null,
+      renderItem: ({ item }: any) => (
+        <StakingItem
+          validator={item.fromValidator}
+          toValidator={item.toValidator}
+          amount={item.amount}
+          completion={item.completion}
+          symbol={luna[0].symbol}
+          price={luna[0].price}
+        />
+      ),
     },
     {
       title: t('unbonding'),

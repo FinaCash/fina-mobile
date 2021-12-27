@@ -15,8 +15,10 @@ import last from 'lodash/last'
 import { AssetTypes, AvailableAsset, StakingInfo, Validator } from '../types/assets'
 import {
   anchorAddressProvider,
+  anchorAirdropApiUrl,
   anchorApiUrl,
   anchorClient,
+  chainID,
   colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
@@ -293,4 +295,11 @@ export const fetchStakingInfo = async (address: string) => {
     stakingApr: Number((last(stakingReturn) as any).annualizedReturn),
   }
   return { stakingInfo, validators }
+}
+
+export const fetchAirdrops = async (address: string) => {
+  // const anc = (
+  //   await fetch(`${anchorAirdropApiUrl}&address=${address}`).then((r) => r.json())
+  // ).filter((a) => a.claimable)
+  // const mir = Mirr
 }

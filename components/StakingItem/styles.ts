@@ -18,12 +18,25 @@ export default (theme: Theme) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   avatar: {
     width: theme.baseSpace * 10,
     height: theme.baseSpace * 10,
     borderRadius: theme.baseSpace * 4,
     marginRight: theme.baseSpace * 6,
+  },
+  toAvatar: {
+    width: theme.baseSpace * 10,
+    height: theme.baseSpace * 10,
+    borderRadius: theme.baseSpace * 4,
+    borderWidth: theme.baseSpace / 2,
+    borderColor: theme.palette.white,
+    marginLeft: -theme.baseSpace * 10,
+    marginRight: theme.baseSpace * 2,
+  },
+  name: {
+    maxWidth: theme.screenWidth / 2 - theme.baseSpace * 26,
   },
   badge: {
     paddingHorizontal: 1.5 * theme.baseSpace,

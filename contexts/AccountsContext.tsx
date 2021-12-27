@@ -56,7 +56,6 @@ const AccountsProvider: React.FC = ({ children }) => {
       account = initialState.hdPath[2],
       index = initialState.hdPath[4]
     ) => {
-      setHdPath([44, coinType, account, 0, index])
       if (ledgerAddress) {
         setType('ledger')
         setAddress(ledgerAddress)
@@ -72,6 +71,7 @@ const AccountsProvider: React.FC = ({ children }) => {
         setAddress(key.accAddress)
         setEncryptedSeedPhrase(CryptoJS.AES.encrypt(seedPhrase, password).toString())
       }
+      setHdPath([44, coinType, account, 0, index])
     },
     [setAddress, setEncryptedSeedPhrase, setHdPath, setType]
   )

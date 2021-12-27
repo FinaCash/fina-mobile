@@ -35,6 +35,7 @@ import {
 import usePersistedState from '../utils/usePersistedState'
 import {
   fetchAassetRate,
+  fetchAirdrops,
   fetchAnchorBalances,
   fetchAnchorCollaterals,
   fetchAvailableCollaterals,
@@ -243,7 +244,6 @@ const AssetsProvider: React.FC = ({ children }) => {
       availableResult,
       currenciesResult
     )
-
     setAssets(
       sortBy(result, [
         (r) => {
@@ -267,6 +267,8 @@ const AssetsProvider: React.FC = ({ children }) => {
     const stakingResult = await fetchStakingInfo(address)
     setValidators(stakingResult.validators)
     setStakingInfo(stakingResult.stakingInfo)
+    // Fetch airdrops
+    // fetchAirdrops(address)
   }, [
     address,
     setAssets,
@@ -292,6 +294,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const mAssets = availableAssets.filter(
         (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
@@ -381,6 +386,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const result = await signAndBroadcastTx(
         key,
@@ -411,6 +419,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.earn.depositStable({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
@@ -441,6 +452,9 @@ const AssetsProvider: React.FC = ({ children }) => {
       const amount = amountInBase / rate
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.earn.withdrawStable({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
@@ -469,6 +483,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.borrow.borrow({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
@@ -497,6 +514,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.borrow.repay({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
@@ -519,6 +539,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     async (market: MARKET_DENOMS, password?: string, terraApp?: TerraApp, simulate?: boolean) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.anchorToken.claimUSTBorrowRewards({ market })
       const result = await signAndBroadcastTx(
@@ -548,6 +571,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.borrow.provideCollateral({
         market,
@@ -581,6 +607,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const ops = anchorClient.borrow.withdrawCollateral({
         market,
@@ -613,6 +642,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const result = await signAndBroadcastTx(
         key,
@@ -642,6 +674,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const result = await signAndBroadcastTx(
         key,
@@ -674,6 +709,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const result = await signAndBroadcastTx(
         key,
@@ -704,6 +742,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     async (password?: string, terraApp?: TerraApp, simulate?: boolean) => {
       const key = new MnemonicKey({
         mnemonic: !password ? '' : decryptSeedPhrase(password),
+        coinType: hdPath[1],
+        account: hdPath[2],
+        index: hdPath[4],
       })
       const result = await signAndBroadcastTx(
         key,
@@ -731,6 +772,9 @@ const AssetsProvider: React.FC = ({ children }) => {
       setAssets(initialState.assets)
       setAvailableAssets(initialState.availableAssets)
       setAvailableCurrencies(initialState.availableCurrencies)
+      setBorrowInfo(initialState.borrowInfo)
+      setStakingInfo(initialState.stakingInfo)
+      setValidators(initialState.validators)
     }
   }, [address, setAssets, setAvailableAssets, setAvailableCurrencies])
 

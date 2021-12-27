@@ -5,7 +5,8 @@
   "back": "Back",
   "confirm": "Confirm",
   "search": "Search",
-  "enter seed recovery phrase": "Enter your Seed Phrase",
+  "enter seed phrase": "Enter your Seed Phrase",
+  "invalid seed phrase": "Invalid Seed Phrase",
   "store phrase securely": "Please store your Seed Phrase securely. We would not be able to recover your wallet if you lose it.",
   "please enter password": "Please enter a password",
   "please confirm password": "Please confirm your password",
@@ -150,5 +151,7 @@
   "select validator": "Select Validator",
   "undelegate": "Undelegate",
   "redelegate": "Redelegate",
-  "complete at": "Complete at: {{completion}}"
+  "complete at": "Complete at: {{completion}}",
+  "hd path": "HD Path",
+  "custom hd path": "Custom HD Path"
 }

@@ -54,6 +54,14 @@ interface SuccessProps {
         symbol: string
         price: number
       }
+    | {
+        type: 'redelegate'
+        amount: number
+        fromValidator: Validator
+        toValidator: Validator
+        symbol: string
+        price: number
+      }
   error?: string
   onClose(): void
 }
@@ -162,6 +170,34 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 amount={message.amount * 10 ** 6}
                 symbol={message.symbol}
                 price={message.price}
+                hideBorder
+              />
+            </>
+          ) : null}
+          {message.type === 'redelegate' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              <StakingItem
+                validator={message.fromValidator}
+                amount={message.amount * 10 ** 6}
+                symbol={message.symbol}
+                price={message.price}
+                hideBorder
+              />
+              <Icon
+                name="arrow-down"
+                size={theme.baseSpace * 8}
+                color={theme.palette.grey[10]}
+                style={styles.arrow}
+              />
+              <StakingItem
+                validator={message.toValidator}
+                amount={message.amount * 10 ** 6}
+                symbol={message.symbol}
+                price={message.price}
+                hideBorder
               />
             </>
           ) : null}

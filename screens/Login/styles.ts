@@ -3,7 +3,7 @@ import { Theme } from '../../types/misc'
 export default (theme: Theme) => ({
   container: {
     padding: theme.baseSpace * 12,
-    justifyContent: 'center',
+    paddingTop: theme.screenHeight * 0.2,
     flex: 1,
   },
   slogan: {
@@ -19,12 +19,11 @@ export default (theme: Theme) => ({
     marginBottom: theme.baseSpace * 4,
   },
   contentContainer: {
-    height: 0.4 * theme.screenHeight,
-    justifyContent: 'flex-end',
+    marginTop: 36 * theme.baseSpace,
   },
   phraseInput: {
-    marginVertical: 8 * theme.baseSpace,
-    flex: 1,
+    marginTop: 8 * theme.baseSpace,
+    height: theme.baseSpace * 30,
   },
   securityReminder: {
     marginTop: -4 * theme.baseSpace,
@@ -32,6 +31,7 @@ export default (theme: Theme) => ({
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   rowButton: {
     flex: 1,
@@ -42,5 +42,12 @@ export default (theme: Theme) => ({
     borderWidth: 1,
     borderColor: theme.palette.primary,
     backgroundColor: 'transparent',
+  },
+  hdContainer: {
+    marginVertical: 16 * theme.baseSpace,
+  },
+  numberInput: {
+    width: theme.baseSpace * 16,
+    marginHorizontal: theme.baseSpace * 2,
   },
 })

@@ -12,6 +12,7 @@ import { format } from 'date-fns'
 
 export interface StakingItemProps extends TouchableOpacityProps {
   validator: Validator
+  toValidator?: Validator
   amount: number
   symbol: string
   price: number
@@ -22,6 +23,7 @@ export interface StakingItemProps extends TouchableOpacityProps {
 
 const StakingItem: React.FC<StakingItemProps> = ({
   validator,
+  toValidator,
   amount,
   symbol,
   price,
@@ -49,14 +51,40 @@ const StakingItem: React.FC<StakingItemProps> = ({
                 color={theme.palette.grey[5]}
               />
             )}
+            {toValidator ? (
+              toValidator.image ? (
+                <Image source={{ uri: toValidator.image }} style={styles.toAvatar} />
+              ) : (
+                <Icon
+                  name="user-circle"
+                  style={styles.avatar}
+                  size={styles.avatar.width}
+                  color={theme.palette.grey[5]}
+                />
+              )
+            ) : null}
             <View>
-              <Typography type="H6">{validator.name}</Typography>
+              <View style={styles.row}>
+                <Typography
+                  type="H6"
+                  style={toValidator ? styles.name : undefined}
+                  numberOfLines={1}
+                >
+                  {validator.name}
+                </Typography>
+                {toValidator ? <Typography type="H6"> → </Typography> : null}
+                {toValidator ? (
+                  <Typography type="H6" style={styles.name} numberOfLines={1}>
+                    {toValidator.name}
+                  </Typography>
+                ) : null}
+              </View>
               <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
                 {completion
                   ? t('complete at', { completion: format(completion, 'yyyy-MM-dd, HH:mm') })
                   : t('validator commission and vp', {
-                      commission: formatPercentage(validator.commission, 2),
-                      votingPower: formatPercentage(validator.votingPower, 2),
+                      commission: formatPercentage((toValidator || validator).commission, 2),
+                      votingPower: formatPercentage((toValidator || validator).votingPower, 2),
                     })}
               </Typography>
             </View>

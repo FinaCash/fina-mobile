@@ -10,7 +10,8 @@ const useStateHistory = <P>(
   P | undefined,
   (state: P, options?: { type?: StateChangeType }) => void,
   () => void,
-  boolean
+  boolean,
+  P | undefined
 ] => {
   const [states, setStates] = React.useState([initialState])
   const setNextState = React.useCallback(
@@ -34,7 +35,7 @@ const useStateHistory = <P>(
 
   const isPrevStateAvailable = React.useMemo(() => states.length > 1, [states.length])
 
-  return [last(states), setNextState, prevState, isPrevStateAvailable]
+  return [last(states), setNextState, prevState, isPrevStateAvailable, states[states.length - 2]]
 }
 
 export default useStateHistory

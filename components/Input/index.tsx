@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TextInput, TextInputProps } from 'react-native'
+import { View, TextInput, TextInputProps, TextStyle } from 'react-native'
 import useStyles from '../../theme/useStyles'
 import Typography from '../Typography'
 import getStyles from './styles'
@@ -10,6 +10,7 @@ export interface InputProps extends TextInputProps {
   size?: 'XLarge' | 'Large' | 'Base'
   inputRef?: any
   error?: string
+  textStyle?: TextStyle
 }
 
 const Input: React.FC<InputProps> = ({
@@ -19,6 +20,7 @@ const Input: React.FC<InputProps> = ({
   endAdornment,
   inputRef,
   error,
+  textStyle,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -51,7 +53,7 @@ const Input: React.FC<InputProps> = ({
         {icon ? React.cloneElement(icon, { style: styles.icon }) : null}
         <TextInput
           ref={inputRef}
-          style={[styles.input, font[size]]}
+          style={[styles.input, font[size], textStyle]}
           placeholderTextColor={theme.palette.grey[6]}
           {...props}
         />

@@ -63,6 +63,7 @@ export const anchorAddressProvider = new AddressProviderFromJson(bombay12)
 export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvider)
 
 export const anchorApiUrl = 'https://api.anchorprotocol.com/api'
+export const anchorAirdropApiUrl = 'https://airdrop.anchorprotocol.com/api/get?chainId=columbus-4'
 
 export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'
 
@@ -82,6 +83,5 @@ export const colleteralsInfo = {
 
 export const defaultValidatorAddress = 'terravaloper1qxqrtvg3smlfdfhvwcdzh0huh4f50kfs6gdt4x'
 
-// TODO: register transak api key
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
