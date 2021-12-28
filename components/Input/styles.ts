@@ -12,6 +12,7 @@ export default (theme: Theme) => ({
   },
   input: {
     flex: 1,
+    color: theme.palette.grey[10],
   },
   marginLeft: {
     marginLeft: theme.baseSpace * 2,

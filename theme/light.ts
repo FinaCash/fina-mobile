@@ -26,8 +26,10 @@ export default {
     facebook: '#3c5898',
     google: '#DB4437',
     background: '#ffffff',
+    altBackground: '#F2F3F8',
     border: '#eaebf1',
     active: '#0E1E59',
+    button: '#0E1E59',
   },
   gradients: {
     primary: ['#432DD9', '#2FC3FF'],

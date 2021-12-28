@@ -22,7 +22,10 @@ export interface Theme {
     facebook: string
     google: string
     background: string
+    altBackground: string
     border: string
+    active: string
+    button: string
   }
   gradients: {
     primary: string[]

@@ -193,7 +193,7 @@ const Settings: React.FC = () => {
                   style={styles.icon}
                   name={item.icon as any}
                   size={6 * themeStyle.baseSpace}
-                  color={themeStyle.palette.grey[10]}
+                  color={themeStyle.fonts.Base.color}
                 />
                 <Typography>{item.title}</Typography>
               </View>
@@ -203,7 +203,7 @@ const Settings: React.FC = () => {
                   style={styles.arrow}
                   name="chevron-right"
                   size={6 * themeStyle.baseSpace}
-                  color={themeStyle.palette.grey[10]}
+                  color={themeStyle.fonts.Base.color}
                 />
               </View>
             </TouchableOpacity>

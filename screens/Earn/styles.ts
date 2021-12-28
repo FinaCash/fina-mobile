@@ -4,10 +4,13 @@ export default (theme: Theme) => ({
   tabbar: { backgroundColor: theme.palette.background },
   tabLabel: {
     ...theme.fonts.Large,
-    color: theme.palette.primary,
+    color: theme.palette.active,
     textTransform: 'none',
   },
-  tabIndicator: { backgroundColor: theme.palette.primary, height: theme.baseSpace / 2 },
+  tabIndicator: {
+    backgroundColor: theme.palette.active,
+    height: theme.baseSpace / 2,
+  },
   list: {
     backgroundColor: theme.palette.background,
   },

@@ -10,7 +10,7 @@ export default (theme: Theme) => ({
     justifyContent: 'space-between',
   },
   greyConteiner: {
-    backgroundColor: theme.palette.grey[0],
+    backgroundColor: theme.palette.altBackground,
     borderRadius: theme.borderRadius[2],
   },
   checkContainer: {

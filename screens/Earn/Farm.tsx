@@ -50,7 +50,6 @@ const Farm: React.FC = () => {
             <Typography type="Large" bold>
               {title}
             </Typography>
-            <Typography color={theme.palette.grey[7]}>{t('price in usd')}</Typography>
           </View>
         )}
         renderItem={({ item }) => (

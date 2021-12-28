@@ -265,7 +265,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           <Icon
             name="arrow-down"
             size={theme.baseSpace * 8}
-            color={theme.palette.grey[10]}
+            color={theme.fonts.H1.color}
             style={styles.arrow}
           />
           {mode === 'buy' ? (

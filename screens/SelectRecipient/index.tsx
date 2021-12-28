@@ -37,7 +37,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
 }) => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
-  const { currency } = useSettingsContext()
+  const { currency, currencyRate } = useSettingsContext()
   const { addRecipient } = useRecipientsContext()
 
   const [address, setAddress] = React.useState(get(defaultRecipient, 'address', ''))
@@ -56,7 +56,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
               {getCurrencyFromDenom(asset.coin.denom)}
             </Typography>
             <Typography color={theme.palette.grey[7]} type="Small">
-              ~{formatCurrency(Number(amount) * asset.price * 10 ** 6, currency)}
+              ~{formatCurrency(Number(amount) * asset.price * 10 ** 6 * currencyRate, currency)}
             </Typography>
           </View>
           <View style={styles.card}>

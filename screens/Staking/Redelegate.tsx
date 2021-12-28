@@ -117,11 +117,11 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
                       />
                     )}
                     <View>
-                      <Typography type="H6">
+                      <Typography type="H6" color={theme.palette.grey[10]}>
                         {toValidator ? toValidator.name : t('validator')}
                       </Typography>
                       {toValidator ? (
-                        <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
+                        <Typography type="Small" color={theme.palette.grey[9]} numberOfLines={2}>
                           {t('validator commission and vp', {
                             commission: formatPercentage(toValidator.commission),
                             votingPower: formatPercentage(toValidator.votingPower),

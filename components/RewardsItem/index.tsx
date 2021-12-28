@@ -60,7 +60,7 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
           {hideValue ? null : (
             <View style={styles.rightAligned}>
               <Typography type="H6">
-                {formatCurrency(availableAsset.price * 10 ** 6, 'uusd', true)}
+                {formatCurrency(availableAsset.price * 10 ** 6 * currencyRate, currency, true)}
               </Typography>
               <Typography
                 bold
@@ -97,7 +97,7 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
           {hideValue ? null : (
             <View style={styles.alignRight}>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
-                {t('usd value')}
+                {t('value')}
               </Typography>
               <Typography bold>
                 {formatCurrency(

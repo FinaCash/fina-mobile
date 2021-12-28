@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   const { assets, availableAssets, fetchAssets } = useAssetsContext()
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
-  const { currency } = useSettingsContext()
+  const { currency, currencyRate } = useSettingsContext()
   const { t } = useLocalesContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const assetsDistribution = transformAssetsToDistributions(assets)
@@ -177,7 +177,7 @@ const Home: React.FC = () => {
         </Typography>
         <View style={styles.row}>
           <Typography color={theme.palette.white} type="H2">
-            {formatCurrency(assetsDistribution[filterAsset], currency, true)}
+            {formatCurrency(assetsDistribution[filterAsset] * currencyRate, currency, true)}
           </Typography>
           {filterAsset === AssetTypes.Savings ? (
             <Button

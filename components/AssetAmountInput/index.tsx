@@ -74,7 +74,9 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           endAdornment={
             asset || (availableAsset && stakedAmount) ? (
               <View style={styles.row}>
-                <Typography bold>{asset ? asset.symbol : availableAsset?.symbol}</Typography>
+                <Typography color={theme.palette.grey[10]} bold>
+                  {asset ? asset.symbol : availableAsset?.symbol}
+                </Typography>
                 <View style={styles.verticalDivider} />
                 <TouchableOpacity
                   onPress={() =>

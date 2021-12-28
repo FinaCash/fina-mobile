@@ -53,7 +53,7 @@ const Input: React.FC<InputProps> = ({
         {icon ? React.cloneElement(icon, { style: styles.icon }) : null}
         <TextInput
           ref={inputRef}
-          style={[styles.input, font[size], textStyle]}
+          style={[font[size], styles.input, textStyle]}
           placeholderTextColor={theme.palette.grey[6]}
           {...props}
         />

@@ -39,7 +39,7 @@ const History: React.FC = () => {
         display: none !important;
       }
       .card {
-        background: ${theme.palette.white} !important;
+        background: ${theme.palette.background} !important;
       }
       .card-header {
         display: flex !important

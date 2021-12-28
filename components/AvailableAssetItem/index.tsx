@@ -18,7 +18,7 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
-  const { currency } = useSettingsContext()
+  const { currency, currencyRate } = useSettingsContext()
 
   const deltaPercent = (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
 
@@ -38,7 +38,7 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
         {amount === undefined ? (
           <View style={styles.rightAligned}>
             <Typography type="H6">
-              {formatCurrency(availableAsset.price * 10 ** 6, 'uusd', true)}
+              {formatCurrency(availableAsset.price * 10 ** 6 * currencyRate, currency, true)}
             </Typography>
             <Typography
               bold
@@ -54,7 +54,11 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
               {formatCurrency(amount * 10 ** 6, availableAsset.coin.denom)}
             </Typography>
             <Typography type="Small" color={theme.palette.grey[7]}>
-              {formatCurrency(amount * availableAsset.price, currency, true)}
+              {formatCurrency(
+                amount * 10 ** 6 * availableAsset.price * currencyRate,
+                currency,
+                true
+              )}
             </Typography>
           </View>
         )}

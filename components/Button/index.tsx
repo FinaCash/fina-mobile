@@ -47,7 +47,7 @@ const Button: React.FC<ButtonProps> = ({
         styles.container,
         {
           backgroundColor:
-            !loading && !disabled ? bgColor || theme.palette.primary : theme.palette.grey[3],
+            !loading && !disabled ? bgColor || theme.palette.button : theme.palette.grey[3],
         },
         {
           paddingHorizontal: theme.baseSpace * paddings[size],

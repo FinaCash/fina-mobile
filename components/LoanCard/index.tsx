@@ -96,7 +96,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
       >
         <View>
           <Typography color={theme.palette.white} type="H4">
-            {formatCurrency(borrowInfo.collateralValue * 10 ** 6, 'uusd', true)}
+            {formatCurrency(borrowInfo.collateralValue * 10 ** 6 * currencyRate, currency, true)}
           </Typography>
           <Typography color={theme.palette.white} type="Small">
             {t('collateral value')}
@@ -104,7 +104,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
         </View>
         <View>
           <Typography color={theme.palette.white} type="H4">
-            {formatCurrency(borrowInfo.borrowedValue * 10 ** 6, 'uusd', true)}
+            {formatCurrency(borrowInfo.borrowedValue * 10 ** 6 * currencyRate, currency, true)}
           </Typography>
           <Typography color={theme.palette.white} type="Small">
             {t('borrowed value')}
@@ -134,7 +134,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
           </TouchableOpacity>
           <View>
             <Typography type="Large">
-              {formatCurrency(borrowInfo.borrowLimit * 10 ** 6, denom, true)}
+              {formatCurrency(borrowInfo.borrowLimit * 10 ** 6 * currencyRate, currency, true)}
             </Typography>
             <Typography type="Small" color={theme.palette.grey[7]}>
               {t('borrow limit')}
@@ -219,7 +219,9 @@ const LoanCard: React.FC<LoanCardProps> = ({
               }}
               endAdornment={
                 <View style={styles.row}>
-                  <Typography bold>{getSymbolFromDenom(denom)}</Typography>
+                  <Typography color={theme.palette.grey[10]} bold>
+                    {getSymbolFromDenom(denom)}
+                  </Typography>
                   <View style={styles.verticalDivider} />
                   <TouchableOpacity onPress={() => setAmount!(maxValue.toFixed(2))}>
                     <Typography bold color={theme.palette.secondary}>

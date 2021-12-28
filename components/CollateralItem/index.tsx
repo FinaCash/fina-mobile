@@ -45,7 +45,7 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
           {availableAsset ? (
             <View style={styles.rightAligned}>
               <Typography type="H6">
-                {formatCurrency(availableAsset.price * 10 ** 6, 'uusd', true)}
+                {formatCurrency(availableAsset.price * 10 ** 6 * currencyRate, currency, true)}
               </Typography>
               <Typography
                 bold
