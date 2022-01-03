@@ -1,14 +1,14 @@
-import { Anchor, bombay12, AddressProviderFromJson } from '@anchor-protocol/anchor.js'
-import { DEFAULT_BOMBAY_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
+import { Anchor, bombay12, AddressProviderFromJson, columbus5 } from '@anchor-protocol/anchor.js'
+import { DEFAULT_BOMBAY_MIRROR_OPTIONS, DEFAULT_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
 
 export const deafultHdPath = [44, 330, 0, 0, 0]
 export const defaultPrefix = 'terra'
 
-export const chainID = 'bombay-12'
+export const chainID = 'columbus-5'
 
 export const terraLCDClient = new LCDClient({
-  URL: 'https://bombay-lcd.terra.dev',
+  URL: 'https://lcd.terra.dev',
   chainID,
   gasPrices: {
     uusd: 0.15,
@@ -16,9 +16,9 @@ export const terraLCDClient = new LCDClient({
   gasAdjustment: 2,
 })
 
-export const terraFCDUrl = 'https://bombay-fcd.terra.dev'
+export const terraFCDUrl = 'https://fcd.terra.dev'
 
-export const terraUstPairContract = 'terra156v8s539wtz0sjpn8y8a8lfg8fhmwa7fy22aff'
+export const terraUstPairContract = 'terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552'
 
 export const supportedTokens = {
   uluna: {
@@ -58,19 +58,20 @@ export const supportedTokens = {
   },
 }
 
-export const anchorAddressProvider = new AddressProviderFromJson(bombay12)
+export const anchorAddressProvider = new AddressProviderFromJson(columbus5)
 
 export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvider)
 
 export const anchorApiUrl = 'https://api.anchorprotocol.com/api'
 export const anchorAirdropApiUrl = 'https://airdrop.anchorprotocol.com/api/get?chainId=columbus-4'
+export const terraMantleUrl = 'https://mantle.terra.dev'
 
 export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'
 
 export const terraStationUrl = 'https://station.terra.money'
-export const terraStationChain = 'testnet'
+export const terraStationChain = 'mainnet'
 
-export const mirrorOptions = DEFAULT_BOMBAY_MIRROR_OPTIONS
+export const mirrorOptions = DEFAULT_MIRROR_OPTIONS
 
 export const colleteralsInfo = {
   BETH: {
@@ -81,7 +82,7 @@ export const colleteralsInfo = {
   },
 }
 
-export const defaultValidatorAddress = 'terravaloper1qxqrtvg3smlfdfhvwcdzh0huh4f50kfs6gdt4x'
+export const defaultValidatorAddress = 'terravaloper1jkqr2vfg4krfd4zwmsf7elfj07cjuzss30ux8g'
 
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`

@@ -152,5 +152,6 @@
   "redelegate": "Redelegate",
   "complete at": "Complete at: {{completion}}",
   "hd path": "HD Path",
-  "custom hd path": "Custom HD Path"
+  "custom hd path": "Custom HD Path",
+  "claim all": "Claim All"
 }

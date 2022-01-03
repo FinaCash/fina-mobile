@@ -28,7 +28,8 @@ const Settings: React.FC = () => {
   const { login, logout, decryptSeedPhrase, type } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
-  const { theme, currency, setTheme, setCurrency } = useSettingsContext()
+  const { theme, currency, setTheme, setCurrency, systemDefaultTheme, setSystemDefaultTheme } =
+    useSettingsContext()
   const { availableCurrencies } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
@@ -43,11 +44,15 @@ const Settings: React.FC = () => {
           onPress: () => {
             showActionSheetWithOptions(
               {
-                options: [...supportedThemes.map((l) => t(l)), t('cancel')],
+                options: [t('system default'), ...supportedThemes.map((l) => t(l)), t('cancel')],
                 cancelButtonIndex: supportedThemes.length,
               },
               (index) => {
-                if (index < supportedThemes.length) {
+                if (index === 0) {
+                  setSystemDefaultTheme(true)
+                  Actions.jump('Settings')
+                } else if (index < supportedThemes.length + 1) {
+                  setSystemDefaultTheme(false)
                   setTheme(supportedThemes[index])
                   Actions.jump('Settings')
                 }

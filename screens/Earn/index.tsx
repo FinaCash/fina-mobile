@@ -22,7 +22,7 @@ const Earn: React.FC = () => {
           routes: [
             { key: 'Stake', title: t('stake') },
             { key: 'Farm', title: t('farm') },
-            // { key: 'Airdrop', title: t('airdrop') },
+            { key: 'Airdrop', title: t('airdrop') },
           ],
         }}
         renderScene={SceneMap({ Stake, Farm, Airdrop })}

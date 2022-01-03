@@ -1,80 +1,92 @@
 import React from 'react'
-import { Alert, SectionList, View } from 'react-native'
-import { Actions } from 'react-native-router-flux'
-import SearchIcon from '../../assets/images/icons/search.svg'
-import HeaderBar from '../../components/HeaderBar'
-import AvailableAssetItem from '../../components/AvailableAssetItem'
+import { FlatList, View } from 'react-native'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
-import Input from '../../components/Input'
-import { groupBy } from 'lodash'
-import Typography from '../../components/Typography'
 import { useLocalesContext } from '../../contexts/LocalesContext'
-import { useActionSheet } from '@expo/react-native-action-sheet'
-import { getMAssetDetail } from '../../utils/transformAssets'
+import { getTokenAssetDetail } from '../../utils/transformAssets'
+import AssetItem from '../../components/AssetItem'
+import { Airdrop, Asset } from '../../types/assets'
+import { Portal } from '@gorhom/portal'
+import ConfirmClaimAirdropModal from '../../components/ConfirmModals/ConfirmClaimAirdropModal'
+import { Actions } from 'react-native-router-flux'
+import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
+import { useAccountsContext } from '../../contexts/AccountsContext'
+import TerraApp from '@terra-money/ledger-terra-js'
+import Button from '../../components/Button'
 
-const Airdrop: React.FC = () => {
+const AirdropTab: React.FC = () => {
   const { t } = useLocalesContext()
-  const { styles, theme } = useStyles(getStyles)
-  const { availableAssets, assets } = useAssetsContext()
-  const { showActionSheetWithOptions } = useActionSheet()
-  const [search, setSearch] = React.useState('')
+  const { styles } = useStyles(getStyles)
+  const { availableAssets, airdrops, claimAirdrops } = useAssetsContext()
+  const { type } = useAccountsContext()
 
-  const groupedAssets = groupBy(
-    availableAssets.filter((a) => (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())),
-    'type'
+  const [claimingAirdrops, setClaimingAirdrops] = React.useState<Airdrop[]>([])
+
+  const data = React.useMemo(
+    () =>
+      airdrops.map((a) => getTokenAssetDetail(a.coin, availableAssets)).filter((a) => a) as Asset[],
+    [availableAssets, airdrops]
   )
-  const sections = Object.keys(groupedAssets).map((k) => ({
-    title: t(k),
-    data: groupedAssets[k],
-  }))
+
+  const onClaim = React.useCallback(
+    async (password?: string, terraApp?: TerraApp) => {
+      const message = {
+        type: 'claim airdrops',
+        airdrops: claimingAirdrops,
+      }
+      try {
+        await claimAirdrops(claimingAirdrops, password, terraApp)
+        Actions.Success({
+          message,
+          onClose: () => Actions.jump('Earn'),
+        })
+      } catch (err: any) {
+        Actions.Success({
+          message,
+          error: err.message,
+          onClose: () => Actions.jump('Earn'),
+        })
+      }
+    },
+    [claimAirdrops, claimingAirdrops]
+  )
 
   return (
     <>
-      <View style={styles.searchBarContainer}>
-        <Input
-          placeholder={t('search')}
-          icon={<SearchIcon />}
-          value={search}
-          onChangeText={setSearch}
-        />
-      </View>
-      <SectionList
+      <FlatList
         style={styles.list}
         keyExtractor={(item) => item.symbol}
-        sections={sections}
-        stickySectionHeadersEnabled={false}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.titleContainer}>
-            <Typography type="Large" bold>
-              {title}
-            </Typography>
-          </View>
-        )}
+        data={data}
         renderItem={({ item }) => (
-          <AvailableAssetItem
-            availableAsset={item}
+          <AssetItem
+            asset={item}
             onPress={() =>
-              showActionSheetWithOptions(
-                { options: [t('buy'), t('sell'), t('cancel')], cancelButtonIndex: 2 },
-                (i) => {
-                  if (i === 0) {
-                    Actions.Swap({ mode: 'buy', asset: item })
-                  } else {
-                    const asset =
-                      assets.find((a) => a.symbol === item.symbol) ||
-                      getMAssetDetail({ denom: item.coin.denom, amount: '0' }, availableAssets)
-                    Actions.Swap({ mode: 'sell', asset })
-                  }
-                }
-              )
+              setClaimingAirdrops([airdrops.find((a) => a.coin.denom === item.coin.denom)!])
             }
           />
         )}
+        ListFooterComponent={
+          <View style={styles.margin}>
+            <Button size="Large" onPress={() => setClaimingAirdrops(airdrops)}>
+              {t('claim all')}
+            </Button>
+          </View>
+        }
       />
+      <Portal>
+        <ConfirmClaimAirdropModal
+          open={!!claimingAirdrops.length}
+          onClose={() => setClaimingAirdrops([])}
+          airdrops={claimingAirdrops}
+          onConfirm={() => {
+            getPasswordOrLedgerApp(onClaim, type)
+            setClaimingAirdrops([])
+          }}
+        />
+      </Portal>
     </>
   )
 }
 
-export default Airdrop
+export default AirdropTab

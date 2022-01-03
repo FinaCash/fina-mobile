@@ -82,3 +82,15 @@ export interface StakingInfo {
   totalRewards: number // In USD
   stakingApr: number
 }
+
+export interface Airdrop {
+  coin: {
+    denom: string
+    amount: string
+  }
+  details: {
+    stage: number
+    amount: string
+    proof: string
+  }[]
+}

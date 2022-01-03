@@ -152,5 +152,6 @@
   "redelegate": "重新質押",
   "complete at": "完成日期: {{completion}}",
   "hd path": "HD Path",
-  "custom hd path": "自選 HD Path"
+  "custom hd path": "自選 HD Path",
+  "claim all": "領取全部"
 }

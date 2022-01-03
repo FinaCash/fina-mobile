@@ -12,7 +12,7 @@ import { Coin, Int } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import flatten from 'lodash/flatten'
 import last from 'lodash/last'
-import { AssetTypes, AvailableAsset, StakingInfo, Validator } from '../types/assets'
+import { Airdrop, AssetTypes, AvailableAsset, StakingInfo, Validator } from '../types/assets'
 import {
   anchorAddressProvider,
   anchorAirdropApiUrl,
@@ -24,6 +24,7 @@ import {
   mirrorOptions,
   terraFCDUrl,
   terraLCDClient,
+  terraMantleUrl,
 } from './terraConfig'
 
 export const fetchAvailableMirrorAssets = async () => {
@@ -195,8 +196,7 @@ export const fetchAnchorCollaterals = async (address: string) => {
     await queryMarketState({ lcd: terraLCDClient } as any)
   )(anchorAddressProvider)) as any
   const marketBalance = await terraLCDClient.bank.balance(anchorAddressProvider.market())
-  const market_balance = get(marketBalance, '_coins.uusd.amount', new Int()).toString()
-
+  const market_balance = get(marketBalance, '[0]._coins.uusd.amount', new Int()).toString()
   const interestModelBorrowRate = await (
     await queryInterestModelBorrowRate({
       lcd: terraLCDClient,
@@ -297,9 +297,78 @@ export const fetchStakingInfo = async (address: string) => {
   return { stakingInfo, validators }
 }
 
-export const fetchAirdrops = async (address: string) => {
-  // const anc = (
-  //   await fetch(`${anchorAirdropApiUrl}&address=${address}`).then((r) => r.json())
-  // ).filter((a) => a.claimable)
-  // const mir = Mirr
+export const fetchAirdrops = async (address: string): Promise<Airdrop[]> => {
+  const airdrops: Airdrop[] = []
+  // Anchor
+  const ancAirdrops = []
+  const ancResult = await fetch(`${anchorAirdropApiUrl}&address=${address}`).then((r) => r.json())
+  for (let i = 0; i < ancResult.length; i += 1) {
+    const { data } = await fetch(
+      `${terraMantleUrl}/?airdrop--is-claimed&address=${address}&stage=${ancResult[i].stage}`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            {
+              isClaimed: WasmContractsContractAddressStore(
+                ContractAddress: "${anchorAddressProvider.airdrop()}"
+                QueryMsg: "{\\"is_claimed\\":{\\"address\\":\\"${address}\\",\\"stage\\":${
+            ancResult[i].stage
+          }}}"
+              ) {
+                Result
+                Height
+              }
+            }
+          `,
+          variables: {},
+        }),
+      }
+    ).then((r) => r.json())
+    if (JSON.parse(get(data, 'isClaimed.Result', '{}')).is_claimed === false) {
+      ancAirdrops.push(ancResult[i])
+    }
+  }
+  airdrops.push({
+    coin: {
+      denom: 'ANC',
+      amount: String(
+        Math.round(ancAirdrops.map((a) => Number(a.amount)).reduce((a, b) => a + b, 0))
+      ),
+    },
+    details: ancAirdrops.map(({ amount, proof, stage }) => ({ amount, proof, stage })),
+  })
+  // Mirror
+  const {
+    data: { airdrop: mirrorAirdrops },
+  } = await fetch(mirrorGraphqlUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      operationName: 'airdropQuery',
+      query:
+        'query airdropQuery($address: String!, $network: String) {airdrop(address: $address, network: $network)}',
+      variables: {
+        address,
+        network: 'TERRA',
+      },
+    }),
+  }).then((r) => r.json())
+  airdrops.push({
+    coin: {
+      denom: 'MIR',
+      amount: String(
+        Math.round(
+          mirrorAirdrops.map((a: any) => Number(a.amount)).reduce((a: any, b: any) => a + b, 0)
+        )
+      ),
+    },
+    details: mirrorAirdrops.map(({ amount, proof, stage }: any) => ({ amount, proof, stage })),
+  })
+  return airdrops
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { Feather as Icon } from '@expo/vector-icons'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
-import { Asset, AvailableAsset, Validator } from '../../types/assets'
+import { Airdrop, Asset, AvailableAsset, Validator } from '../../types/assets'
 import useStyles from '../../theme/useStyles'
 import { View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -15,6 +15,8 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import RewardsItem from '../../components/RewardsItem'
 import AvailableAssetItem from '../../components/AvailableAssetItem'
 import StakingItem from '../../components/StakingItem'
+import { getTokenAssetDetail } from '../../utils/transformAssets'
+import { useAssetsContext } from '../../contexts/AssetsContext'
 
 interface SuccessProps {
   message:
@@ -62,6 +64,10 @@ interface SuccessProps {
         symbol: string
         price: number
       }
+    | {
+        type: 'claim airdrops'
+        airdrops: Airdrop[]
+      }
   error?: string
   onClose(): void
 }
@@ -69,6 +75,7 @@ interface SuccessProps {
 const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
+  const { availableAssets } = useAssetsContext()
   const { recipients } = useRecipientsContext()
   const recipient =
     message.type === 'send' ? recipients.find((r) => r.address === message.address) : undefined
@@ -199,6 +206,20 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 price={message.price}
                 hideBorder
               />
+            </>
+          ) : null}
+          {message.type === 'claim airdrops' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              {(
+                message.airdrops
+                  .map((a) => getTokenAssetDetail(a.coin, availableAssets))
+                  .filter((a) => a) as Asset[]
+              ).map((a) => (
+                <AssetItem asset={a} disabled />
+              ))}
             </>
           ) : null}
         </View>

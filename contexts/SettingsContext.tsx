@@ -9,16 +9,24 @@ interface SettingsState {
   currency: string
   currencyRate: number
   theme: ThemeType
+  systemDefaultTheme: boolean
+  hideSmallBalance: boolean
   setCurrency: React.Dispatch<React.SetStateAction<string>>
   setTheme: React.Dispatch<React.SetStateAction<ThemeType>>
+  setSystemDefaultTheme: React.Dispatch<React.SetStateAction<boolean>>
+  setHideSmallBalance: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const initialState: SettingsState = {
   currency: 'uusd',
   currencyRate: 1,
   theme: ThemeType.Light,
+  systemDefaultTheme: true,
+  hideSmallBalance: false,
   setCurrency: () => null,
   setTheme: () => null,
+  setSystemDefaultTheme: () => null,
+  setHideSmallBalance: () => null,
 }
 
 const SettingsContext = React.createContext<SettingsState>(initialState)
@@ -31,6 +39,14 @@ const SettingsProvider: React.FC = ({ children }) => {
     initialState.currencyRate
   )
   const [theme, setTheme] = usePersistedState('theme', initialState.theme)
+  const [systemDefaultTheme, setSystemDefaultTheme] = usePersistedState(
+    'systemDefaultTheme',
+    initialState.systemDefaultTheme
+  )
+  const [hideSmallBalance, setHideSmallBalance] = usePersistedState(
+    'hideSmallBalance',
+    initialState.hideSmallBalance
+  )
 
   React.useEffect(() => {
     if (currency !== 'uusd') {
@@ -46,9 +62,9 @@ const SettingsProvider: React.FC = ({ children }) => {
   React.useEffect(() => {
     if (!address) {
       setCurrency(initialState.currency)
-      setTheme(initialState.theme)
+      setHideSmallBalance(initialState.hideSmallBalance)
     }
-  }, [address, setCurrency, setTheme])
+  }, [address, setCurrency, setHideSmallBalance])
 
   return (
     <SettingsContext.Provider
@@ -58,6 +74,10 @@ const SettingsProvider: React.FC = ({ children }) => {
         setCurrency,
         theme,
         setTheme,
+        systemDefaultTheme,
+        setSystemDefaultTheme,
+        hideSmallBalance,
+        setHideSmallBalance,
       }}
     >
       {children}

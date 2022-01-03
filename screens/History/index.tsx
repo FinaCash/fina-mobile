@@ -32,17 +32,17 @@ const History: React.FC = () => {
   const style = `
     <style>
       body {
-        color: ${theme.palette.grey[9]};
-        background: ${theme.palette.grey[0]};
+        color: ${theme.fonts.Base.color};
+        background: ${theme.palette.background};
       }
-      nav, header {
+      nav, header, nav+div {
         display: none !important;
       }
-      .card {
-        background: ${theme.palette.background} !important;
+      section {
+        background: ${theme.palette.altBackground} !important;
       }
-      .card-header {
-        display: flex !important
+      #station div {
+        grid-template-rows: auto;
       }
     </style>
   `

@@ -105,16 +105,17 @@ const Stake: React.FC = () => {
     {
       title: t('rewards'),
       data: stakingInfo.rewards,
-      renderItem: ({ item }: any) => (
-        <AssetItem
-          disabled
-          asset={
-            item.denom === 'uluna'
-              ? { ...luna[0], coin: item }
-              : getCurrentAssetDetail(item, availableCurrenciesMap[item.denom].price)
-          }
-        />
-      ),
+      renderItem: ({ item }: any) =>
+        item.denom === 'uluna' || availableCurrenciesMap[item.denom] ? (
+          <AssetItem
+            disabled
+            asset={
+              item.denom === 'uluna'
+                ? { ...luna[0], coin: item }
+                : getCurrentAssetDetail(item, availableCurrenciesMap[item.denom].price)
+            }
+          />
+        ) : null,
     },
   ].filter((s) => s.data.length)
 

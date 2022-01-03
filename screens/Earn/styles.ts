@@ -1,7 +1,11 @@
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
-  tabbar: { backgroundColor: theme.palette.background },
+  tabbar: {
+    backgroundColor: theme.palette.background,
+    borderBottomWidth: 0.8,
+    borderColor: theme.palette.border,
+  },
   tabLabel: {
     ...theme.fonts.Large,
     color: theme.palette.active,
@@ -45,5 +49,8 @@ export default (theme: Theme) => ({
   },
   centered: {
     alignItems: 'center',
+  },
+  margin: {
+    margin: 4 * theme.baseSpace,
   },
 })
