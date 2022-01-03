@@ -45,7 +45,7 @@ const Settings: React.FC = () => {
             showActionSheetWithOptions(
               {
                 options: [t('system default'), ...supportedThemes.map((l) => t(l)), t('cancel')],
-                cancelButtonIndex: supportedThemes.length,
+                cancelButtonIndex: supportedThemes.length + 1,
               },
               (index) => {
                 if (index === 0) {
@@ -53,7 +53,7 @@ const Settings: React.FC = () => {
                   Actions.jump('Settings')
                 } else if (index < supportedThemes.length + 1) {
                   setSystemDefaultTheme(false)
-                  setTheme(supportedThemes[index])
+                  setTheme(supportedThemes[index - 1])
                   Actions.jump('Settings')
                 }
               }
@@ -93,7 +93,7 @@ const Settings: React.FC = () => {
                 setCurrency(a.coin.denom)
                 setTimeout(() => {
                   Actions.jump('Settings')
-                }, 50)
+                }, 500)
               },
             }),
         },

@@ -38,7 +38,7 @@ const LocalesProvider: React.FC = ({ children }) => {
       let value: string = get(
         translations,
         `${locale}.${key}`,
-        get(translations, `${fallback}.${key}`, key)
+        get(translations, `${fallback}.${key}`, String(key))
       )
       const vars = value.match(/{{([^}]+)}}/g) || []
       vars.forEach((v) => {
