@@ -37,6 +37,8 @@ import Delegate from '../screens/Staking/Delegate'
 import SelectValidator from '../screens/SelectValidator'
 import Undelegate from '../screens/Staking/Undelegate'
 import Redelegate from '../screens/Staking/Redelegate'
+import { AssetsProvider } from '../contexts/AssetsContext'
+import { RecipientsProvider } from '../contexts/RecipientsContext'
 
 export const TabIcon: React.FC<{
   focused: boolean
@@ -66,86 +68,88 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
   const { t } = useLocalesContext()
 
   return (
-    <>
-      <Router sceneStyle={styles.scene}>
-        <Scene key="root">
-          <Modal hideNavBar>
-            <Scene key="Login" hideNavBar component={Login} />
-            <Stack hideNavBar key="Main" initial={!!address}>
-              <Tabs
-                tabBarPosition="bottom"
-                showLabel={false}
-                tabBarStyle={styles.tabBar}
-                hideNavBar
-                lazy
-              >
-                <Scene
-                  key="Home"
+    <AssetsProvider>
+      <RecipientsProvider>
+        <Router sceneStyle={styles.scene}>
+          <Scene key="root">
+            <Modal hideNavBar>
+              <Scene key="Login" hideNavBar component={Login} />
+              <Stack hideNavBar key="Main" initial={!!address}>
+                <Tabs
+                  tabBarPosition="bottom"
+                  showLabel={false}
+                  tabBarStyle={styles.tabBar}
                   hideNavBar
-                  iconSvg={<HomeIcon />}
-                  tabTitle={t('home')}
-                  icon={TabIcon}
-                  component={Home}
-                />
-                <Scene
-                  key="Trade"
-                  hideNavBar
-                  iconSvg={<TradeIcon />}
-                  tabTitle={t('trade')}
-                  icon={TabIcon}
-                  component={Trade}
-                />
-                <Scene
-                  key="Earn"
-                  hideNavBar
-                  iconSvg={<EarnIcon />}
-                  tabTitle={t('earn')}
-                  icon={TabIcon}
-                  component={Earn}
-                />
-                <Scene
-                  key="Loan"
-                  hideNavBar
-                  iconSvg={<BorrowIcon />}
-                  tabTitle={t('loan')}
-                  icon={TabIcon}
-                  component={Loan}
-                />
-                <Scene
-                  key="Settings"
-                  hideNavBar
-                  iconSvg={<SettingsIcon />}
-                  tabTitle={t('settings')}
-                  icon={TabIcon}
-                  component={Settings}
-                />
-              </Tabs>
-              <Scene key="SelectAsset" hideNavBar component={SelectAsset} />
-              <Scene key="SelectAmount" hideNavBar component={SelectAmount} />
-              <Scene key="SelectRecipient" hideNavBar component={SelectRecipient} />
-              <Scene key="SelectRecipients" hideNavBar component={SelectRecipients} />
-              <Scene key="UpdateRecipient" hideNavBar component={UpdateRecipient} />
-              <Scene key="MyAddress" hideNavBar component={MyAddress} />
-              <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
-              <Scene key="CurrencyExchange" hideNavBar component={CurrencyExchange} />
-              <Scene key="Savings" hideNavBar component={Savings} />
-              <Scene key="Swap" hideNavBar component={Swap} />
-              <Scene key="History" hideNavBar component={History} />
-              <Scene key="Recipients" hideNavBar component={Recipients} />
-              <Scene key="ProvideCollateral" hideNavBar component={ProvideCollateral} />
-              <Scene key="Borrow" hideNavBar component={Borrow} />
-              <Scene key="Delegate" hideNavBar component={Delegate} />
-              <Scene key="Undelegate" hideNavBar component={Undelegate} />
-              <Scene key="Redelegate" hideNavBar component={Redelegate} />
-              <Scene key="SelectValidator" hideNavBar component={SelectValidator} />
-            </Stack>
-            <Scene key="Password" hideNavBar component={Password} />
-            <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />
-            <Scene key="Success" hideNavBar component={Success} />
-          </Modal>
-        </Scene>
-      </Router>
-    </>
+                  lazy
+                >
+                  <Scene
+                    key="Home"
+                    hideNavBar
+                    iconSvg={<HomeIcon />}
+                    tabTitle={t('home')}
+                    icon={TabIcon}
+                    component={Home}
+                  />
+                  <Scene
+                    key="Trade"
+                    hideNavBar
+                    iconSvg={<TradeIcon />}
+                    tabTitle={t('trade')}
+                    icon={TabIcon}
+                    component={Trade}
+                  />
+                  <Scene
+                    key="Earn"
+                    hideNavBar
+                    iconSvg={<EarnIcon />}
+                    tabTitle={t('earn')}
+                    icon={TabIcon}
+                    component={Earn}
+                  />
+                  <Scene
+                    key="Loan"
+                    hideNavBar
+                    iconSvg={<BorrowIcon />}
+                    tabTitle={t('loan')}
+                    icon={TabIcon}
+                    component={Loan}
+                  />
+                  <Scene
+                    key="Settings"
+                    hideNavBar
+                    iconSvg={<SettingsIcon />}
+                    tabTitle={t('settings')}
+                    icon={TabIcon}
+                    component={Settings}
+                  />
+                </Tabs>
+                <Scene key="SelectAsset" hideNavBar component={SelectAsset} />
+                <Scene key="SelectAmount" hideNavBar component={SelectAmount} />
+                <Scene key="SelectRecipient" hideNavBar component={SelectRecipient} />
+                <Scene key="SelectRecipients" hideNavBar component={SelectRecipients} />
+                <Scene key="UpdateRecipient" hideNavBar component={UpdateRecipient} />
+                <Scene key="MyAddress" hideNavBar component={MyAddress} />
+                <Scene key="ScanQRCode" hideNavBar component={ScanQRCode} />
+                <Scene key="CurrencyExchange" hideNavBar component={CurrencyExchange} />
+                <Scene key="Savings" hideNavBar component={Savings} />
+                <Scene key="Swap" hideNavBar component={Swap} />
+                <Scene key="History" hideNavBar component={History} />
+                <Scene key="Recipients" hideNavBar component={Recipients} />
+                <Scene key="ProvideCollateral" hideNavBar component={ProvideCollateral} />
+                <Scene key="Borrow" hideNavBar component={Borrow} />
+                <Scene key="Delegate" hideNavBar component={Delegate} />
+                <Scene key="Undelegate" hideNavBar component={Undelegate} />
+                <Scene key="Redelegate" hideNavBar component={Redelegate} />
+                <Scene key="SelectValidator" hideNavBar component={SelectValidator} />
+              </Stack>
+              <Scene key="Password" hideNavBar component={Password} />
+              <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />
+              <Scene key="Success" hideNavBar component={Success} />
+            </Modal>
+          </Scene>
+        </Router>
+      </RecipientsProvider>
+    </AssetsProvider>
   )
 }
 

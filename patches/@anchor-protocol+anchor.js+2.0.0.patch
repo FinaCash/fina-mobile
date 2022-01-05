@@ -39,7 +39,7 @@ index 65f4d51..1e4c4a7 100644
      terraswapblunaLunaLPToken(): string;
      gov(): string;
 diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
-index 6995f8d..df9aa74 100644
+index 6995f8d..b0e51e4 100644
 --- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
 +++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
 @@ -52,6 +52,9 @@ class AddressProviderFromJson {
@@ -47,11 +47,142 @@ index 6995f8d..df9aa74 100644
          return this.data.mmLiquidationQueue;
      }
 +    terraswapbethUstPair() {
-+        return this.data.terraswapblunaLunaPair;
++        return this.data.terraswapbethUstPair;
 +    }
      terraswapblunaLunaPair() {
          return this.data.terraswapblunaLunaPair;
      }
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.d.ts
+index 357a3ec..85d8325 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.d.ts
+@@ -2,6 +2,7 @@ export * from './provide-liquidity-bluna';
+ export * from './provide-liquidity-anc';
+ export * from './swap-anc';
+ export * from './swap-bluna';
++export * from './swap-beth';
+ export * from './swap-ust';
+ export * from './swap-luna';
+ export * from './withdraw-liquidity-anc';
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.js b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.js
+index 6baa3b8..26f5c52 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/index.js
+@@ -14,6 +14,7 @@ __exportStar(require("./provide-liquidity-bluna"), exports);
+ __exportStar(require("./provide-liquidity-anc"), exports);
+ __exportStar(require("./swap-anc"), exports);
+ __exportStar(require("./swap-bluna"), exports);
++__exportStar(require("./swap-beth"), exports);
+ __exportStar(require("./swap-ust"), exports);
+ __exportStar(require("./swap-luna"), exports);
+ __exportStar(require("./withdraw-liquidity-anc"), exports);
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-beth.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-beth.d.ts
+new file mode 100644
+index 0000000..1729f8e
+--- /dev/null
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-beth.d.ts
+@@ -0,0 +1,11 @@
++import { MsgExecuteContract } from '@terra-money/terra.js';
++import { AddressProvider } from '../../address-provider/provider';
++interface Option {
++    address: string;
++    amount: string;
++    to?: string;
++    belief_price?: string;
++    max_spread?: string;
++}
++export declare const fabricateTerraswapSwapbEth: ({ address, amount, to, belief_price, max_spread }: Option) => (addressProvider: AddressProvider) => MsgExecuteContract[];
++export {};
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-beth.js b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-beth.js
+new file mode 100644
+index 0000000..6a88138
+--- /dev/null
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-beth.js
+@@ -0,0 +1,34 @@
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.fabricateTerraswapSwapbEth = void 0;
++const terra_js_1 = require("@terra-money/terra.js");
++const validate_input_1 = require("@anchor-protocol/anchor.js/dist/utils/validate-input");
++const address_1 = require("@anchor-protocol/anchor.js/dist/utils/validation/address");
++const number_1 = require("@anchor-protocol/anchor.js/dist/utils/validation/number");
++const create_hook_msg_1 = require("@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg");
++const fabricateTerraswapSwapbEth = ({ address, amount, to, belief_price, max_spread }) => (addressProvider) => {
++    (0, validate_input_1.validateInput)([
++        (0, address_1.validateAddress)(address),
++        (0, number_1.validateIsNumber)(amount),
++        (0, number_1.validateIsGreaterThanZero)(amount),
++    ]);
++    const bAssetTokenAddress = addressProvider.bEthToken();
++    const pairAddress = addressProvider.terraswapbethUstPair();
++    return [
++        new terra_js_1.MsgExecuteContract(address, bAssetTokenAddress, {
++            send: {
++                contract: pairAddress,
++                amount: new terra_js_1.Int(new terra_js_1.Dec(amount).mul(1000000)).toString(),
++                msg: (0, create_hook_msg_1.createHookMsg)({
++                    swap: {
++                        belief_price: belief_price,
++                        max_spread: max_spread,
++                        to: to,
++                    },
++                }),
++            },
++        }),
++    ];
++};
++exports.fabricateTerraswapSwapbEth = fabricateTerraswapSwapbEth;
++//# sourceMappingURL=swap-bluna.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.d.ts
+index 3b9d782..88291c2 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.d.ts
+@@ -9,4 +9,5 @@ interface Option {
+     max_spread?: string;
+ }
+ export declare const fabricateTerraswapSwapUSTANC: ({ address, amount, to, belief_price, max_spread, denom }: Option) => (addressProvider: AddressProvider) => MsgExecuteContract[];
++export declare const fabricateTerraswapSwapUSTbETH: ({ address, amount, to, belief_price, max_spread, denom }: Option) => (addressProvider: AddressProvider) => MsgExecuteContract[];
+ export {};
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.js b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.js
+index 3ead1b1..c2380d3 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/terraswap/swap-ust.js
+@@ -34,4 +34,33 @@ const fabricateTerraswapSwapUSTANC = ({ address, amount, to, belief_price, max_s
+     ];
+ };
+ exports.fabricateTerraswapSwapUSTANC = fabricateTerraswapSwapUSTANC;
++const fabricateTerraswapSwapUSTbETH = ({ address, amount, to, belief_price, max_spread, denom }) => (addressProvider) => {
++    (0, validate_input_1.validateInput)([
++        (0, address_1.validateAddress)(address),
++        (0, number_1.validateIsNumber)(amount),
++        (0, number_1.validateIsGreaterThanZero)(amount),
++    ]);
++    const coins = new terra_js_1.Coins([
++        new terra_js_1.Coin(denom, new terra_js_1.Int(new terra_js_1.Dec(amount).mul(1000000)).toString()),
++    ]);
++    const pairAddress = addressProvider.terraswapbethUstPair();
++    return [
++        new terra_js_1.MsgExecuteContract(address, pairAddress, {
++            swap: {
++                offer_asset: {
++                    info: {
++                        native_token: {
++                            denom: denom,
++                        },
++                    },
++                    amount: new terra_js_1.Int(new terra_js_1.Dec(amount).mul(1000000)).toString(),
++                },
++                belief_price: belief_price,
++                max_spread: max_spread,
++                to: to,
++            },
++        }, coins),
++    ];
++};
++exports.fabricateTerraswapSwapUSTbETH = fabricateTerraswapSwapUSTbETH;
+ //# sourceMappingURL=swap-ust.js.map
+\ No newline at end of file
 diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts
 index 0cbec92..e0e253d 100644
 --- a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts

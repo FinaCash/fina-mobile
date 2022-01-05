@@ -6,43 +6,28 @@ import HeaderBar from '../../components/HeaderBar'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
-import { terraStationChain, terraStationUrl } from '../../utils/terraConfig'
+import { exTerraFinderUrl } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { ActivityIndicator, View } from 'react-native'
 
 const History: React.FC = () => {
   const webview = React.useRef<WebView>(null)
   const { theme, styles } = useStyles(getStyles)
   const { t, locale } = useLocalesContext()
-  const { currency } = useSettingsContext()
+  const { theme: uiTheme } = useSettingsContext()
   const { address } = useAccountsContext()
 
-  const terraStationSettings = {
-    recentAddresses: [address],
-    user: {
-      address,
-      ledger: false,
-    },
-    hideSmallBalances: false,
-    chain: terraStationChain,
-    lang: locale,
-    currency: currency,
-  }
+  const [loading, setLoading] = React.useState(true)
 
   const style = `
     <style>
       body {
+        background-color: ${theme.palette.background};
         color: ${theme.fonts.Base.color};
-        background: ${theme.palette.background};
       }
-      nav, header, nav+div {
-        display: none !important;
-      }
-      section {
-        background: ${theme.palette.altBackground} !important;
-      }
-      #station div {
-        grid-template-rows: auto;
+      .TxSummary_tx__281GP {
+        border-bottom: 1px solid ${theme.palette.border};
       }
     </style>
   `
@@ -52,34 +37,50 @@ const History: React.FC = () => {
       <HeaderBar
         title={t('history')}
         back
-        subtitle={t('powered by terra station')}
+        subtitle={t('powered by extraterrestrial finder')}
         rightButton={{
           icon: <Icon name="refresh-cw" size={theme.baseSpace * 5} color={theme.palette.white} />,
-          onPress: () => webview.current?.reload(),
+          onPress: () => {
+            setLoading(true)
+            webview.current?.reload()
+          },
         }}
       />
-      <WebView
-        ref={webview}
-        style={styles.webview}
-        source={{ uri: `${terraStationUrl}/history` }}
-        injectedJavaScriptBeforeContentLoaded={
-          `
-          localStorage.setItem("settings", '${JSON.stringify(terraStationSettings)}')
-        ` as string
-        }
-        injectedJavaScript={
-          `
-          document.head.innerHTML += '${style.replace(/(?:\r\n|\r|\n)/g, '')}'
-        ` as string
-        }
-        onMessage={() => null}
-        onNavigationStateChange={(e) => {
-          if (!e.url.includes(terraStationUrl) && !e.loading) {
-            WebBrowser.openBrowserAsync(e.url)
-            webview.current?.goBack()
-          }
-        }}
-      />
+      <View style={styles.webview}>
+        <View style={{ flex: loading ? 0 : 1 }}>
+          <WebView
+            ref={webview}
+            source={{ uri: `${exTerraFinderUrl}/address/${address}` }}
+            injectedJavaScript={
+              `
+              document.head.innerHTML += '${style.replace(/(?:\r\n|\r|\n)/g, '')}'
+              document.querySelector('body').style.opacity = 0
+              const interval = setInterval(() => {
+                if (document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML.length > 300) {
+                  document.querySelector('body').innerHTML = document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML
+                  setTimeout(() => window.scrollTo(0, 0), 100)
+                  document.querySelector('body').style.opacity = 1
+                  window.ReactNativeWebView.postMessage("loaded")
+                  clearInterval(interval)
+                }
+              }, 100)
+            ` as string
+            }
+            onMessage={(e) => {
+              if (e.nativeEvent.data === 'loaded') {
+                setLoading(false)
+              }
+            }}
+            onNavigationStateChange={(e) => {
+              if (!e.url.includes(exTerraFinderUrl) && !e.loading) {
+                WebBrowser.openBrowserAsync(e.url)
+                webview.current?.goBack()
+              }
+            }}
+          />
+        </View>
+        {loading ? <ActivityIndicator style={styles.loader} /> : null}
+      </View>
     </>
   )
 }

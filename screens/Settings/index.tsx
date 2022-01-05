@@ -1,5 +1,5 @@
 import React from 'react'
-import { SectionList, TouchableOpacity, View, Alert } from 'react-native'
+import { SectionList, TouchableOpacity, View, Alert, Switch } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import get from 'lodash/get'
@@ -28,8 +28,16 @@ const Settings: React.FC = () => {
   const { login, logout, decryptSeedPhrase, type } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
-  const { theme, currency, setTheme, setCurrency, systemDefaultTheme, setSystemDefaultTheme } =
-    useSettingsContext()
+  const {
+    theme,
+    currency,
+    setTheme,
+    setCurrency,
+    systemDefaultTheme,
+    setSystemDefaultTheme,
+    hideSmallBalance,
+    setHideSmallBalance,
+  } = useSettingsContext()
   const { availableCurrencies } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
@@ -40,7 +48,7 @@ const Settings: React.FC = () => {
         {
           icon: theme === 'dark' ? 'moon' : 'sun',
           title: t('theme'),
-          value: t(theme),
+          value: systemDefaultTheme ? t('system default') : t(theme),
           onPress: () => {
             showActionSheetWithOptions(
               {
@@ -50,7 +58,6 @@ const Settings: React.FC = () => {
               (index) => {
                 if (index === 0) {
                   setSystemDefaultTheme(true)
-                  Actions.jump('Settings')
                 } else if (index < supportedThemes.length + 1) {
                   setSystemDefaultTheme(false)
                   setTheme(supportedThemes[index - 1])
@@ -90,12 +97,25 @@ const Settings: React.FC = () => {
               ),
               assetItemProps: { hideAmount: true },
               onSelect: (a: Asset) => {
-                setCurrency(a.coin.denom)
+                Actions.pop()
                 setTimeout(() => {
+                  setCurrency(a.coin.denom)
                   Actions.jump('Settings')
                 }, 500)
               },
             }),
+        },
+        {
+          icon: 'eye-off',
+          title: t('hide small balance'),
+          value: hideSmallBalance,
+          toggle: true,
+          onChange: (v: boolean) => {
+            setTimeout(() => {
+              setHideSmallBalance(v)
+              Actions.jump('Settings')
+            }, 100)
+          },
         },
       ],
     },
@@ -202,15 +222,19 @@ const Settings: React.FC = () => {
                 />
                 <Typography>{item.title}</Typography>
               </View>
-              <View style={styles.row}>
-                <Typography>{item.value}</Typography>
-                <Icon
-                  style={styles.arrow}
-                  name="chevron-right"
-                  size={6 * themeStyle.baseSpace}
-                  color={themeStyle.fonts.Base.color}
-                />
-              </View>
+              {item.toggle ? (
+                <Switch value={item.value} onValueChange={item.onChange} />
+              ) : (
+                <View style={styles.row}>
+                  <Typography>{item.value}</Typography>
+                  <Icon
+                    style={styles.arrow}
+                    name="chevron-right"
+                    size={6 * themeStyle.baseSpace}
+                    color={themeStyle.fonts.Base.color}
+                  />
+                </View>
+              )}
             </TouchableOpacity>
           ) : null
         }

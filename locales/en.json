@@ -97,7 +97,7 @@
   "password updated": "Password has been updated",
   "please enter new password": "Please enter a new password",
   "history": "History",
-  "powered by terra station": "Powered by Terra Station",
+  "powered by extraterrestrial finder": "Powered by Extraterrestrial Finder",
   "borrow": "Borrow",
   "earn": "Earn",
   "powered by anchor protocol": "Powered by Anchor Protocol",
@@ -153,5 +153,6 @@
   "complete at": "Complete at: {{completion}}",
   "hd path": "HD Path",
   "custom hd path": "Custom HD Path",
-  "claim all": "Claim All"
+  "claim all": "Claim All",
+  "hide small balance": "Hide Small Balance"
 }

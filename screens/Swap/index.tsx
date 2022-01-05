@@ -33,6 +33,7 @@ import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -225,7 +226,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
     <>
       <HeaderBar title={t(mode)} back />
       <View style={styles.container}>
-        <ScrollView scrollEnabled={false}>
+        <KeyboardAwareScrollView>
           {mode === 'buy' ? (
             <AssetAmountInput
               asset={currentAsset}
@@ -304,7 +305,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
               }}
             />
           )}
-        </ScrollView>
+        </KeyboardAwareScrollView>
         <Button
           disabled={
             !Number(fromAmount) ||

@@ -1,14 +1,16 @@
 import groupBy from 'lodash/groupBy'
 import { colleteralsInfo, supportedTokens } from './terraConfig'
 import get from 'lodash/get'
-import { Asset, AssetTypes, AvailableAsset } from '../types/assets'
+import { Asset, AssetTypes, AvailableAsset, StakingInfo } from '../types/assets'
 import { UserCollateral } from '@anchor-protocol/anchor.js'
 
 export const getCurrencyFromDenom = (denom: string) => denom.slice(1).toUpperCase()
 export const getSymbolFromDenom = (denom: string) =>
   (supportedTokens as any)[denom]
     ? (supportedTokens as any)[denom].symbol
-    : denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
+    : denom.match(/^u/)
+    ? denom.replace(/^u/, '').slice(0, 2).toUpperCase() + 'T'
+    : denom
 
 export const getCurrentAssetDetail = (
   coin: {
@@ -144,16 +146,23 @@ export const transformCoinsToAssets = async (
   return assets
 }
 
-export const transformAssetsToDistributions = (assets: Asset[]) => {
+export const transformAssetsToDistributions = (assets: Asset[], stakingInfo: StakingInfo) => {
   const groupedAssets = groupBy(assets, 'type')
   const result: { [type: string]: number } = {}
   for (let type in AssetTypes) {
     const assetType = (AssetTypes as any)[type]
     for (let i in groupedAssets[assetType]) {
       const asset = groupedAssets[assetType][i]
+      let totalAmount = Number(asset.coin.amount)
+      if (asset.symbol === 'LUNA') {
+        totalAmount +=
+          stakingInfo.delegated.map((d) => d.amount).reduce((a, b) => a + b, 0) +
+          stakingInfo.unbonding.map((d) => d.amount).reduce((a, b) => a + b, 0)
+      }
       result[assetType as AssetTypes] =
-        (result[assetType as AssetTypes] || 0) + asset.price * Number(asset.coin.amount)
+        (result[assetType as AssetTypes] || 0) + asset.price * totalAmount
     }
   }
+  console.log(result)
   return result
 }

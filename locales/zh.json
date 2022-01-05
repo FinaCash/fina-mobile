@@ -97,7 +97,7 @@
   "password updated": "密碼已更改",
   "please enter new password": "請輸入新密碼",
   "history": "交易紀錄",
-  "powered by terra station": "建立於Terra Station",
+  "powered by extraterrestrial finder": "建立於 Extraterrestrial Finder",
   "borrow": "借貸",
   "earn": "賺取",
   "powered by anchor protocol": "建立於 Anchor Protocol",
@@ -153,5 +153,6 @@
   "complete at": "完成日期: {{completion}}",
   "hd path": "HD Path",
   "custom hd path": "自選 HD Path",
-  "claim all": "領取全部"
+  "claim all": "領取全部",
+  "hide small balance": "隱藏小額資產"
 }

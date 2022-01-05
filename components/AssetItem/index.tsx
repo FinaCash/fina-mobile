@@ -2,7 +2,7 @@ import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import { FontAwesome as Icon } from '@expo/vector-icons'
 import useStyles from '../../theme/useStyles'
-import { Asset } from '../../types/assets'
+import { Asset, StakingInfo } from '../../types/assets'
 import { formatCurrency, formatPercentage, getCurrencySymbol } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
@@ -15,6 +15,7 @@ export interface AssetItemProps extends TouchableOpacityProps {
   hideApr?: boolean
   hideAmount?: boolean
   hideBorder?: boolean
+  stakingInfo?: StakingInfo
 }
 
 const AssetItem: React.FC<AssetItemProps> = ({
@@ -22,11 +23,20 @@ const AssetItem: React.FC<AssetItemProps> = ({
   hideApr,
   hideAmount,
   hideBorder,
+  stakingInfo,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { currencyRate, currency } = useSettingsContext()
+
+  const totalDelegated = stakingInfo
+    ? stakingInfo.delegated.map((d) => d.amount).reduce((a, b) => a + b, 0)
+    : 0
+  const totalUnbonding = stakingInfo
+    ? stakingInfo.unbonding.map((d) => d.amount).reduce((a, b) => a + b, 0)
+    : 0
+  const totalAmount = asset ? Number(asset.coin.amount) + totalDelegated + totalUnbonding : 0
 
   return (
     <TouchableOpacity {...props}>
@@ -58,15 +68,11 @@ const AssetItem: React.FC<AssetItemProps> = ({
           {asset && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
-                {formatCurrency(asset.coin.amount, asset.coin.denom)}
+                {formatCurrency(totalAmount, asset.coin.denom)}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
                 {asset.price
-                  ? formatCurrency(
-                      String(asset.price * Number(asset.coin.amount) * currencyRate),
-                      currency,
-                      true
-                    )
+                  ? formatCurrency(String(asset.price * totalAmount * currencyRate), currency, true)
                   : ''}
               </Typography>
             </View>
@@ -97,6 +103,28 @@ const AssetItem: React.FC<AssetItemProps> = ({
                       get(asset, 'rewards.denom', '')
                     )}
               </Typography>
+            </View>
+          </View>
+        ) : null}
+        {asset && stakingInfo ? (
+          <View style={styles.aprContainer}>
+            <View>
+              <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
+                {t('available')}
+              </Typography>
+              <Typography bold>{formatCurrency(asset.coin.amount, asset.coin.denom)}</Typography>
+            </View>
+            <View>
+              <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
+                {t('delegated')}
+              </Typography>
+              <Typography bold>{formatCurrency(totalDelegated, asset.coin.denom)}</Typography>
+            </View>
+            <View style={styles.alignRight}>
+              <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
+                {t('unbonding')}
+              </Typography>
+              <Typography bold>{formatCurrency(totalUnbonding, asset.coin.denom)}</Typography>
             </View>
           </View>
         ) : null}

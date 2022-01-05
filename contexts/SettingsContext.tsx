@@ -1,5 +1,7 @@
 import { Coin } from '@terra-money/terra.js'
 import React from 'react'
+import { useColorScheme } from 'react-native'
+import { Actions } from 'react-native-router-flux'
 import { ThemeType } from '../types/misc'
 import { terraLCDClient } from '../utils/terraConfig'
 import usePersistedState from '../utils/usePersistedState'
@@ -33,6 +35,7 @@ const SettingsContext = React.createContext<SettingsState>(initialState)
 
 const SettingsProvider: React.FC = ({ children }) => {
   const { address } = useAccountsContext()
+  const colorScheme = useColorScheme()
   const [currency, setCurrency] = usePersistedState('currency', initialState.currency)
   const [currencyRate, setCurrencyRate] = usePersistedState(
     'currencyRate',
@@ -50,13 +53,19 @@ const SettingsProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     if (currency !== 'uusd') {
-      terraLCDClient.market
-        .swapRate(new Coin('uusd', 10 ** 6), currency)
-        .then((result) => setCurrencyRate(result.amount.toNumber() / 10 ** 6))
+      terraLCDClient.market.swapRate(new Coin('uusd', 10 ** 6), currency).then((result) => {
+        setCurrencyRate(result.amount.toNumber() / 10 ** 6)
+        // HACK: jump back to settings page
+        Actions.jump('Settings')
+      })
     } else {
-      setCurrencyRate(1)
+      setTimeout(() => {
+        setCurrencyRate(1)
+        // HACK: jump back to settings page
+        Actions.jump('Settings')
+      }, 100)
     }
-  }, [currency])
+  }, [currency, setCurrencyRate])
 
   // On logout
   React.useEffect(() => {
@@ -65,6 +74,12 @@ const SettingsProvider: React.FC = ({ children }) => {
       setHideSmallBalance(initialState.hideSmallBalance)
     }
   }, [address, setCurrency, setHideSmallBalance])
+
+  React.useEffect(() => {
+    if (systemDefaultTheme) {
+      setTheme((colorScheme as any) || 'light')
+    }
+  }, [systemDefaultTheme, colorScheme, setTheme])
 
   return (
     <SettingsContext.Provider

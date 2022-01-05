@@ -33,6 +33,8 @@ import {
   fabricateAirdropClaim,
   fabricateTerraswapSwapbLuna,
   fabricateTerraswapSwapLuna,
+  fabricateTerraswapSwapUSTbETH,
+  fabricateTerraswapSwapbEth,
   MARKET_DENOMS,
 } from '@anchor-protocol/anchor.js'
 import usePersistedState from '../utils/usePersistedState'
@@ -264,17 +266,20 @@ const AssetsProvider: React.FC = ({ children }) => {
     setAssets(
       sortBy(result, [
         (r) => {
+          if (r.coin.denom === 'uluna') {
+            return 0
+          }
           switch (r.type) {
             case AssetTypes.Currents:
-              return 0
-            case AssetTypes.Savings:
               return 1
-            case AssetTypes.Tokens:
+            case AssetTypes.Savings:
               return 2
-            case AssetTypes.Investments:
+            case AssetTypes.Tokens:
               return 3
-            case AssetTypes.Collaterals:
+            case AssetTypes.Investments:
               return 4
+            case AssetTypes.Collaterals:
+              return 5
           }
         },
         'symbol',
@@ -295,6 +300,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     setAvailableCurrencies,
     setStakingInfo,
     setAirdrops,
+    setValidators,
   ])
 
   React.useEffect(() => {
@@ -323,17 +329,19 @@ const AssetsProvider: React.FC = ({ children }) => {
       let msg
       // Buy Collateral
       if (toDenom.match(/^B/)) {
-        msg = fabricateTerraswapSwapLuna({
+        msg = (toDenom === 'BLUNA' ? fabricateTerraswapSwapLuna : fabricateTerraswapSwapUSTbETH)({
           address,
           amount: String(from.amount),
           denom: from.denom,
         })(anchorAddressProvider)[0]
         // Sell Collateral
       } else if (from.denom.match(/^B/)) {
-        msg = fabricateTerraswapSwapbLuna({
+        console.log(fabricateTerraswapSwapbLuna, fabricateTerraswapSwapbEth)
+        msg = (toDenom === 'BLUNA' ? fabricateTerraswapSwapbLuna : fabricateTerraswapSwapbEth)({
           address,
           amount: String(from.amount),
         })(anchorAddressProvider)[0]
+        console.log(msg)
         // Buy ANC
       } else if (toDenom === 'ANC') {
         msg = (

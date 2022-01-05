@@ -6,10 +6,8 @@ import { StatusBar } from 'expo-status-bar'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import AppLoading from 'expo-app-loading'
 import { RootSiblingParent } from 'react-native-root-siblings'
-import { SettingsProvider, useSettingsContext } from './contexts/SettingsContext'
+import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
-import { AssetsProvider } from './contexts/AssetsContext'
-import { RecipientsProvider } from './contexts/RecipientsContext'
 import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext'
 import { LocalesProvider } from './contexts/LocalesContext'
 import { PortalProvider } from '@gorhom/portal'
@@ -17,7 +15,6 @@ import { PortalProvider } from '@gorhom/portal'
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)
   const { loaded: accountLoaded, address } = useAccountsContext()
-  const { theme } = useSettingsContext()
 
   const initialize = React.useCallback(async () => {
     try {
@@ -38,7 +35,7 @@ const InnerApp: React.FC = () => {
 
   return (
     <>
-      <StatusBar style={theme} />
+      <StatusBar style="light" />
       {accountLoaded && fontLoaded ? <Routes address={address} /> : <AppLoading />}
     </>
   )
@@ -50,15 +47,11 @@ export default function App() {
       <ActionSheetProvider>
         <AccountsProvider>
           <SettingsProvider>
-            <AssetsProvider>
-              <RecipientsProvider>
-                <RootSiblingParent>
-                  <PortalProvider>
-                    <InnerApp />
-                  </PortalProvider>
-                </RootSiblingParent>
-              </RecipientsProvider>
-            </AssetsProvider>
+            <RootSiblingParent>
+              <PortalProvider>
+                <InnerApp />
+              </PortalProvider>
+            </RootSiblingParent>
           </SettingsProvider>
         </AccountsProvider>
       </ActionSheetProvider>

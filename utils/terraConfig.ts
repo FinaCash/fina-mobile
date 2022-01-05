@@ -68,8 +68,7 @@ export const terraMantleUrl = 'https://mantle.terra.dev'
 
 export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'
 
-export const terraStationUrl = 'https://station.terra.money'
-export const terraStationChain = 'mainnet'
+export const exTerraFinderUrl = 'https://finder.extraterrestrial.money/mainnet'
 
 export const mirrorOptions = DEFAULT_MIRROR_OPTIONS
 

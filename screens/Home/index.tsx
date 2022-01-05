@@ -33,19 +33,28 @@ import CollateralItem from '../../components/CollateralItem'
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, availableAssets, fetchAssets } = useAssetsContext()
+  const { assets, availableAssets, fetchAssets, stakingInfo } = useAssetsContext()
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideSmallBalance } = useSettingsContext()
   const { t } = useLocalesContext()
   const { showActionSheetWithOptions } = useActionSheet()
-  const assetsDistribution = transformAssetsToDistributions(assets)
-  assetsDistribution.overview = Object.values(assetsDistribution).reduce((a, b) => a + b, 0)
-  const averageSavingsAPR =
-    assets
-      .filter((a) => a.type === AssetTypes.Savings)
-      .map((a) => a.price * Number(a.coin.amount) * (a.apr || 0))
-      .reduce((a, b) => a + b, 0) / assetsDistribution[AssetTypes.Savings]
+  const assetsDistribution = React.useMemo(
+    () => transformAssetsToDistributions(assets, stakingInfo),
+    [assets, stakingInfo]
+  )
+  assetsDistribution.overview = React.useMemo(
+    () => Object.values(assetsDistribution).reduce((a, b) => a + b, 0),
+    [assetsDistribution]
+  )
+  const averageSavingsAPR = React.useMemo(
+    () =>
+      assets
+        .filter((a) => a.type === AssetTypes.Savings)
+        .map((a) => a.price * Number(a.coin.amount) * (a.apr || 0))
+        .reduce((a, b) => a + b, 0) / assetsDistribution[AssetTypes.Savings],
+    [assets, assetsDistribution]
+  )
 
   const [search, setSearch] = React.useState('')
   const [filterAsset, setFilterAsset] = React.useState('overview')
@@ -68,7 +77,10 @@ const Home: React.FC = () => {
           options = [t('buy'), t('sell'), t('cancel')]
           break
         case AssetTypes.Tokens:
-          options = [t('buy'), t('sell'), t('cancel')]
+          options =
+            asset.symbol === 'LUNA'
+              ? [t('buy'), t('sell'), t('stake'), t('cancel')]
+              : [t('buy'), t('sell'), t('cancel')]
           break
         case AssetTypes.Collaterals:
           options = [t('buy'), t('sell'), t('provide'), t('withdraw'), t('cancel')]
@@ -112,6 +124,9 @@ const Home: React.FC = () => {
             index === 1
           ) {
             return Actions.Swap({ asset, mode: 'sell' })
+          }
+          if (asset.symbol === 'LUNA' && index === 2) {
+            return Actions.jump('Earn')
           }
           if (asset.type === AssetTypes.Collaterals && (index === 0 || index === 1)) {
             Actions.Swap({
@@ -268,7 +283,8 @@ const Home: React.FC = () => {
               (filterAsset === 'overview'
                 ? (a.type !== AssetTypes.Savings && a.type !== AssetTypes.Collaterals) ||
                   Number(a.coin.amount) > 0
-                : true)
+                : true) &&
+              (hideSmallBalance ? (Number(a.coin.amount) * a.price) / 10 ** 6 > 0.1 : true)
           ),
           renderItem: ({ item }) =>
             filterAsset === 'overview' || item.type !== AssetTypes.Collaterals ? (
@@ -276,6 +292,7 @@ const Home: React.FC = () => {
                 asset={item}
                 onPress={() => selectAsset(item)}
                 hideApr={filterAsset === 'overview'}
+                stakingInfo={item.coin.denom === 'uluna' ? stakingInfo : undefined}
               />
             ) : (
               <CollateralItem asset={item} onPress={() => selectAsset(item)} />
