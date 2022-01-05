@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { Keyboard, ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import {
@@ -221,6 +221,12 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
     },
     [asset, fromAmount, fromAsset, toAsset, swap, currentAsset, mode]
   )
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
 
   return (
     <>

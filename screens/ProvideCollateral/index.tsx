@@ -64,6 +64,12 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
     [availableAsset, mode, provideCollateral, withdrawCollateral, amount]
   )
 
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
+
   return (
     <>
       <HeaderBar title={t(mode + ' collateral')} back />
@@ -86,7 +92,6 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
           size="Large"
           onPress={() => {
             setIsConfirming(true)
-            Keyboard.dismiss()
           }}
         >
           {t('next')}

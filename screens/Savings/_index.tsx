@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { Keyboard, ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useAssetsContext } from '../../contexts/AssetsContext'
@@ -96,6 +96,12 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
   React.useEffect(() => {
     fetchApr()
   }, [])
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
 
   return (
     <>

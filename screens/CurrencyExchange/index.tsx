@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { Keyboard, ScrollView, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -130,6 +130,12 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
     },
     [from, to, fromAmount, fromAssetWithAmount, toAsset, swap]
   )
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
 
   return (
     <>

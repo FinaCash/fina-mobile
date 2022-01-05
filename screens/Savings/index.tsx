@@ -1,5 +1,5 @@
 import React from 'react'
-import { KeyboardAvoidingView } from 'react-native'
+import { Keyboard, KeyboardAvoidingView } from 'react-native'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
@@ -95,6 +95,12 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
   React.useEffect(() => {
     fetchApr()
   }, [])
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
 
   return (
     <>

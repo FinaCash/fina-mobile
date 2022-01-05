@@ -5,6 +5,7 @@ export default (theme: Theme) => ({
     padding: theme.baseSpace * 12,
     paddingTop: theme.screenHeight * 0.2,
     flex: 1,
+    backgroundColor: theme.palette.background,
   },
   slogan: {
     alignSelf: 'center',
@@ -40,7 +41,7 @@ export default (theme: Theme) => ({
   },
   borderButton: {
     borderWidth: 1,
-    borderColor: theme.palette.primary,
+    borderColor: theme.palette.button,
     backgroundColor: 'transparent',
   },
   hdContainer: {

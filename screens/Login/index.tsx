@@ -117,7 +117,7 @@ const Login: React.FC<LoginProps> = () => {
                 onPress={() => setStage(ContentStage.ImportWallet)}
                 size="Large"
                 style={[styles.button, styles.borderButton]}
-                color={theme.palette.primary}
+                color={theme.palette.button}
               >
                 {t('import wallet')}
               </Button>
@@ -127,7 +127,7 @@ const Login: React.FC<LoginProps> = () => {
                 }}
                 size="Large"
                 style={[styles.button, styles.borderButton]}
-                color={theme.palette.primary}
+                color={theme.palette.button}
               >
                 {t('connect ledger')}
               </Button>
@@ -156,7 +156,7 @@ const Login: React.FC<LoginProps> = () => {
                   onPress={back}
                   size="Large"
                   style={[styles.rowButton, styles.borderButton]}
-                  color={theme.palette.primary}
+                  color={theme.palette.button}
                 >
                   {t('back')}
                 </Button>
@@ -221,7 +221,7 @@ const Login: React.FC<LoginProps> = () => {
                   onPress={back}
                   size="Large"
                   style={[styles.rowButton, styles.borderButton]}
-                  color={theme.palette.primary}
+                  color={theme.palette.button}
                 >
                   {t('back')}
                 </Button>

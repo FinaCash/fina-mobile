@@ -163,6 +163,5 @@ export const transformAssetsToDistributions = (assets: Asset[], stakingInfo: Sta
         (result[assetType as AssetTypes] || 0) + asset.price * totalAmount
     }
   }
-  console.log(result)
   return result
 }

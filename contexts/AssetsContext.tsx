@@ -336,12 +336,10 @@ const AssetsProvider: React.FC = ({ children }) => {
         })(anchorAddressProvider)[0]
         // Sell Collateral
       } else if (from.denom.match(/^B/)) {
-        console.log(fabricateTerraswapSwapbLuna, fabricateTerraswapSwapbEth)
         msg = (toDenom === 'BLUNA' ? fabricateTerraswapSwapbLuna : fabricateTerraswapSwapbEth)({
           address,
           amount: String(from.amount),
         })(anchorAddressProvider)[0]
-        console.log(msg)
         // Buy ANC
       } else if (toDenom === 'ANC') {
         msg = (

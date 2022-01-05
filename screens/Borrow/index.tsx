@@ -2,7 +2,7 @@ import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { View } from 'react-native'
+import { Keyboard, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from '../../components/Button'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -57,6 +57,12 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
     },
     [mode, borrow, repay, amount]
   )
+
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
 
   return (
     <>

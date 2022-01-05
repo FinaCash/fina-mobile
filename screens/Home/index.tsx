@@ -284,7 +284,12 @@ const Home: React.FC = () => {
                 ? (a.type !== AssetTypes.Savings && a.type !== AssetTypes.Collaterals) ||
                   Number(a.coin.amount) > 0
                 : true) &&
-              (hideSmallBalance ? (Number(a.coin.amount) * a.price) / 10 ** 6 > 0.1 : true)
+              // Filter small balance tokens/currents/mAssets
+              (hideSmallBalance
+                ? a.type === AssetTypes.Savings ||
+                  a.type === AssetTypes.Collaterals ||
+                  (Number(a.coin.amount) * a.price) / 10 ** 6 > 0.1
+                : true)
           ),
           renderItem: ({ item }) =>
             filterAsset === 'overview' || item.type !== AssetTypes.Collaterals ? (

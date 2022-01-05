@@ -58,6 +58,7 @@ const Settings: React.FC = () => {
               (index) => {
                 if (index === 0) {
                   setSystemDefaultTheme(true)
+                  Actions.jump('Settings')
                 } else if (index < supportedThemes.length + 1) {
                   setSystemDefaultTheme(false)
                   setTheme(supportedThemes[index - 1])

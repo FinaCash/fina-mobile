@@ -44,6 +44,12 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
   const [memo, setMemo] = React.useState(get(defaultRecipient, 'memo', ''))
   const [isConfirming, setIsConfirming] = React.useState(!!defaultRecipient)
 
+  React.useEffect(() => {
+    if (isConfirming) {
+      Keyboard.dismiss()
+    }
+  }, [isConfirming])
+
   return (
     <>
       <HeaderBar back title={t('recipient')} />
@@ -162,7 +168,6 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
           size="Large"
           onPress={() => {
             setIsConfirming(true)
-            Keyboard.dismiss()
           }}
         >
           {t('next')}
