@@ -107,7 +107,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
       <View style={styles.confirmHeader}>
         <Typography type="H6">{t('confirm transacrtion')}</Typography>
         <TouchableOpacity onPress={onClose}>
-          <CloseIcon fill={theme.palette.grey[9]} />
+          <CloseIcon fill={theme.fonts.H6.color} />
         </TouchableOpacity>
       </View>
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>

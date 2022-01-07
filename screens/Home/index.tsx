@@ -10,6 +10,7 @@ import SearchIcon from '../../assets/images/icons/search.svg'
 import TransakIcon from '../../assets/images/icons/transak.svg'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
 import ReceiveIcon from '../../assets/images/icons/receive.svg'
+// import TradeIcon from '../../assets/images/icons/swap.svg'
 import AssetItem from '../../components/AssetItem'
 import { LinearGradient } from 'expo-linear-gradient'
 import Typography from '../../components/Typography'
@@ -153,6 +154,17 @@ const Home: React.FC = () => {
     setLoading(false)
   }, [fetchAssets, setLoading])
 
+  // const smallBalanceAssets = React.useMemo(
+  //   () =>
+  //     assets.filter(
+  //       (a) =>
+  //         a.type !== AssetTypes.Savings &&
+  //         a.type !== AssetTypes.Collaterals &&
+  //         (Number(a.coin.amount) * a.price) / 10 ** 6 <= 0.1
+  //     ),
+  //   [assets]
+  // )
+
   return (
     <LinearGradient
       start={[0, 0]}
@@ -241,7 +253,7 @@ const Home: React.FC = () => {
       <Modalize
         alwaysOpen={
           theme.screenHeight -
-          72 * theme.baseSpace -
+          70 * theme.baseSpace -
           theme.bottomSpace -
           theme.tabBarHeight -
           theme.statusBarHeight -
@@ -291,6 +303,18 @@ const Home: React.FC = () => {
                   (Number(a.coin.amount) * a.price) / 10 ** 6 > 0.1
                 : true)
           ),
+          // ListHeaderComponent: smallBalanceAssets.length ? (
+          //   <View style={styles.linkButtonContainer}>
+          //     <Button
+          //       size="Small"
+          //       icon={<TradeIcon />}
+          //       bgColor="transparent"
+          //       color={theme.palette.lightPrimary}
+          //     >
+          //       {t('convert small balance')}
+          //     </Button>
+          //   </View>
+          // ) : null,
           renderItem: ({ item }) =>
             filterAsset === 'overview' || item.type !== AssetTypes.Collaterals ? (
               <AssetItem

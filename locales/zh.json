@@ -154,5 +154,6 @@
   "hd path": "HD Path",
   "custom hd path": "自選 HD Path",
   "claim all": "領取全部",
-  "hide small balance": "隱藏小額資產"
+  "hide small balance": "隱藏小額資產",
+  "convert small balance": "轉換小額資產為 UST"
 }

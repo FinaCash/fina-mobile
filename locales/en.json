@@ -154,5 +154,6 @@
   "hd path": "HD Path",
   "custom hd path": "Custom HD Path",
   "claim all": "Claim All",
-  "hide small balance": "Hide Small Balance"
+  "hide small balance": "Hide Small Balance",
+  "convert small balance": "Convert Small Balance to UST"
 }

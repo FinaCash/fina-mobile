@@ -67,6 +67,7 @@ const Button: React.FC<ButtonProps> = ({
         <View style={[styles.iconContainer, iconStyle]}>
           {React.cloneElement(icon, {
             color: color || theme.palette.white,
+            fill: color || theme.palette.white,
             width: theme.fonts[size].fontSize * 1.5,
             height: theme.fonts[size].fontSize * 1.5,
           })}

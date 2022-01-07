@@ -7,6 +7,10 @@ export default (theme: Theme) => ({
   title: {
     marginTop: 6 * theme.baseSpace,
   },
+  linkButtonContainer: {
+    alignItems: 'flex-end',
+    marginHorizontal: theme.baseSpace * 4,
+  },
   swipeIndicator: {
     width: '30%',
     alignSelf: 'center',
