@@ -12,7 +12,7 @@ const useStyles = (getStyles?: (t: Theme) => any) => {
   const { theme: themeType } = useSettingsContext()
   const theme = {
     ...(themeType === 'dark' ? darkTheme : lightTheme),
-    bottomSpace: getBottomSpace(),
+    bottomSpace: Math.max(getBottomSpace() - 12, 0),
     statusBarHeight: Constants.statusBarHeight,
     screenWidth,
     screenHeight,

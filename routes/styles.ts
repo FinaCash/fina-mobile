@@ -1,32 +1,19 @@
 import { Theme } from '../types/misc'
 
 export default (theme: Theme) => ({
-  scene: {
-    backgroundColor: theme.palette.background,
-  },
   tabBar: {
     backgroundColor: theme.palette.background,
     borderTopWidth: 0,
     paddingTop: 4 * theme.baseSpace,
-    paddingBottom: 4 * theme.baseSpace + theme.bottomSpace,
     height: theme.tabBarHeight + theme.bottomSpace,
-    // position: 'absolute',
-    // ...theme.shadow,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   tab: {
     alignItems: 'center',
+    flex: 1,
   },
   tabText: {
     marginTop: theme.baseSpace,
   },
-  // raisedTab: {
-  //   backgroundColor: theme.palette.primary,
-  //   height: theme.tabBarHeight + 2 * theme.baseSpace,
-  //   width: theme.tabBarHeight + 2 * theme.baseSpace,
-  //   borderRadius: '50%',
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   marginTop: -4 * theme.baseSpace,
-  //   ...theme.shadow,
-  // },
 })

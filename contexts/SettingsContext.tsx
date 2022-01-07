@@ -1,7 +1,6 @@
 import { Coin } from '@terra-money/terra.js'
 import React from 'react'
 import { useColorScheme } from 'react-native'
-import { Actions } from 'react-native-router-flux'
 import { ThemeType } from '../types/misc'
 import { terraLCDClient } from '../utils/terraConfig'
 import usePersistedState from '../utils/usePersistedState'
@@ -55,15 +54,9 @@ const SettingsProvider: React.FC = ({ children }) => {
     if (currency !== 'uusd') {
       terraLCDClient.market.swapRate(new Coin('uusd', 10 ** 6), currency).then((result) => {
         setCurrencyRate(result.amount.toNumber() / 10 ** 6)
-        // HACK: jump back to settings page
-        Actions.jump('Settings')
       })
     } else {
-      setTimeout(() => {
-        setCurrencyRate(1)
-        // HACK: jump back to settings page
-        Actions.jump('Settings')
-      }, 100)
+      setCurrencyRate(1)
     }
   }, [currency, setCurrencyRate])
 

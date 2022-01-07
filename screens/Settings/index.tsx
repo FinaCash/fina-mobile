@@ -58,11 +58,9 @@ const Settings: React.FC = () => {
               (index) => {
                 if (index === 0) {
                   setSystemDefaultTheme(true)
-                  Actions.jump('Settings')
                 } else if (index < supportedThemes.length + 1) {
                   setSystemDefaultTheme(false)
                   setTheme(supportedThemes[index - 1])
-                  Actions.jump('Settings')
                 }
               }
             )
@@ -81,7 +79,6 @@ const Settings: React.FC = () => {
               (index) => {
                 if (index < supportedLocales.length) {
                   setLocale(supportedLocales[index])
-                  Actions.jump('Settings')
                 }
               }
             )
@@ -101,7 +98,6 @@ const Settings: React.FC = () => {
                 Actions.pop()
                 setTimeout(() => {
                   setCurrency(a.coin.denom)
-                  Actions.jump('Settings')
                 }, 500)
               },
             }),
@@ -112,10 +108,7 @@ const Settings: React.FC = () => {
           value: hideSmallBalance,
           toggle: true,
           onChange: (v: boolean) => {
-            setTimeout(() => {
-              setHideSmallBalance(v)
-              Actions.jump('Settings')
-            }, 100)
+            setHideSmallBalance(v)
           },
         },
       ],
@@ -160,7 +153,6 @@ const Settings: React.FC = () => {
                       Actions.Password({
                         onSubmit: async (password: string) => {
                           await login(phrase, password)
-                          Actions.jump('Settings')
                           Toast.show(t('password updated'))
                         },
                         confirmationRequired: true,

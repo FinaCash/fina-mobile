@@ -1,5 +1,3 @@
-import { Platform } from 'react-native'
-
 export default {
   palette: {
     primary: '#0E1E59',
@@ -36,7 +34,7 @@ export default {
     error: ['#FFAD85', '#FD4E76'],
   },
   baseSpace: 4,
-  tabBarHeight: Platform.OS === 'web' ? 64 : 32,
+  tabBarHeight: 64,
   shadow: {
     shadowColor: '#e4dfc4',
     shadowOffset: {

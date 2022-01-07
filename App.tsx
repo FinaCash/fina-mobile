@@ -8,6 +8,8 @@ import AppLoading from 'expo-app-loading'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SettingsProvider } from './contexts/SettingsContext'
 import Routes from './routes'
+import { AssetsProvider } from './contexts/AssetsContext'
+import { RecipientsProvider } from './contexts/RecipientsContext'
 import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext'
 import { LocalesProvider } from './contexts/LocalesContext'
 import { PortalProvider } from '@gorhom/portal'
@@ -47,11 +49,15 @@ export default function App() {
       <ActionSheetProvider>
         <AccountsProvider>
           <SettingsProvider>
-            <RootSiblingParent>
-              <PortalProvider>
-                <InnerApp />
-              </PortalProvider>
-            </RootSiblingParent>
+            <AssetsProvider>
+              <RecipientsProvider>
+                <RootSiblingParent>
+                  <PortalProvider>
+                    <InnerApp />
+                  </PortalProvider>
+                </RootSiblingParent>
+              </RecipientsProvider>
+            </AssetsProvider>
           </SettingsProvider>
         </AccountsProvider>
       </ActionSheetProvider>

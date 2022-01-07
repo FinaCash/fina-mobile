@@ -56,7 +56,7 @@ const History: React.FC = () => {
               document.head.innerHTML += '${style.replace(/(?:\r\n|\r|\n)/g, '')}'
               document.querySelector('body').style.opacity = 0
               const interval = setInterval(() => {
-                if (document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML.length > 300) {
+                if (document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML.length > 1000) {
                   document.querySelector('body').innerHTML = document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML
                   setTimeout(() => window.scrollTo(0, 0), 100)
                   document.querySelector('body').style.opacity = 1
