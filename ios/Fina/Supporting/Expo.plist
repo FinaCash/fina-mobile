@@ -9,8 +9,8 @@
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>0</integer>
     <key>EXUpdatesSDKVersion</key>
-    <string>42.0.0</string>
+    <string>44.0.0</string>
     <key>EXUpdatesURL</key>
-    <string>https://exp.host/@fina-io/fina</string>
+    <string>https://exp.host/@fina-cash/fina</string>
   </dict>
 </plist>

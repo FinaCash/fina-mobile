@@ -1,7 +1,15 @@
 /* eslint-disable no-undef */
 import TerraApp from '@terra-money/ledger-terra-js'
-import { CreateTxOptions, Key, PublicKey, SignatureV2, Wallet } from '@terra-money/terra.js'
+import {
+  CreateTxOptions,
+  Key,
+  MnemonicKey,
+  PublicKey,
+  SignatureV2,
+  Wallet,
+} from '@terra-money/terra.js'
 import { Actions } from 'react-native-router-flux'
+// import { RNMnemonicKey } from 'react-native-mnemonic-key'
 import { WalletTypes } from '../types/assets'
 import { defaultPrefix, terraLCDClient } from './terraConfig'
 import LedgerKey from './LedgerKey'
@@ -34,14 +42,20 @@ export const getPasswordOrLedgerApp = (
 }
 
 const signAndBroadcastTx = async (
-  mnemonicKey: Key,
+  mnemonic: string,
   terraApp: TerraApp | undefined,
   hdPath: number[],
   options: CreateTxOptions,
   address: string,
   simulate?: boolean
 ) => {
-  let key: Key = mnemonicKey
+  // TODO: use rn mnemonic key
+  let key: Key = new MnemonicKey({
+    mnemonic,
+    coinType: hdPath[1],
+    account: hdPath[2],
+    index: hdPath[4],
+  })
   if (terraApp) {
     const pubkeyResponse = await terraApp.getAddressAndPubKey(hdPath, defaultPrefix)
     const pk = Buffer.from(pubkeyResponse.compressed_pk as any)

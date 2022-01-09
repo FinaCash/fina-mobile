@@ -205,7 +205,11 @@ const Settings: React.FC = () => {
         )}
         renderItem={({ item }) =>
           item ? (
-            <TouchableOpacity style={styles.itemContainer} onPress={item.onPress}>
+            <TouchableOpacity
+              style={styles.itemContainer}
+              onPress={item.onPress}
+              disabled={item.toggle}
+            >
               <View style={styles.row}>
                 <Icon
                   style={styles.icon}

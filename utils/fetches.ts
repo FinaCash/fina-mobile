@@ -37,28 +37,21 @@ export const fetchAvailableMirrorAssets = async () => {
       },
       body: JSON.stringify({
         query: `
-            query assets($interval: Float!, $from: Float!, $to: Float!) {
+            query assets($prevTimestamp: Float!) {
               assets {
                 name
                 symbol
-                description
                 prices {
                   price
-                  priceAt(timestamp: $from)
+                  priceAt(timestamp: $prevTimestamp)
                   oraclePrice
-                  oraclePriceAt(timestamp: $from)
-                  history(interval: $interval, from: $from, to: $to) {
-                    timestamp
-                    price
-                  }
+                  oraclePriceAt(timestamp: $prevTimestamp)
                 }
               }
             }
           `,
         variables: {
-          from: now - 24 * 3600 * 1000,
-          to: now,
-          interval: 60,
+          prevTimestamp: now - 24 * 3600 * 1000,
         },
       }),
     }).then((r) => r.json())
@@ -68,13 +61,8 @@ export const fetchAvailableMirrorAssets = async () => {
       symbol: a.symbol,
       coin: { denom: a.symbol },
       image: `https://whitelist.mirror.finance/icon/${a.symbol.replace(/^m/, '')}.png`,
-      description: a.description,
       price: Number(a.prices.price || a.prices.oraclePrice),
       prevPrice: Number(a.prices.priceAt || a.prices.oraclePriceAt),
-      priceHistories: a.prices.history.map((p: any) => ({
-        ...p,
-        price: Number(p.price),
-      })),
     }))
   } catch (err: any) {
     console.log(err)
@@ -156,7 +144,6 @@ export const fetchAvailableCollaterals = async (): Promise<AvailableAsset[]> => 
     symbol: c.symbol,
     coin: { denom: c.symbol },
     image: get(colleteralsInfo, `${c.symbol}.img`, ''),
-    description: '',
     price: Number(
       get(
         price.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
@@ -245,7 +232,7 @@ export const fetchAvailableCurrencies = async () => {
   return result.map((r) => ({ denom: r.denom, price: usd.amount.toNumber() / r.amount.toNumber() }))
 }
 
-export const fetchStakingInfo = async (address: string) => {
+export const fetchLunaStakingInfo = async (address: string) => {
   const stakingResult = await fetch(`${terraFCDUrl}/v1/staking/${address}`).then((r) => r.json())
   const stakingReturn = await fetch(`${terraFCDUrl}/v1/dashboard/staking_return`).then((r) =>
     r.json()
@@ -297,7 +284,7 @@ export const fetchStakingInfo = async (address: string) => {
   return { stakingInfo, validators }
 }
 
-export const fetchAirdrops = async (address: string): Promise<Airdrop[]> => {
+export const fetchClaimableAirdrops = async (address: string): Promise<Airdrop[]> => {
   const airdrops: Airdrop[] = []
   // Anchor
   const ancAirdrops = []

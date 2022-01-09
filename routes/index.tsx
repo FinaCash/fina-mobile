@@ -112,7 +112,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
                   key="Earn"
                   hideNavBar
                   iconSvg={<EarnIcon />}
-                  tabTitle="earm"
+                  tabTitle="earn"
                   component={Earn}
                 />
                 <Scene

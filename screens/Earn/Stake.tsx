@@ -1,5 +1,5 @@
 import React from 'react'
-import { SectionList, View } from 'react-native'
+import { RefreshControl, SectionList, View } from 'react-native'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -26,8 +26,17 @@ const Stake: React.FC = () => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { type } = useAccountsContext()
-  const { assets, availableAssets, availableCurrencies, stakingInfo, claimStakingRewards } =
-    useAssetsContext()
+  const {
+    assets,
+    availableAssets,
+    availableCurrencies,
+    stakingInfo,
+    claimStakingRewards,
+    fetchStakingInfo,
+    fetchAssets,
+    fetchAvailableAssets,
+  } = useAssetsContext()
+  const [loading, setLoading] = React.useState(false)
   const { showActionSheetWithOptions } = useActionSheet()
   const availableCurrenciesMap = React.useMemo(
     () => keyBy(availableCurrencies, 'denom'),
@@ -153,6 +162,17 @@ const Stake: React.FC = () => {
     <>
       <SectionList
         style={styles.list}
+        refreshControl={
+          <RefreshControl
+            tintColor={theme.fonts.H1.color}
+            refreshing={loading}
+            onRefresh={async () => {
+              setLoading(true)
+              await Promise.all([fetchAssets(), fetchStakingInfo(), fetchAvailableAssets()])
+              setLoading(false)
+            }}
+          />
+        }
         keyExtractor={(item, index) => String(index)}
         sections={sections as any}
         stickySectionHeadersEnabled={false}

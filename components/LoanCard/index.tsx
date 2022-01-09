@@ -90,7 +90,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
     <>
       <LinearGradient
         start={[0, 0]}
-        end={[1, 2.4]}
+        end={[1.6, 1.7]}
         colors={theme.gradients.primary}
         style={styles.top}
       >

@@ -1,16 +1,16 @@
 import React from 'react'
-import { MnemonicKey } from '@terra-money/terra.js'
 import CryptoJS from 'crypto-js'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
 import { deafultHdPath } from '../utils/terraConfig'
 import { WalletTypes } from '../types/assets'
+import { MnemonicKey } from '@terra-money/terra.js'
 
 interface AccountsState {
   address: string
   hdPath: number[]
   type: WalletTypes
-  decryptSeedPhrase(password: string): string
+  decryptSeedPhrase(password?: string): string
   loaded: boolean
   login(
     seedPhrase?: string,
@@ -85,8 +85,11 @@ const AccountsProvider: React.FC = ({ children }) => {
   }, [setAddress, setEncryptedSeedPhrase, setType, setHdPath])
 
   const decryptSeedPhrase = React.useCallback(
-    (password: string) => {
+    (password?: string) => {
       try {
+        if (!password) {
+          return ''
+        }
         const seedPhrase = CryptoJS.AES.decrypt(encryptedSeedPhrase, password).toString(
           CryptoJS.enc.Utf8
         )

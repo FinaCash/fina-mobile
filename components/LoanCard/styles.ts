@@ -3,8 +3,8 @@ import { Theme } from '../../types/misc'
 export default (theme: Theme) => ({
   top: {
     padding: theme.baseSpace * 10,
-    paddingTop: theme.baseSpace * 16 + theme.statusBarHeight,
-    marginTop: -(theme.baseSpace * 12 + theme.statusBarHeight),
+    paddingTop: theme.baseSpace * 40 + theme.statusBarHeight,
+    marginTop: -(theme.baseSpace * 36 + theme.statusBarHeight),
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

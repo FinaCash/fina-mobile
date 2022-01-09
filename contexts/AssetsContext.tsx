@@ -2,13 +2,13 @@ import React from 'react'
 import {
   Coin,
   MsgSwap,
-  MnemonicKey,
   MsgSend,
   MsgDelegate,
   MsgUndelegate,
   MsgBeginRedelegate,
   MsgWithdrawDelegatorReward,
   MsgExecuteContract,
+  MnemonicKey,
 } from '@terra-money/terra.js'
 import { Mirror, MirrorAirdrop, UST } from '@mirror-protocol/mirror.js'
 import {
@@ -40,25 +40,30 @@ import {
 import usePersistedState from '../utils/usePersistedState'
 import {
   fetchAassetRate,
-  fetchAirdrops,
+  fetchClaimableAirdrops,
   fetchAnchorBalances,
   fetchAnchorCollaterals,
   fetchAvailableCollaterals,
   fetchAvailableCurrencies,
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
-  fetchStakingInfo,
+  fetchLunaStakingInfo,
 } from '../utils/fetches'
 import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
 import signAndBroadcastTx from '../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
 import flatten from 'lodash/flatten'
+import uniqBy from 'lodash/uniqBy'
 
 interface AssetsState {
-  assets: Asset[]
-  fetchAssets(): void
   availableAssets: AvailableAsset[]
+  assets: Asset[]
+  fetchAvailableAssets(): void
+  fetchAssets(): void
+  fetchBorrowInfo(): void
+  fetchStakingInfo(): void
+  fetchAirdrops(): void
   availableCurrencies: { denom: string; price: number }[]
   borrowInfo: BorrowInfo
   stakingInfo: StakingInfo
@@ -161,9 +166,13 @@ interface AssetsState {
 }
 
 const initialState: AssetsState = {
-  assets: [],
-  fetchAssets: () => null,
   availableAssets: [],
+  assets: [],
+  fetchAvailableAssets: () => null,
+  fetchAssets: () => null,
+  fetchBorrowInfo: () => null,
+  fetchStakingInfo: () => null,
+  fetchAirdrops: () => null,
   availableCurrencies: [{ denom: 'uusd', price: 1 }],
   borrowInfo: {
     collateralValue: 0,
@@ -203,7 +212,9 @@ const AssetsContext = React.createContext<AssetsState>(initialState)
 
 const AssetsProvider: React.FC = ({ children }) => {
   const { decryptSeedPhrase, address, hdPath } = useAccountsContext()
-  const [assets, setAssets] = usePersistedState<Asset[]>('assets', initialState.assets)
+  const [rawAssets, setRawAssets] = usePersistedState<
+    { amount: string; denom: string; apr?: number; extra?: any }[]
+  >('assets', [])
   const [availableAssets, setAvailableAssets] = usePersistedState<AvailableAsset[]>(
     'availableAssets',
     initialState.availableAssets
@@ -211,6 +222,12 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [availableCurrencies, setAvailableCurrencies] = usePersistedState<
     { denom: string; price: number }[]
   >('availableCurrencies', initialState.availableCurrencies)
+
+  const assets = React.useMemo(
+    () => transformCoinsToAssets(rawAssets, availableAssets, availableCurrencies),
+    [rawAssets, availableAssets, availableCurrencies]
+  )
+
   const [borrowInfo, setBorrowInfo] = usePersistedState<BorrowInfo>(
     'borrowInfo',
     initialState.borrowInfo
@@ -225,8 +242,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   )
   const [airdrops, setAirdrops] = usePersistedState<Airdrop[]>('airdrops', initialState.airdrops)
 
-  const fetchAssets = React.useCallback(async () => {
-    // Fetch available assets
+  const fetchAvailableAssets = React.useCallback(async () => {
     const mAssets = await fetchAvailableMirrorAssets()
     const availableCollaterals = await fetchAvailableCollaterals()
     const tokens = Object.values(supportedTokens).filter(
@@ -241,8 +257,6 @@ const AssetsProvider: React.FC = ({ children }) => {
         symbol: tokens[i].symbol,
         coin: { denom: tokens[i].denom },
         image: tokens[i].image,
-        description: '',
-        // priceHistories: [],
         ...result,
       })
     }
@@ -253,59 +267,45 @@ const AssetsProvider: React.FC = ({ children }) => {
     setAvailableAssets(availableResult)
     const currenciesResult = await fetchAvailableCurrencies()
     setAvailableCurrencies(currenciesResult)
+  }, [setAvailableAssets, setAvailableCurrencies])
+
+  const fetchAssets = React.useCallback(async () => {
     // Fetch my assets
     const balances = await terra.bank.balance(address)
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
+    setRawAssets((a) => {
+      return uniqBy(
+        [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...a],
+        'denom'
+      )
+    })
+  }, [address, setRawAssets])
+
+  const fetchBorrowInfo = React.useCallback(async () => {
     const { collaterals, ...borrowInfoResult } = await fetchAnchorCollaterals(address)
-    const result = await transformCoinsToAssets(
-      [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...collaterals],
-      availableResult,
-      currenciesResult
-    )
-    setAssets(
-      sortBy(result, [
-        (r) => {
-          if (r.coin.denom === 'uluna') {
-            return 0
-          }
-          switch (r.type) {
-            case AssetTypes.Currents:
-              return 1
-            case AssetTypes.Savings:
-              return 2
-            case AssetTypes.Tokens:
-              return 3
-            case AssetTypes.Investments:
-              return 4
-            case AssetTypes.Collaterals:
-              return 5
-          }
-        },
-        'symbol',
-      ])
-    )
+    setRawAssets((a) => uniqBy([...collaterals, ...a], 'denom'))
     setBorrowInfo(borrowInfoResult)
-    const stakingResult = await fetchStakingInfo(address)
+  }, [address, setRawAssets, setBorrowInfo])
+
+  const fetchStakingInfo = React.useCallback(async () => {
+    const stakingResult = await fetchLunaStakingInfo(address)
     setValidators(stakingResult.validators)
     setStakingInfo(stakingResult.stakingInfo)
-    // Fetch airdrops
-    const airdropsResult = await fetchAirdrops(address)
+  }, [address, setValidators, setStakingInfo])
+
+  const fetchAirdrops = React.useCallback(async () => {
+    const airdropsResult = await fetchClaimableAirdrops(address)
     setAirdrops(airdropsResult)
-  }, [
-    address,
-    setAssets,
-    setBorrowInfo,
-    setAvailableAssets,
-    setAvailableCurrencies,
-    setStakingInfo,
-    setAirdrops,
-    setValidators,
-  ])
+  }, [address, setAirdrops])
 
   React.useEffect(() => {
     if (address) {
+      fetchAvailableAssets()
       fetchAssets()
+      fetchBorrowInfo()
+      fetchStakingInfo()
+      fetchAirdrops()
     }
   }, [address])
 
@@ -317,12 +317,6 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const mAssets = availableAssets.filter(
         (a) => a.type === AssetTypes.Investments || a.symbol === 'MIR'
       )
@@ -352,7 +346,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         )[0]
         // Buy mAsset
       } else if (mAssets.find((a) => a.symbol === toDenom)) {
-        const mirror = new Mirror({ ...mirrorOptions, key })
+        const key = new MnemonicKey()
+        const mirror = new Mirror({
+          ...mirrorOptions,
+          key,
+        })
         msg = mirror.assets[toDenom].pair.swap(
           {
             amount: (Number(from.amount) * 10 ** 6).toString(),
@@ -363,7 +361,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         msg.sender = address
         // Sell mAsset
       } else if (mAssets.find((a) => a.symbol === from.denom)) {
-        const mirror = new Mirror({ ...mirrorOptions, key })
+        const key = new MnemonicKey()
+        const mirror = new Mirror({
+          ...mirrorOptions,
+          key,
+        })
         msg = mirror.assets[from.denom].pair.swap(
           {
             amount: (Number(from.amount) * 10 ** 6).toString(),
@@ -385,7 +387,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         )
       }
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: [msg as any] },
@@ -409,14 +411,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         {
@@ -442,15 +438,9 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.earn.depositStable({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -475,15 +465,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     ) => {
       const rate = await fetchAassetRate(market)
       const amount = amountInBase / rate
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.earn.withdrawStable({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -506,15 +490,9 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.borrow.borrow({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -537,15 +515,9 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.borrow.repay({ market, amount: String(amount) })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -562,15 +534,9 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const claimBorrowRewards = React.useCallback(
     async (market: MARKET_DENOMS, password?: string, terraApp?: TerraApp, simulate?: boolean) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.anchorToken.claimUSTBorrowRewards({ market })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -594,19 +560,13 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.borrow.provideCollateral({
         market,
         amount: String(amount),
         collateral: (COLLATERAL_DENOMS as any)[`U${symbol.toUpperCase()}`],
       })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -630,19 +590,13 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const ops = anchorClient.borrow.withdrawCollateral({
         market,
         amount: String(amount),
         collateral: (COLLATERAL_DENOMS as any)[`U${symbol.toUpperCase()}`],
       })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
@@ -665,14 +619,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         {
@@ -697,14 +645,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         {
@@ -732,14 +674,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         {
@@ -765,14 +701,8 @@ const AssetsProvider: React.FC = ({ children }) => {
 
   const claimStakingRewards = React.useCallback(
     async (password?: string, terraApp?: TerraApp, simulate?: boolean) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
       const result = await signAndBroadcastTx(
-        key,
+        decryptSeedPhrase(password),
         terraApp,
         hdPath,
         {
@@ -798,12 +728,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const key = new MnemonicKey({
-        mnemonic: !password ? '' : decryptSeedPhrase(password),
-        coinType: hdPath[1],
-        account: hdPath[2],
-        index: hdPath[4],
-      })
+      const key = new MnemonicKey()
       const msgs = flatten(
         airdropsToClaim.map((a) => {
           if (a.coin.denom === 'ANC') {
@@ -825,7 +750,14 @@ const AssetsProvider: React.FC = ({ children }) => {
           }
         })
       ).map((msg) => new MsgExecuteContract(address, msg.contract, msg.execute_msg, msg.coins))
-      const result = await signAndBroadcastTx(key, terraApp, hdPath, { msgs }, address, simulate)
+      const result = await signAndBroadcastTx(
+        decryptSeedPhrase(password),
+        terraApp,
+        hdPath,
+        { msgs },
+        address,
+        simulate
+      )
       if (!simulate) {
         fetchAssets()
       }
@@ -837,7 +769,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   // On logout
   React.useEffect(() => {
     if (!address) {
-      setAssets(initialState.assets)
+      setRawAssets([])
       setAvailableAssets(initialState.availableAssets)
       setAvailableCurrencies(initialState.availableCurrencies)
       setBorrowInfo(initialState.borrowInfo)
@@ -846,7 +778,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     }
   }, [
     address,
-    setAssets,
+    setRawAssets,
     setAvailableAssets,
     setAvailableCurrencies,
     setBorrowInfo,
@@ -864,7 +796,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         borrowInfo,
         stakingInfo,
         airdrops,
+        fetchAvailableAssets,
         fetchAssets,
+        fetchBorrowInfo,
+        fetchStakingInfo,
+        fetchAirdrops,
         swap,
         send,
         depositSavings,

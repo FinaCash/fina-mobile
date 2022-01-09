@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, View } from 'react-native'
+import { FlatList, RefreshControl, View } from 'react-native'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -17,11 +17,12 @@ import Button from '../../components/Button'
 
 const AirdropTab: React.FC = () => {
   const { t } = useLocalesContext()
-  const { styles } = useStyles(getStyles)
-  const { availableAssets, airdrops, claimAirdrops } = useAssetsContext()
+  const { styles, theme } = useStyles(getStyles)
+  const { availableAssets, airdrops, claimAirdrops, fetchAirdrops } = useAssetsContext()
   const { type } = useAccountsContext()
 
   const [claimingAirdrops, setClaimingAirdrops] = React.useState<Airdrop[]>([])
+  const [loading, setLoading] = React.useState(false)
 
   const data = React.useMemo(
     () =>
@@ -56,6 +57,17 @@ const AirdropTab: React.FC = () => {
     <>
       <FlatList
         style={styles.list}
+        refreshControl={
+          <RefreshControl
+            tintColor={theme.fonts.H1.color}
+            refreshing={loading}
+            onRefresh={async () => {
+              setLoading(true)
+              await fetchAirdrops()
+              setLoading(false)
+            }}
+          />
+        }
         keyExtractor={(item) => item.symbol}
         data={data}
         renderItem={({ item }) => (

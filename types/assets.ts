@@ -41,13 +41,8 @@ export interface AvailableAsset {
   symbol: string
   coin: { denom: string }
   image: string
-  description: string
   price: number // In USD
   prevPrice: number
-  priceHistories?: Array<{
-    timestamp: number
-    price: number
-  }>
 }
 
 export interface BorrowInfo {

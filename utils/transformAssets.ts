@@ -1,6 +1,7 @@
 import groupBy from 'lodash/groupBy'
 import { colleteralsInfo, supportedTokens } from './terraConfig'
 import get from 'lodash/get'
+import sortBy from 'lodash/sortBy'
 import { Asset, AssetTypes, AvailableAsset, StakingInfo } from '../types/assets'
 import { UserCollateral } from '@anchor-protocol/anchor.js'
 
@@ -112,7 +113,7 @@ export const getCollateralAssetDetail = (coin: {
   }
 }
 
-export const transformCoinsToAssets = async (
+export const transformCoinsToAssets = (
   coins: Array<{
     amount: string
     denom: string
@@ -121,7 +122,7 @@ export const transformCoinsToAssets = async (
   }>,
   availableAssets: AvailableAsset[],
   availableCurrencies: { denom: string; price: number }[]
-): Promise<Asset[]> => {
+): Asset[] => {
   const assets: Asset[] = []
   for (let i = 0; i < coins.length; i += 1) {
     const coin = coins[i]
@@ -130,10 +131,10 @@ export const transformCoinsToAssets = async (
       asset = getTokenAssetDetail(coin, availableAssets)
     } else if (coin.denom.match(/^u/)) {
       const rate = availableCurrencies.find((a) => a.denom === coin.denom)!
-      asset = getCurrentAssetDetail(coin, rate.price)
+      asset = getCurrentAssetDetail(coin, get(rate, 'price', 1))
     } else if (coin.denom.match(/^a/)) {
       const rate = availableCurrencies.find((a) => a.denom === coin.denom.replace(/^a/, 'u'))!
-      asset = getSavingAssetDetail(coin, rate.price)
+      asset = getSavingAssetDetail(coin, get(rate, 'price', 1))
     } else if (coin.denom.match(/^B/)) {
       asset = getCollateralAssetDetail(coin as any)
     } else {
@@ -143,7 +144,26 @@ export const transformCoinsToAssets = async (
       assets.push(asset)
     }
   }
-  return assets
+  return sortBy(assets, [
+    (r) => {
+      if (r.coin.denom === 'uluna') {
+        return 0
+      }
+      switch (r.type) {
+        case AssetTypes.Currents:
+          return 1
+        case AssetTypes.Savings:
+          return 2
+        case AssetTypes.Tokens:
+          return 3
+        case AssetTypes.Investments:
+          return 4
+        case AssetTypes.Collaterals:
+          return 5
+      }
+    },
+    'symbol',
+  ])
 }
 
 export const transformAssetsToDistributions = (assets: Asset[], stakingInfo: StakingInfo) => {

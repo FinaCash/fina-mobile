@@ -3,7 +3,7 @@ import { Theme } from '../../types/misc'
 export default (theme: Theme) => ({
   container: {
     borderRadius: theme.borderRadius[0],
-    backgroundColor: theme.palette.grey[1],
+    backgroundColor: theme.palette.altBackground,
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },

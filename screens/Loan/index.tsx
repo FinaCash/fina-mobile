@@ -1,6 +1,6 @@
 import React from 'react'
 import HeaderBar from '../../components/HeaderBar'
-import { View, ScrollView, Alert } from 'react-native'
+import { View, ScrollView, Alert, RefreshControl } from 'react-native'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../../components/Typography'
@@ -26,10 +26,19 @@ const Loan: React.FC = () => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { type } = useAccountsContext()
-  const { assets, availableAssets, borrowInfo, claimBorrowRewards } = useAssetsContext()
+  const {
+    assets,
+    availableAssets,
+    borrowInfo,
+    claimBorrowRewards,
+    fetchBorrowInfo,
+    fetchAssets,
+    fetchAvailableAssets,
+  } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
   const [isClaiming, setIsClaiming] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
 
   const collaterals = assets.filter((a) => a.type === AssetTypes.Collaterals)
 
@@ -93,7 +102,21 @@ const Loan: React.FC = () => {
   return (
     <>
       <HeaderBar title={t('loan')} subtitle={t('powered by anchor protocol')} />
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            style={{ zIndex: 100 }}
+            tintColor={theme.palette.white}
+            refreshing={loading}
+            onRefresh={async () => {
+              setLoading(true)
+              await Promise.all([fetchBorrowInfo(), fetchAssets(), fetchAvailableAssets()])
+              setLoading(false)
+            }}
+          />
+        }
+      >
         <LoanCard denom={MARKET_DENOMS.UUSD} />
         <View style={styles.row}>
           <Button

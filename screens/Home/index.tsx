@@ -34,7 +34,15 @@ import CollateralItem from '../../components/CollateralItem'
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
-  const { assets, availableAssets, fetchAssets, stakingInfo } = useAssetsContext()
+  const {
+    assets,
+    availableAssets,
+    stakingInfo,
+    fetchAssets,
+    fetchAvailableAssets,
+    fetchBorrowInfo,
+    fetchStakingInfo,
+  } = useAssetsContext()
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
   const { currency, currencyRate, hideSmallBalance } = useSettingsContext()
@@ -150,9 +158,14 @@ const Home: React.FC = () => {
 
   const refresh = React.useCallback(async () => {
     setLoading(true)
-    await fetchAssets()
+    await Promise.all([
+      fetchAssets(),
+      fetchAvailableAssets(),
+      fetchBorrowInfo(),
+      fetchStakingInfo(),
+    ])
     setLoading(false)
-  }, [fetchAssets, setLoading])
+  }, [fetchAssets, fetchAvailableAssets, fetchBorrowInfo, fetchStakingInfo, setLoading])
 
   // const smallBalanceAssets = React.useMemo(
   //   () =>

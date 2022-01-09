@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, SectionList, View } from 'react-native'
+import { Alert, RefreshControl, SectionList, View } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import SearchIcon from '../../assets/images/icons/search.svg'
 import HeaderBar from '../../components/HeaderBar'
@@ -17,9 +17,10 @@ import { getMAssetDetail } from '../../utils/transformAssets'
 const Trade: React.FC = () => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
-  const { availableAssets, assets } = useAssetsContext()
+  const { availableAssets, assets, fetchAvailableAssets, fetchAssets } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const [search, setSearch] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
 
   const groupedAssets = groupBy(
     availableAssets.filter((a) => (a.symbol + a.name).toLowerCase().includes(search.toLowerCase())),
@@ -45,6 +46,17 @@ const Trade: React.FC = () => {
         style={styles.list}
         keyExtractor={(item) => item.symbol}
         sections={sections}
+        refreshControl={
+          <RefreshControl
+            tintColor={theme.fonts.H1.color}
+            refreshing={loading}
+            onRefresh={async () => {
+              setLoading(true)
+              await Promise.all([fetchAvailableAssets(), fetchAssets()])
+              setLoading(false)
+            }}
+          />
+        }
         stickySectionHeadersEnabled={false}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.titleContainer}>

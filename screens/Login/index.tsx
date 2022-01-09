@@ -9,13 +9,13 @@ import Button from '../../components/Button'
 import useStateHistory from '../../utils/useStateHistory'
 import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
-import { MnemonicKey } from '@terra-money/terra.js'
 import { ScrollView } from 'react-native'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { deafultHdPath, defaultPrefix } from '../../utils/terraConfig'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { MnemonicKey } from '@terra-money/terra.js'
 
 enum ContentStage {
   Start = 'start',
@@ -103,7 +103,7 @@ const Login: React.FC<LoginProps> = () => {
           {stage === ContentStage.Start ? (
             <View style={styles.contentContainer}>
               <Button
-                onPress={() => {
+                onPress={async () => {
                   setStage(ContentStage.CreateWallet)
                   const { mnemonic } = new MnemonicKey()
                   setPhraseInput(mnemonic)

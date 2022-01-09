@@ -3,8 +3,8 @@ import 'dotenv/config'
 export default {
   name: 'Fina',
   slug: 'fina',
-  owner: 'fina-io',
-  version: '0.4.0',
+  owner: 'fina-cash',
+  version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
   plugins: ['@config-plugins/react-native-ble-plx'],
