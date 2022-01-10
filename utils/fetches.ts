@@ -6,6 +6,7 @@ import {
   queryMarketEpochState,
   queryMarketState,
   queryOverseerWhitelist,
+  queryTokenBalance,
 } from '@anchor-protocol/anchor.js'
 import { Mirror } from '@mirror-protocol/mirror.js'
 import { Coin, Int } from '@terra-money/terra.js'
@@ -110,16 +111,17 @@ export const fetchAnchorBalances = async (address: string) => {
   const markets = [MARKET_DENOMS.UUSD]
   for (let i = 0; i < markets.length; i += 1) {
     const market = markets[i]
-    const userBalance = await anchorClient.earn.getTotalDeposit({
-      market,
+    const tokenBalance = await queryTokenBalance({
+      lcd: terraLCDClient,
       address,
-    })
+      token_address: anchorAddressProvider.aTerra(/* market */),
+    })(anchorAddressProvider)
     const apr = await anchorClient.earn.getAPY({
       market,
     })
     result.push({
       denom: market.replace(/^u/, 'a'),
-      amount: (Number(userBalance) * 10 ** 6).toString(),
+      amount: tokenBalance.balance,
       apr,
     })
   }
@@ -229,7 +231,14 @@ export const fetchAassetRate = async (market: MARKET_DENOMS) => {
 export const fetchAvailableCurrencies = async () => {
   const result = await terraLCDClient.oracle.exchangeRates()
   const usd = result.get('uusd')!
-  return result.map((r) => ({ denom: r.denom, price: usd.amount.toNumber() / r.amount.toNumber() }))
+  const currencies = result.map((r) => ({
+    denom: r.denom,
+    price: usd.amount.toNumber() / r.amount.toNumber(),
+  }))
+  const austRate = await queryMarketEpochState({ lcd: terraLCDClient, market: MARKET_DENOMS.UUSD })(
+    anchorAddressProvider
+  )
+  return [...currencies, { denom: 'ausd', price: Number(austRate.exchange_rate), hidden: true }]
 }
 
 export const fetchLunaStakingInfo = async (address: string) => {

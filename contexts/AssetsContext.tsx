@@ -64,7 +64,7 @@ interface AssetsState {
   fetchBorrowInfo(): void
   fetchStakingInfo(): void
   fetchAirdrops(): void
-  availableCurrencies: { denom: string; price: number }[]
+  availableCurrencies: { denom: string; price: number; hidden?: boolean }[]
   borrowInfo: BorrowInfo
   stakingInfo: StakingInfo
   validators: Validator[]

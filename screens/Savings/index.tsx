@@ -108,16 +108,24 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <AssetAmountInput
           asset={mode === 'deposit' ? baseAsset : savingAsset}
+          symbol="UST"
+          price={1}
+          max={
+            mode === 'deposit'
+              ? Number(baseAsset.coin.amount) * baseAsset.price
+              : Number(savingAsset.coin.amount) * savingAsset.price
+          }
           amount={amount}
           setAmount={setAmount}
-          assetItemProps={{ disabled: true }}
+          assetItemProps={{ disabled: true, reversePriceAmount: true }}
           inputProps={{ autoFocus: true }}
         />
         <Button
           disabled={
             !Number(amount) ||
             (mode === 'deposit' && Number(amount) * 10 ** 6 > Number(baseAsset.coin.amount)) ||
-            (mode === 'withdraw' && Number(amount) * 10 ** 6 > Number(savingAsset.coin.amount))
+            (mode === 'withdraw' &&
+              Number(amount) * 10 ** 6 > Number(savingAsset.coin.amount) * savingAsset.price)
           }
           style={styles.button}
           size="Large"

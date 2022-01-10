@@ -133,7 +133,7 @@ export const transformCoinsToAssets = (
       const rate = availableCurrencies.find((a) => a.denom === coin.denom)!
       asset = getCurrentAssetDetail(coin, get(rate, 'price', 1))
     } else if (coin.denom.match(/^a/)) {
-      const rate = availableCurrencies.find((a) => a.denom === coin.denom.replace(/^a/, 'u'))!
+      const rate = availableCurrencies.find((a) => a.denom === coin.denom)!
       asset = getSavingAssetDetail(coin, get(rate, 'price', 1))
     } else if (coin.denom.match(/^B/)) {
       asset = getCollateralAssetDetail(coin as any)

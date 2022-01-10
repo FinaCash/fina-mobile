@@ -90,9 +90,9 @@ const Settings: React.FC = () => {
           value: `${getSymbolFromDenom(currency)} (${getCurrencyFromDenom(currency)})`,
           onPress: () =>
             Actions.SelectAsset({
-              assets: availableCurrencies.map((c) =>
-                getCurrentAssetDetail({ denom: c.denom, amount: '0' })
-              ),
+              assets: availableCurrencies
+                .filter((c) => !c.hidden)
+                .map((c) => getCurrentAssetDetail({ denom: c.denom, amount: '0' })),
               assetItemProps: { hideAmount: true },
               onSelect: (a: Asset) => {
                 Actions.pop()

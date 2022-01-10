@@ -18,6 +18,8 @@ interface AssetAmountInputProps {
   availableAsset?: AvailableAsset
   validator?: Validator
   stakedAmount?: number
+  symbol?: string
+  price?: number
   amount: string
   setAmount(amount: string): void
   assetItemProps?: Omit<AssetItemProps, 'asset'>
@@ -32,6 +34,8 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   availableAsset,
   validator,
   stakedAmount,
+  symbol,
+  price,
   amount,
   setAmount,
   assetItemProps,
@@ -75,7 +79,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
             asset || (availableAsset && stakedAmount) ? (
               <View style={styles.row}>
                 <Typography color={theme.palette.grey[10]} bold>
-                  {asset ? asset.symbol : availableAsset?.symbol}
+                  {symbol || (asset ? asset.symbol : availableAsset?.symbol)}
                 </Typography>
                 <View style={styles.verticalDivider} />
                 <TouchableOpacity
@@ -103,7 +107,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
         <Typography color={theme.palette.grey[7]} type="Small">
           ~
           {formatCurrency(
-            Number(amount) * (asset ? asset.price : 0) * 10 ** 6 * currencyRate,
+            Number(amount) * (price || (asset ? asset.price : 0)) * 10 ** 6 * currencyRate,
             currency,
             true
           )}

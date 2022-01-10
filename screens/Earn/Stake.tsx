@@ -39,7 +39,11 @@ const Stake: React.FC = () => {
   const [loading, setLoading] = React.useState(false)
   const { showActionSheetWithOptions } = useActionSheet()
   const availableCurrenciesMap = React.useMemo(
-    () => keyBy(availableCurrencies, 'denom'),
+    () =>
+      keyBy(
+        availableCurrencies.filter((c) => !c.hidden),
+        'denom'
+      ),
     [availableCurrencies]
   )
   const { currency, currencyRate } = useSettingsContext()

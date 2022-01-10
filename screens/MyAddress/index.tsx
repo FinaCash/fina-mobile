@@ -31,10 +31,8 @@ const MyAddress: React.FC<MyAddressProps> = () => {
             Toast.show(t('address copied'))
           }}
         >
-          <Typography style={styles.address} color={theme.palette.grey[7]}>
-            {address}
-          </Typography>
-          <Icon name="copy" />
+          <Typography style={styles.address}>{address}</Typography>
+          <Icon name="copy" color={theme.fonts.Base.color} />
         </TouchableOpacity>
         <Button
           onPress={() => Share.share({ message: address })}

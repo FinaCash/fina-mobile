@@ -3,6 +3,7 @@ import { Modalize } from 'react-native-modalize'
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
 import keyBy from 'lodash/keyBy'
 import cloneDeep from 'lodash/cloneDeep'
+import get from 'lodash/get'
 import CloseIcon from '../../assets/images/icons/close.svg'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -42,20 +43,26 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { depositSavings, withdrawSavings } = useAssetsContext()
+  const { depositSavings, withdrawSavings, availableCurrencies } = useAssetsContext()
+  const currencyRate = availableCurrencies.find((c) => c.denom === denom)
+  const aTerraRate = availableCurrencies.find((c) => c.denom === `a${denom.slice(-3)}`)
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {
     const result = cloneDeep(fee)
-    if (result[denom]) {
-      result[denom].amount += amount
+    const coin =
+      mode === 'deposit'
+        ? { amount, denom }
+        : {
+            amount: amount / get(aTerraRate, 'price', 1),
+            denom: `a${getSymbolFromDenom(denom)}`,
+          }
+    if (result[coin.denom]) {
+      result[coin.denom].amount += coin.amount
     } else {
-      result[denom] = {
-        denom,
-        amount,
-      }
+      result[coin.denom] = coin
     }
     return result
-  }, [fee, denom, amount])
+  }, [fee, denom, amount, aTerraRate, mode])
 
   const estimateGasFee = React.useCallback(async () => {
     try {
@@ -115,22 +122,32 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
       </Typography>
       <AssetItem
         disabled
-        asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
-          amount: String(amount * 10 ** 6),
-          apr,
-        })}
+        asset={(mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)(
+          {
+            denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
+            amount: String(
+              (amount * 10 ** 6) / (mode === 'deposit' ? 1 : get(aTerraRate, 'price', 1))
+            ),
+            apr,
+          },
+          mode === 'deposit' ? get(currencyRate, 'price', 1) : get(aTerraRate, 'price', 1)
+        )}
       />
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('to')}
       </Typography>
       <AssetItem
         disabled
-        asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
-          amount: String(amount * 10 ** 6),
-          apr,
-        })}
+        asset={(mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)(
+          {
+            denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
+            amount: String(
+              (amount * 10 ** 6) / (mode === 'withdraw' ? 1 : aTerraRate ? aTerraRate.price : 1)
+            ),
+            apr,
+          },
+          mode === 'withdraw' ? get(currencyRate, 'price', 1) : get(aTerraRate, 'price', 1)
+        )}
       />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
