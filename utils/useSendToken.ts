@@ -4,6 +4,7 @@ import { Actions } from 'react-native-router-flux'
 import { useAccountsContext } from '../contexts/AccountsContext'
 import { useAssetsContext } from '../contexts/AssetsContext'
 import { useLocalesContext } from '../contexts/LocalesContext'
+import { useSettingsContext } from '../contexts/SettingsContext'
 import { Asset } from '../types/assets'
 import { Recipient } from '../types/recipients'
 import { getPasswordOrLedgerApp } from './signAndBroadcastTx'
@@ -12,6 +13,7 @@ const useSendToken = () => {
   const { assets, send } = useAssetsContext()
   const { t } = useLocalesContext()
   const { type } = useAccountsContext()
+  const { hideSmallBalance } = useSettingsContext()
   const transferAsset = React.useCallback(
     ({ asset, recipient }: { asset: Asset; recipient?: Recipient }) => {
       Actions.SelectAmount({
@@ -64,7 +66,12 @@ const useSendToken = () => {
         Actions.SelectAsset({
           onSelect: (a: Asset) => transferAsset({ asset: a, recipient }),
           // TODO: transfer other tokens
-          assets: assets.filter((a) => a.coin.denom.match(/^u/)),
+          assets: assets.filter(
+            (a) =>
+              a.coin.denom.match(/^u/) &&
+              a.coin.amount !== '0' &&
+              (hideSmallBalance ? (Number(a.coin.amount) * a.price) / 10 ** 6 > 0.1 : true)
+          ),
         })
       }
     },

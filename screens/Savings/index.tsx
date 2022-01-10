@@ -31,6 +31,13 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
   const [apr, setApr] = React.useState(0)
   const [isConfirming, setIsConfirming] = React.useState(false)
 
+  const savingAsset =
+    assets.find((a) => a.coin.denom === `a${denom.slice(-3)}`) ||
+    getSavingAssetDetail({
+      denom: `a${denom.slice(1)}`,
+      amount: '0',
+      apr,
+    })
   let asset =
     assets.find((a) => a.coin.denom === denom) ||
     getCurrentAssetDetail({
@@ -38,13 +45,6 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
       amount: '0',
     })
   if (mode === 'withdraw') {
-    const savingAsset =
-      assets.find((a) => a.coin.denom === `a${denom.slice(-3)}`) ||
-      getSavingAssetDetail({
-        denom: `a${denom.slice(1)}`,
-        amount: '0',
-        apr,
-      })
     asset = {
       ...asset,
       coin: {
@@ -58,16 +58,26 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
     async (password?: string, terraApp?: TerraApp) => {
       const message = {
         type: 'swap',
-        from: (mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
-          amount: String(Number(amount) * 10 ** 6),
-          apr,
-        }),
-        to: (mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)({
-          denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
-          amount: String(Number(amount) * 10 ** 6),
-          apr,
-        }),
+        from: (mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)(
+          {
+            denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
+            amount: String(
+              (Number(amount) * 10 ** 6) / (mode === 'deposit' ? 1 : savingAsset.price)
+            ),
+            apr,
+          },
+          mode === 'deposit' ? 1 : savingAsset.price
+        ),
+        to: (mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)(
+          {
+            denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
+            amount: String(
+              (Number(amount) * 10 ** 6) / (mode === 'withdraw' ? 1 : savingAsset.price)
+            ),
+            apr,
+          },
+          mode === 'withdraw' ? 1 : savingAsset.price
+        ),
       }
       try {
         await (mode === 'deposit' ? depositSavings : withdrawSavings)(

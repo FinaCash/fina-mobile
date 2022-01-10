@@ -58,11 +58,15 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
           <View style={styles.centered}>
             <Image source={{ uri: asset.image }} style={styles.image} />
             <Typography type="H6" style={styles.amount}>
-              {formatCurrency(Number(amount) * 10 ** 6, asset.coin.denom)}{' '}
-              {getCurrencyFromDenom(asset.coin.denom)}
+              {formatCurrency(Number(amount) * 10 ** 6, asset.coin.denom)} {asset.symbol}
             </Typography>
             <Typography color={theme.palette.grey[7]} type="Small">
-              ~{formatCurrency(Number(amount) * asset.price * 10 ** 6 * currencyRate, currency)}
+              ~
+              {formatCurrency(
+                Number(amount) * asset.price * 10 ** 6 * currencyRate,
+                currency,
+                true
+              )}
             </Typography>
           </View>
           <View style={styles.card}>
