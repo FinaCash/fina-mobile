@@ -8,17 +8,17 @@ import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { exTerraFinderUrl } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
-import { useSettingsContext } from '../../contexts/SettingsContext'
 import { ActivityIndicator, View } from 'react-native'
 
 const History: React.FC = () => {
   const webview = React.useRef<WebView>(null)
   const { theme, styles } = useStyles(getStyles)
-  const { t, locale } = useLocalesContext()
-  const { theme: uiTheme } = useSettingsContext()
+  const { t } = useLocalesContext()
   const { address } = useAccountsContext()
 
   const [loading, setLoading] = React.useState(true)
+
+  const uri = `${exTerraFinderUrl}/address/${address}`
 
   const style = `
     <style>
@@ -50,7 +50,7 @@ const History: React.FC = () => {
         <View style={{ flex: loading ? 0 : 1 }}>
           <WebView
             ref={webview}
-            source={{ uri: `${exTerraFinderUrl}/address/${address}` }}
+            source={{ uri }}
             injectedJavaScript={
               `
               document.head.innerHTML += '${style.replace(/(?:\r\n|\r|\n)/g, '')}'
@@ -72,7 +72,7 @@ const History: React.FC = () => {
               }
             }}
             onNavigationStateChange={(e) => {
-              if (!e.url.includes(exTerraFinderUrl) && !e.loading) {
+              if (!e.url.includes(uri) && !e.loading) {
                 WebBrowser.openBrowserAsync(e.url)
                 webview.current?.goBack()
               }
