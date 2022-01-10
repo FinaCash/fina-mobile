@@ -16,7 +16,6 @@ export interface AssetItemProps extends TouchableOpacityProps {
   hideAmount?: boolean
   hideBorder?: boolean
   stakingInfo?: StakingInfo
-  reversePriceAmount?: boolean
 }
 
 const AssetItem: React.FC<AssetItemProps> = ({
@@ -25,7 +24,6 @@ const AssetItem: React.FC<AssetItemProps> = ({
   hideAmount,
   hideBorder,
   stakingInfo,
-  reversePriceAmount,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -39,13 +37,6 @@ const AssetItem: React.FC<AssetItemProps> = ({
     ? stakingInfo.unbonding.map((d) => d.amount).reduce((a, b) => a + b, 0)
     : 0
   const totalAmount = asset ? Number(asset.coin.amount) + totalDelegated + totalUnbonding : 0
-  const totalAmountString = asset
-    ? formatCurrency(totalAmount, asset.coin.denom) + (reversePriceAmount ? ` ${asset.symbol}` : '')
-    : ''
-  const totalValueString =
-    asset && asset.price
-      ? formatCurrency(String(asset.price * totalAmount * currencyRate), currency, true)
-      : ''
 
   return (
     <TouchableOpacity {...props}>
@@ -77,10 +68,12 @@ const AssetItem: React.FC<AssetItemProps> = ({
           {asset && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
-                {reversePriceAmount ? totalValueString : totalAmountString}
+                {formatCurrency(totalAmount, asset.coin.denom)}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
-                {reversePriceAmount ? totalAmountString : totalValueString}
+                {asset.price
+                  ? formatCurrency(String(asset.price * totalAmount * currencyRate), currency, true)
+                  : ''}
               </Typography>
             </View>
           ) : null}

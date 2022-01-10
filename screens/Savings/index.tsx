@@ -15,6 +15,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
+import cloneDeep from 'lodash/cloneDeep'
 
 interface SavingsProps {
   mode: 'deposit' | 'withdraw'
@@ -30,19 +31,28 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
   const [apr, setApr] = React.useState(0)
   const [isConfirming, setIsConfirming] = React.useState(false)
 
-  const baseAsset =
+  let asset =
     assets.find((a) => a.coin.denom === denom) ||
     getCurrentAssetDetail({
       denom,
       amount: '0',
     })
-  const savingAsset =
-    assets.find((a) => a.coin.denom === `a${denom.slice(1)}`) ||
-    getSavingAssetDetail({
-      denom: `a${denom.slice(1)}`,
-      amount: '0',
-      apr,
-    })
+  if (mode === 'withdraw') {
+    const savingAsset =
+      assets.find((a) => a.coin.denom === `a${denom.slice(-3)}`) ||
+      getSavingAssetDetail({
+        denom: `a${denom.slice(1)}`,
+        amount: '0',
+        apr,
+      })
+    asset = {
+      ...asset,
+      coin: {
+        ...asset.coin,
+        amount: String(Number(savingAsset.coin.amount) * savingAsset.price),
+      },
+    }
+  }
 
   const onSubmit = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
@@ -107,26 +117,14 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
       <HeaderBar back title={t(`${mode} savings`)} />
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <AssetAmountInput
-          asset={mode === 'deposit' ? baseAsset : savingAsset}
-          symbol="UST"
-          price={1}
-          max={
-            mode === 'deposit'
-              ? Number(baseAsset.coin.amount) * baseAsset.price
-              : Number(savingAsset.coin.amount) * savingAsset.price
-          }
+          asset={asset}
           amount={amount}
           setAmount={setAmount}
-          assetItemProps={{ disabled: true, reversePriceAmount: true }}
+          assetItemProps={{ disabled: true }}
           inputProps={{ autoFocus: true }}
         />
         <Button
-          disabled={
-            !Number(amount) ||
-            (mode === 'deposit' && Number(amount) * 10 ** 6 > Number(baseAsset.coin.amount)) ||
-            (mode === 'withdraw' &&
-              Number(amount) * 10 ** 6 > Number(savingAsset.coin.amount) * savingAsset.price)
-          }
+          disabled={!Number(amount) || Number(amount) * 10 ** 6 > Number(asset.coin.amount)}
           style={styles.button}
           size="Large"
           onPress={() => setIsConfirming(true)}
