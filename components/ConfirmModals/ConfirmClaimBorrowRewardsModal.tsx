@@ -1,8 +1,6 @@
 import React from 'react'
-import { Modalize } from 'react-native-modalize'
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import keyBy from 'lodash/keyBy'
-import CloseIcon from '../../assets/images/icons/close.svg'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../Typography'
@@ -15,6 +13,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { AvailableAsset } from '../../types/assets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import RewardsItem from '../RewardsItem'
+import BottomModal from '../BottomModal'
 
 interface ConfirmClaimBorrowRewardsModalProps {
   open: boolean
@@ -35,7 +34,6 @@ const ConfirmClaimBorrowRewardsModal: React.FC<ConfirmClaimBorrowRewardsModalPro
   apr,
   onConfirm,
 }) => {
-  const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { claimBorrowRewards } = useAssetsContext()
@@ -59,32 +57,21 @@ const ConfirmClaimBorrowRewardsModal: React.FC<ConfirmClaimBorrowRewardsModalPro
   }, [claimBorrowRewards, denom])
 
   React.useEffect(() => {
-    if (open) {
-      modalizeRef.current?.open()
-    } else {
-      modalizeRef.current?.close()
+    if (!open) {
       setFee({})
     }
   }, [open])
 
   return (
-    <Modalize
-      ref={modalizeRef}
-      modalStyle={styles.modal}
-      withHandle={false}
-      scrollViewProps={{ scrollEnabled: false }}
+    <BottomModal
+      title={t('confirm transacrtion')}
+      open={open}
+      onClose={onClose}
       modalHeight={
         theme.baseSpace * 80 + Object.keys(fee).length * 2 * theme.baseSpace + theme.bottomSpace
       }
-      onClosed={onClose}
       onOpened={estimateGasFee}
     >
-      <View style={styles.confirmHeader}>
-        <Typography type="H6">{t('confirm transacrtion')}</Typography>
-        <TouchableOpacity onPress={onClose}>
-          <CloseIcon fill={theme.fonts.H6.color} />
-        </TouchableOpacity>
-      </View>
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('claim')}
       </Typography>
@@ -108,7 +95,7 @@ const ConfirmClaimBorrowRewardsModal: React.FC<ConfirmClaimBorrowRewardsModalPro
       <Button style={styles.modalButton} size="Large" onPress={onConfirm}>
         {t('confirm')}
       </Button>
-    </Modalize>
+    </BottomModal>
   )
 }
 

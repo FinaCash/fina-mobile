@@ -1,10 +1,8 @@
 import React from 'react'
-import { Modalize } from 'react-native-modalize'
-import { ActivityIndicator, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import keyBy from 'lodash/keyBy'
 import cloneDeep from 'lodash/cloneDeep'
 import get from 'lodash/get'
-import CloseIcon from '../../assets/images/icons/close.svg'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../Typography'
@@ -20,6 +18,7 @@ import {
 } from '../../utils/transformAssets'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import BottomModal from '../BottomModal'
 
 interface ConfirmSavingsModalProps {
   open: boolean
@@ -40,7 +39,6 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
   apr,
   onConfirm,
 }) => {
-  const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { depositSavings, withdrawSavings, availableCurrencies } = useAssetsContext()
@@ -88,35 +86,24 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
   }, [denom, amount, depositSavings, withdrawSavings, mode])
 
   React.useEffect(() => {
-    if (open) {
-      modalizeRef.current?.open()
-    } else {
-      modalizeRef.current?.close()
+    if (!open) {
       setFee({})
     }
   }, [open])
 
   return (
-    <Modalize
-      ref={modalizeRef}
-      modalStyle={styles.modal}
-      withHandle={false}
-      scrollViewProps={{ scrollEnabled: false }}
+    <BottomModal
+      title={t('confirm transacrtion')}
+      open={open}
+      onClose={onClose}
       modalHeight={
         theme.baseSpace * 120 +
         Object.keys(fee).length * 2 * theme.baseSpace +
         Object.keys(total).length * 2 * theme.baseSpace +
         theme.bottomSpace
       }
-      onClosed={onClose}
       onOpened={estimateGasFee}
     >
-      <View style={styles.confirmHeader}>
-        <Typography type="H6">{t('confirm transacrtion')}</Typography>
-        <TouchableOpacity onPress={onClose}>
-          <CloseIcon fill={theme.fonts.H6.color} />
-        </TouchableOpacity>
-      </View>
       <Typography style={styles.padded} type="Large" color={theme.palette.grey[7]}>
         {t('from')}
       </Typography>
@@ -178,7 +165,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
       <Button style={styles.modalButton} size="Large" onPress={onConfirm}>
         {t('confirm')}
       </Button>
-    </Modalize>
+    </BottomModal>
   )
 }
 
