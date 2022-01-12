@@ -501,10 +501,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchBorrowInfo()
       }
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
   )
 
   const repay = React.useCallback(
@@ -526,10 +527,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchBorrowInfo()
       }
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
   )
 
   const claimBorrowRewards = React.useCallback(
@@ -545,10 +547,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchBorrowInfo()
       }
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
   )
 
   const provideCollateral = React.useCallback(
@@ -574,11 +577,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         simulate
       )
       if (!simulate) {
-        fetchAssets()
+        fetchBorrowInfo()
       }
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, address, hdPath, fetchBorrowInfo]
   )
 
   const withdrawCollateral = React.useCallback(
@@ -604,11 +607,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         simulate
       )
       if (!simulate) {
-        fetchAssets()
+        fetchBorrowInfo()
       }
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, address, hdPath, fetchBorrowInfo]
   )
 
   const stake = React.useCallback(
@@ -631,10 +634,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchStakingInfo()
       }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
   )
 
   const unstake = React.useCallback(
@@ -659,10 +663,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchStakingInfo()
       }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
   )
 
   const redelegate = React.useCallback(
@@ -693,10 +698,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchStakingInfo()
       }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
   )
 
   const claimStakingRewards = React.useCallback(
@@ -715,10 +721,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchStakingInfo()
       }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, stakingInfo]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, stakingInfo, fetchStakingInfo]
   )
 
   const claimAirdrops = React.useCallback(
@@ -760,10 +767,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchAirdrops()
       }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchAirdrops]
   )
 
   // On logout
