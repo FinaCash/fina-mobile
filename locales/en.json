@@ -97,7 +97,7 @@
   "password updated": "Password has been updated",
   "please enter new password": "Please enter a new password",
   "history": "History",
-  "powered by extraterrestrial finder": "Powered by Extraterrestrial Finder",
+  "powered by terra station": "Powered by Terra Station",
   "borrow": "Borrow",
   "earn": "Earn",
   "powered by anchor protocol": "Powered by Anchor Protocol",
@@ -155,5 +155,6 @@
   "custom hd path": "Custom HD Path",
   "claim all": "Claim All",
   "hide small balance": "Hide Small Balance",
-  "convert small balance": "Convert Small Balance to UST"
+  "convert small balance": "Convert Small Balance to UST",
+  "select ledger device": "Select Ledger Device"
 }

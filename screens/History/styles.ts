@@ -6,6 +6,6 @@ export default (theme: Theme) => ({
     flex: 1,
   },
   loader: {
-    marginTop: 30 * theme.baseSpace,
+    marginTop: 50 * theme.baseSpace,
   },
 })

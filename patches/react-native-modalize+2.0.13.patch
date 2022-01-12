@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-modalize/lib/index.js b/node_modules/react-native-modalize/lib/index.js
-index 28e86cd..cc61907 100644
+index 28bf739..3c920d7 100644
 --- a/node_modules/react-native-modalize/lib/index.js
 +++ b/node_modules/react-native-modalize/lib/index.js
 @@ -1,4 +1,5 @@
@@ -8,7 +8,7 @@ index 28e86cd..cc61907 100644
  var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
      if (k2 === undefined) k2 = k;
      Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-@@ -37,6 +38,18 @@ const invariant_1 = require("./utils/invariant");
+@@ -38,6 +39,18 @@ const invariant_1 = require("./utils/invariant");
  const compose_refs_1 = require("./utils/compose-refs");
  const styles_1 = __importDefault(require("./styles"));
  const AnimatedKeyboardAvoidingView = react_native_1.Animated.createAnimatedComponent(react_native_1.KeyboardAvoidingView);
@@ -27,7 +27,7 @@ index 28e86cd..cc61907 100644
  /**
   * When scrolling, it happens than beginScrollYValue is not always equal to 0 (top of the ScrollView).
   * Since we use this to trigger the swipe down gesture animation, we allow a small threshold to
-@@ -77,7 +90,7 @@ withReactModal = false, withHandle = true, withOverlay = true,
+@@ -78,7 +91,7 @@ withReactModal = false, reactModalProps, withHandle = true, withOverlay = true,
  // Additional components
  HeaderComponent, FooterComponent, FloatingComponent, 
  // Callbacks
@@ -36,7 +36,7 @@ index 28e86cd..cc61907 100644
      const { height: screenHeight } = use_dimensions_1.useDimensions();
      const isHandleOutside = handlePosition === 'outside';
      const handleHeight = withHandle ? 20 : isHandleOutside ? 35 : 20;
-@@ -455,6 +468,7 @@ onOpen, onOpened, onClose, onClosed, onBackButtonPress, onPositionChange, onOver
+@@ -458,6 +471,7 @@ onOpen, onOpened, onClose, onClosed, onBackButtonPress, onPositionChange, onOver
              handleClose(dest);
          }
      };
@@ -44,7 +44,7 @@ index 28e86cd..cc61907 100644
      const handleGestureEvent = react_native_1.Animated.event([{ nativeEvent: { translationY: dragY } }], {
          useNativeDriver: USE_NATIVE_DRIVER,
          listener: ({ nativeEvent: { translationY } }) => {
-@@ -466,6 +480,13 @@ onOpen, onOpened, onClose, onClosed, onBackButtonPress, onPositionChange, onOver
+@@ -469,6 +483,13 @@ onOpen, onOpened, onClose, onClosed, onBackButtonPress, onPositionChange, onOver
                  let value;
                  if (modalPosition === 'initial' && translationY > 0) {
                      value = 0;
@@ -59,10 +59,10 @@ index 28e86cd..cc61907 100644
                  else if (modalPosition === 'top' && translationY <= 0) {
                      value = 1;
 diff --git a/node_modules/react-native-modalize/lib/options.d.ts b/node_modules/react-native-modalize/lib/options.d.ts
-index b66d93d..e9e6b63 100644
+index 42352fb..560fd31 100644
 --- a/node_modules/react-native-modalize/lib/options.d.ts
 +++ b/node_modules/react-native-modalize/lib/options.d.ts
-@@ -246,6 +246,7 @@ export interface IProps<ListItem = any> {
+@@ -250,6 +250,7 @@ export interface IProps<ListItem = any> {
      onLayout?(nativeEvent: {
          layout: LayoutRectangle;
      }): void;

@@ -12,7 +12,15 @@ interface BottomModalProps extends ModalizeProps {
   onClose(): void
 }
 
-const BottomModal: React.FC<BottomModalProps> = ({ title, children, open, onClose, ...props }) => {
+const BottomModal: React.FC<BottomModalProps> = ({
+  title,
+  children,
+  open,
+  onClose,
+  flatListProps,
+  sectionListProps,
+  ...props
+}) => {
   const modalizeRef = React.useRef<Modalize>(null)
   const { styles, theme } = useStyles(getStyles)
 
@@ -24,7 +32,29 @@ const BottomModal: React.FC<BottomModalProps> = ({ title, children, open, onClos
     }
   }, [open])
 
-  return (
+  const header = (
+    <View style={styles.confirmHeader}>
+      <Typography type="H6">{title}</Typography>
+      <TouchableOpacity onPress={onClose}>
+        <CloseIcon fill={theme.fonts.H6.color} />
+      </TouchableOpacity>
+    </View>
+  )
+
+  return flatListProps || sectionListProps ? (
+    <Modalize
+      ref={modalizeRef}
+      modalStyle={styles.modal}
+      withHandle={false}
+      onClosed={onClose}
+      useNativeDriver
+      flatListProps={flatListProps ? { ListHeaderComponent: header, ...flatListProps } : undefined}
+      sectionListProps={
+        sectionListProps ? { ListHeaderComponent: header, ...sectionListProps } : undefined
+      }
+      {...props}
+    />
+  ) : (
     <Modalize
       ref={modalizeRef}
       modalStyle={styles.modal}
@@ -34,12 +64,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ title, children, open, onClos
       useNativeDriver
       {...props}
     >
-      <View style={styles.confirmHeader}>
-        <Typography type="H6">{title}</Typography>
-        <TouchableOpacity onPress={onClose}>
-          <CloseIcon fill={theme.fonts.H6.color} />
-        </TouchableOpacity>
-      </View>
+      {header}
       {children}
     </Modalize>
   )

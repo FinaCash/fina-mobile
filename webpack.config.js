@@ -7,7 +7,6 @@ module.exports = async function (env, argv) {
   config.module.rules.push({
     test: /\.(js|ts|jsx|tsx)$/,
     exclude: path.resolve(__dirname, 'node_modules'),
-    use: ['react-native-svg-transformer-fix-expo/loader'],
   })
 
   return config

@@ -6,9 +6,11 @@ export const deafultHdPath = [44, 330, 0, 0, 0]
 export const defaultPrefix = 'terra'
 
 export const chainID = 'columbus-5'
+export const networkName = 'mainnet'
 
+export const terraLCDUrl = 'https://lcd.terra.dev'
 export const terraLCDClient = new LCDClient({
-  URL: 'https://lcd.terra.dev',
+  URL: terraLCDUrl,
   chainID,
   gasPrices: {
     uusd: 0.15,
@@ -68,7 +70,7 @@ export const terraMantleUrl = 'https://mantle.terra.dev'
 
 export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'
 
-export const exTerraFinderUrl = 'https://finder.extraterrestrial.money/mainnet'
+export const terraStationUrl = 'https://station.terra.money'
 
 export const mirrorOptions = DEFAULT_MIRROR_OPTIONS
 

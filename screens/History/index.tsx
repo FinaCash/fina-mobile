@@ -6,28 +6,37 @@ import HeaderBar from '../../components/HeaderBar'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
-import { exTerraFinderUrl } from '../../utils/terraConfig'
+import {
+  chainID,
+  networkName,
+  terraLCDUrl,
+  terraMantleUrl,
+  terraStationUrl,
+} from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { ActivityIndicator, View } from 'react-native'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 const History: React.FC = () => {
   const webview = React.useRef<WebView>(null)
   const { theme, styles } = useStyles(getStyles)
-  const { t } = useLocalesContext()
+  const { t, locale } = useLocalesContext()
   const { address } = useAccountsContext()
+  const { currency, theme: uiTheme } = useSettingsContext()
 
   const [loading, setLoading] = React.useState(true)
 
-  const uri = `${exTerraFinderUrl}/address/${address}`
+  const uri = `${terraStationUrl}/history`
 
   const style = `
     <style>
-      body {
-        background-color: ${theme.palette.background};
-        color: ${theme.fonts.Base.color};
+      .Layout_layout__3qLmz {
+        grid-template-rows: none;
       }
-      .TxSummary_tx__281GP {
-        border-bottom: 1px solid ${theme.palette.border};
+      .Layout_sidebar__1VZN4,
+      .Layout_header__1IkV6,
+      .Page_title__1-E8o {
+        display: none;
       }
     </style>
   `
@@ -37,7 +46,7 @@ const History: React.FC = () => {
       <HeaderBar
         title={t('history')}
         back
-        subtitle={t('powered by extraterrestrial finder')}
+        subtitle={t('powered by terra station')}
         rightButton={{
           icon: <Icon name="refresh-cw" size={theme.baseSpace * 5} color={theme.palette.white} />,
           onPress: () => {
@@ -51,14 +60,18 @@ const History: React.FC = () => {
           <WebView
             ref={webview}
             source={{ uri }}
+            injectedJavaScriptBeforeContentLoaded={`
+              localStorage.setItem('__terra-readonly-wallet-storage-key__', '{"network":{"name":"${networkName}","chainID":"${chainID}","lcd":"${terraLCDUrl}","mantle":"${terraMantleUrl}","walletconnectID":1},"terraAddress":"${address}"}')
+              localStorage.setItem('Currency', '${currency}')
+              localStorage.setItem('i18nextLng', '${locale}')
+              localStorage.setItem('Theme', '${uiTheme}')
+            `}
             injectedJavaScript={
               `
               document.head.innerHTML += '${style.replace(/(?:\r\n|\r|\n)/g, '')}'
               document.querySelector('body').style.opacity = 0
               const interval = setInterval(() => {
-                if (document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML.length > 1000) {
-                  document.querySelector('body').innerHTML = document.querySelector('#rc-tabs-0-panel-overview article:nth-of-type(2)>section').outerHTML
-                  setTimeout(() => window.scrollTo(0, 0), 100)
+                if (document.querySelector('.Page_title__1-E8o')) {
                   document.querySelector('body').style.opacity = 1
                   window.ReactNativeWebView.postMessage("loaded")
                   clearInterval(interval)
