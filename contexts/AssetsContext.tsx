@@ -48,6 +48,7 @@ import {
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
   fetchLunaStakingInfo,
+  fetchAvailableFarms,
 } from '../utils/fetches'
 import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
@@ -276,7 +277,12 @@ const AssetsProvider: React.FC = ({ children }) => {
     const mAssetsBalances = await fetchMirrorBalance(address)
     setRawAssets((a) => {
       return uniqBy(
-        [...JSON.parse(balances[0].toJSON()), ...anchorBalances, ...mAssetsBalances, ...a],
+        [
+          ...JSON.parse(balances[0].toJSON()),
+          ...anchorBalances,
+          ...mAssetsBalances,
+          ...a.filter((aa) => aa.denom.match(/^b/)), // Do not replace collaterals
+        ],
         'denom'
       )
     })
@@ -299,6 +305,11 @@ const AssetsProvider: React.FC = ({ children }) => {
     setAirdrops(airdropsResult)
   }, [address, setAirdrops])
 
+  const fetchFarm = React.useCallback(async () => {
+    const result = await fetchAvailableFarms(address)
+    console.log(result)
+  }, [address, setAirdrops])
+
   React.useEffect(() => {
     if (address) {
       fetchAvailableAssets()
@@ -306,6 +317,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchBorrowInfo()
       fetchStakingInfo()
       fetchAirdrops()
+      fetchFarm()
     }
   }, [address])
 

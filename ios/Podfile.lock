@@ -111,6 +111,8 @@ PODS:
   - ExpoModulesCore (0.6.4):
     - React-Core
     - ReactCommon/turbomodule/core
+  - ExpoSystemUI (1.1.0):
+    - ExpoModulesCore
   - EXRandom (12.1.1):
     - React-Core
   - EXSecureStore (11.1.0):
@@ -479,6 +481,7 @@ DEPENDENCIES:
   - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../node_modules/expo-localization/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
+  - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
   - EXRandom (from `../node_modules/expo-random/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
@@ -584,6 +587,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-localization/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core/ios"
+  ExpoSystemUI:
+    :path: "../node_modules/expo-system-ui/ios"
   EXRandom:
     :path: "../node_modules/expo-random/ios"
   EXSecureStore:
@@ -701,6 +706,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: a7f1672e1727fedc4280d56c27606f8e195b9fcc
   ExpoLocalization: 83582a967db52987a8479490b056d5eb9fd70552
   ExpoModulesCore: 64abda7af7cf659d2fa092934e29c6f4ea7e849f
+  ExpoSystemUI: a6ee69bdbe8bc6caf815117fb5e09330cd820448
   EXRandom: 06978dcf45075f3c9e17ae5e726b887316ee9877
   EXSecureStore: fa0fdde1c81ceee2a3cb0519e649feae42767969
   EXSplashScreen: 7872675b95bb07c25f922b3d3dfae70c76fb5a00

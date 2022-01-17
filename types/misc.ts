@@ -26,6 +26,7 @@ export interface Theme {
     border: string
     active: string
     button: string
+    borderButton: string
   }
   gradients: {
     primary: string[]

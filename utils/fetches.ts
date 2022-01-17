@@ -13,13 +13,20 @@ import { Coin, Int } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import flatten from 'lodash/flatten'
 import last from 'lodash/last'
-import { Airdrop, AssetTypes, AvailableAsset, StakingInfo, Validator } from '../types/assets'
+import {
+  Airdrop,
+  AssetTypes,
+  AvailableAsset,
+  Farm,
+  FarmType,
+  StakingInfo,
+  Validator,
+} from '../types/assets'
 import {
   anchorAddressProvider,
   anchorAirdropApiUrl,
   anchorApiUrl,
   anchorClient,
-  chainID,
   colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
@@ -367,4 +374,55 @@ export const fetchClaimableAirdrops = async (address: string): Promise<Airdrop[]
     details: mirrorAirdrops.map(({ amount, proof, stage }: any) => ({ amount, proof, stage })),
   })
   return airdrops
+}
+
+export const fetchAvailableFarms = async (address: string): Promise<Farm[]> => {
+  const {
+    data: { assets },
+  } = await fetch(mirrorGraphqlUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+          query assets {
+            assets {
+              symbol
+              token
+              pair
+              lpToken
+              positions {
+                pool
+                uusdPool
+                lpShares
+              }
+              statistic{
+                apr {
+                  long
+                  short
+                }
+                minCollateralRatio
+              }
+            }
+          }
+        `,
+    }),
+  }).then((r) => r.json())
+  return assets.map((a: any) => ({
+    symbol: a.symbol,
+    addresses: {
+      token: a.token,
+      lpToken: a.lpToken,
+      pair: a.pair,
+    },
+    rate: {
+      token: Number(a.positions.pool) / Number(a.positions.lpShares),
+      ust: Number(a.positions.uusdPool) / Number(a.positions.lpShares),
+    },
+    apr: {
+      [FarmType.Long]: Number(a.statistic.apr.long),
+      [FarmType.Short]: Number(a.statistic.apr.short),
+    },
+  }))
 }

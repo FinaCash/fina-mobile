@@ -56,6 +56,9 @@ const Settings: React.FC = () => {
                 cancelButtonIndex: supportedThemes.length + 1,
               },
               (index) => {
+                if (index === undefined) {
+                  return
+                }
                 if (index === 0) {
                   setSystemDefaultTheme(true)
                 } else if (index < supportedThemes.length + 1) {
@@ -77,6 +80,9 @@ const Settings: React.FC = () => {
                 cancelButtonIndex: supportedLocales.length,
               },
               (index) => {
+                if (index === undefined) {
+                  return
+                }
                 if (index < supportedLocales.length) {
                   setLocale(supportedLocales[index])
                 }

@@ -1,11 +1,12 @@
 import 'dotenv/config'
 
 export default {
-  name: 'Fina Wallet',
+  name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.0.0',
+  version: '1.0.3',
   orientation: 'portrait',
+  userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
   plugins: ['@config-plugins/react-native-ble-plx'],
   splash: {
@@ -20,9 +21,11 @@ export default {
   ios: {
     bundleIdentifier: 'com.fina.wallet',
     supportsTablet: true,
+    userInterfaceStyle: 'automatic',
   },
   android: {
     package: 'com.fina.wallet',
+    userInterfaceStyle: 'automatic',
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',

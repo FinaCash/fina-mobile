@@ -1,7 +1,11 @@
 {
   "import wallet": "匯入錢包",
   "create wallet": "建立錢包",
-  "slogan": "建立於Terra技術",
+  "slogan 1": "Terra",
+  "slogan highlight": " DeFi ",
+  "slogan 2": "Wallet On The Go",
+  "new to wallet": "第一次使用加密貨幣錢包？",
+  "already have a wallet": "已有加密貨幣錢包",
   "back": "返回",
   "confirm": "確認",
   "search": "搜尋",

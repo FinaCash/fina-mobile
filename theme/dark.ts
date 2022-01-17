@@ -28,6 +28,7 @@ export default {
     border: '#484c63',
     active: '#ffffff',
     button: '#4361EE',
+    borderButton: '#ffffff',
   },
   gradients: {
     primary: ['#432DD9', '#2FC3FF'],

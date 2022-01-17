@@ -3,13 +3,11 @@ import { Theme } from '../../types/misc'
 export default (theme: Theme) => ({
   container: {
     padding: theme.baseSpace * 12,
-    paddingTop: theme.screenHeight * 0.2,
+    paddingTop: theme.screenHeight * 0.14,
     flex: 1,
-    backgroundColor: theme.palette.background,
   },
   slogan: {
-    alignSelf: 'center',
-    marginTop: 4 * theme.baseSpace,
+    marginTop: 12 * theme.baseSpace,
   },
   logo: {
     alignSelf: 'center',
@@ -20,11 +18,19 @@ export default (theme: Theme) => ({
     marginBottom: theme.baseSpace * 4,
   },
   contentContainer: {
-    marginTop: 36 * theme.baseSpace,
+    marginTop: 16 * theme.baseSpace,
+    backgroundColor: theme.palette.altBackground,
+    flex: 1,
+    margin: theme.baseSpace * -12,
+    marginBottom: theme.baseSpace * -120,
+    padding: theme.baseSpace * 12,
+    borderTopLeftRadius: theme.borderRadius[2],
+    borderTopRightRadius: theme.borderRadius[2],
   },
   phraseInput: {
-    marginTop: 8 * theme.baseSpace,
-    height: theme.baseSpace * 30,
+    height: theme.baseSpace * 36,
+    backgroundColor: theme.palette.background,
+    fontSize: theme.fonts.Large.fontSize,
   },
   securityReminder: {
     marginTop: -4 * theme.baseSpace,
@@ -41,14 +47,20 @@ export default (theme: Theme) => ({
   },
   borderButton: {
     borderWidth: 1,
-    borderColor: theme.palette.button,
+    borderColor: theme.palette.borderButton,
     backgroundColor: 'transparent',
   },
   hdContainer: {
-    marginVertical: 16 * theme.baseSpace,
+    marginBottom: 16 * theme.baseSpace,
   },
   numberInput: {
     width: theme.baseSpace * 16,
     marginHorizontal: theme.baseSpace * 2,
+    backgroundColor: theme.palette.background,
+  },
+  btnDescription: {
+    textAlign: 'center',
+    marginBottom: 4 * theme.baseSpace,
+    color: theme.palette.grey[6],
   },
 })

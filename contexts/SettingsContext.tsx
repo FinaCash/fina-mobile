@@ -45,6 +45,7 @@ const SettingsProvider: React.FC = ({ children }) => {
     'systemDefaultTheme',
     initialState.systemDefaultTheme
   )
+
   const [hideSmallBalance, setHideSmallBalance] = usePersistedState(
     'hideSmallBalance',
     initialState.hideSmallBalance

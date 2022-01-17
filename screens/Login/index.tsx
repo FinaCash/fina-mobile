@@ -16,6 +16,10 @@ import TerraApp from '@terra-money/ledger-terra-js'
 import { deafultHdPath, defaultPrefix } from '../../utils/terraConfig'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { MnemonicKey } from '@terra-money/terra.js'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
+const Logo = require('../../assets/images/logo.png')
+const LogoWhite = require('../../assets/images/logo_white.png')
 
 enum ContentStage {
   Start = 'start',
@@ -92,16 +96,24 @@ const Login: React.FC<LoginProps> = () => {
   return (
     <>
       <StatusBar style={uiTheme === 'light' ? 'dark' : 'light'} />
-      <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
+      <KeyboardAwareScrollView
+        style={{ backgroundColor: theme.palette.background }}
+        contentContainerStyle={styles.container}
+      >
         <View>
-          <Image style={styles.logo} source={require('../../assets/images/logo.png')} />
-          <Typography type="Large" style={styles.slogan}>
-            {t('slogan')}
+          <Image style={styles.logo} source={uiTheme === 'light' ? Logo : LogoWhite} />
+          <Typography type="H2" style={styles.slogan}>
+            {t('slogan 1')}
+            <Typography type="H2" color={theme.palette.lightPrimary}>
+              {t('slogan highlight')}
+            </Typography>
+            {t('slogan 2')}
           </Typography>
         </View>
-        <View>
+        <View style={styles.contentContainer}>
           {stage === ContentStage.Start ? (
-            <View style={styles.contentContainer}>
+            <View>
+              <Typography style={styles.btnDescription}>{t('new to wallet')}</Typography>
               <Button
                 onPress={async () => {
                   setStage(ContentStage.CreateWallet)
@@ -113,11 +125,14 @@ const Login: React.FC<LoginProps> = () => {
               >
                 {t('create wallet')}
               </Button>
+              <Typography style={[styles.btnDescription, { marginTop: theme.baseSpace * 4 }]}>
+                {t('already have a wallet')}
+              </Typography>
               <Button
                 onPress={() => setStage(ContentStage.ImportWallet)}
                 size="Large"
                 style={[styles.button, styles.borderButton]}
-                color={theme.palette.button}
+                color={theme.palette.borderButton}
               >
                 {t('import wallet')}
               </Button>
@@ -127,7 +142,7 @@ const Login: React.FC<LoginProps> = () => {
                 }}
                 size="Large"
                 style={[styles.button, styles.borderButton]}
-                color={theme.palette.button}
+                color={theme.palette.borderButton}
               >
                 {t('connect ledger')}
               </Button>
@@ -144,6 +159,7 @@ const Login: React.FC<LoginProps> = () => {
                 onChangeText={setPhraseInput}
                 editable={stage === ContentStage.ImportWallet}
                 error={error}
+                size="Large"
               />
               <View style={{ height: theme.baseSpace * 8 }} />
               {stage === ContentStage.CreateWallet ? (
@@ -156,7 +172,7 @@ const Login: React.FC<LoginProps> = () => {
                   onPress={back}
                   size="Large"
                   style={[styles.rowButton, styles.borderButton]}
-                  color={theme.palette.button}
+                  color={theme.palette.borderButton}
                 >
                   {t('back')}
                 </Button>
@@ -221,7 +237,7 @@ const Login: React.FC<LoginProps> = () => {
                   onPress={back}
                   size="Large"
                   style={[styles.rowButton, styles.borderButton]}
-                  color={theme.palette.button}
+                  color={theme.palette.borderButton}
                 >
                   {t('back')}
                 </Button>
@@ -248,7 +264,7 @@ const Login: React.FC<LoginProps> = () => {
             </>
           ) : null}
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </>
   )
 }

@@ -1,7 +1,11 @@
 {
   "import wallet": "Import Wallet",
   "create wallet": "Create Wallet",
-  "slogan": "Powered by Terra",
+  "slogan 1": "Terra",
+  "slogan highlight": " DeFi ",
+  "slogan 2": "Wallet On The Go",
+  "new to wallet": "New to crypto wallet?",
+  "already have a wallet": "I already have a wallet",
   "back": "Back",
   "confirm": "Confirm",
   "search": "Search",

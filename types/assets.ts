@@ -89,3 +89,25 @@ export interface Airdrop {
     proof: string
   }[]
 }
+
+export enum FarmType {
+  Long = 'Long',
+  Short = 'Short',
+  Gov = 'Gov',
+}
+
+export interface Farm {
+  symbol: string
+  addresses: {
+    token: string
+    lpToken: string
+    pair: string
+  }
+  rate: {
+    token: number
+    ust: number
+  }
+  apr: {
+    [key in FarmType]: number
+  }
+}
