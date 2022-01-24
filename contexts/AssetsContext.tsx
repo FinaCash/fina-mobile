@@ -27,12 +27,13 @@ import {
   Validator,
   StakingInfo,
   Airdrop,
+  Farm,
 } from '../types/assets'
 import {
   COLLATERAL_DENOMS,
   fabricateAirdropClaim,
-  fabricateTerraswapSwapbLuna,
-  fabricateTerraswapSwapLuna,
+  fabricateExchangeSwapbLuna,
+  fabricateExchangeSwapLuna,
   fabricateTerraswapSwapUSTbETH,
   fabricateTerraswapSwapbEth,
   MARKET_DENOMS,
@@ -59,8 +60,10 @@ import uniqBy from 'lodash/uniqBy'
 
 interface AssetsState {
   availableAssets: AvailableAsset[]
+  availableFarms: Farm[]
   assets: Asset[]
   fetchAvailableAssets(): void
+  fetchFarmInfo(): void
   fetchAssets(): void
   fetchBorrowInfo(): void
   fetchStakingInfo(): void
@@ -168,8 +171,10 @@ interface AssetsState {
 
 const initialState: AssetsState = {
   availableAssets: [],
+  availableFarms: [],
   assets: [],
   fetchAvailableAssets: () => null,
+  fetchFarmInfo: () => null,
   fetchAssets: () => null,
   fetchBorrowInfo: () => null,
   fetchStakingInfo: () => null,
@@ -223,6 +228,10 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [availableCurrencies, setAvailableCurrencies] = usePersistedState<
     { denom: string; price: number }[]
   >('availableCurrencies', initialState.availableCurrencies)
+  const [availableFarms, setAvailableFarms] = usePersistedState<Farm[]>(
+    'availableAssets',
+    initialState.availableFarms
+  )
 
   const assets = React.useMemo(
     () => transformCoinsToAssets(rawAssets, availableAssets, availableCurrencies),
@@ -305,10 +314,10 @@ const AssetsProvider: React.FC = ({ children }) => {
     setAirdrops(airdropsResult)
   }, [address, setAirdrops])
 
-  const fetchFarm = React.useCallback(async () => {
+  const fetchFarmInfo = React.useCallback(async () => {
     const result = await fetchAvailableFarms(address)
-    console.log(result)
-  }, [address, setAirdrops])
+    setAvailableFarms(result)
+  }, [address, setAvailableFarms])
 
   React.useEffect(() => {
     if (address) {
@@ -317,7 +326,7 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchBorrowInfo()
       fetchStakingInfo()
       fetchAirdrops()
-      fetchFarm()
+      fetchFarmInfo()
     }
   }, [address])
 
@@ -335,14 +344,14 @@ const AssetsProvider: React.FC = ({ children }) => {
       let msg
       // Buy Collateral
       if (toDenom.match(/^B/)) {
-        msg = (toDenom === 'BLUNA' ? fabricateTerraswapSwapLuna : fabricateTerraswapSwapUSTbETH)({
+        msg = (toDenom === 'BLUNA' ? fabricateExchangeSwapLuna : fabricateTerraswapSwapUSTbETH)({
           address,
           amount: String(from.amount),
           denom: from.denom,
         })(anchorAddressProvider)[0]
         // Sell Collateral
       } else if (from.denom.match(/^B/)) {
-        msg = (toDenom === 'BLUNA' ? fabricateTerraswapSwapbLuna : fabricateTerraswapSwapbEth)({
+        msg = (toDenom === 'BLUNA' ? fabricateExchangeSwapbLuna : fabricateTerraswapSwapbEth)({
           address,
           amount: String(from.amount),
         })(anchorAddressProvider)[0]
@@ -812,11 +821,13 @@ const AssetsProvider: React.FC = ({ children }) => {
         assets,
         availableAssets,
         availableCurrencies,
+        availableFarms,
         validators,
         borrowInfo,
         stakingInfo,
         airdrops,
         fetchAvailableAssets,
+        fetchFarmInfo,
         fetchAssets,
         fetchBorrowInfo,
         fetchStakingInfo,

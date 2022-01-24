@@ -29,6 +29,11 @@ export interface Asset {
   price: number // In USD
   apr?: number
   autoCompound?: boolean
+  addresses?: {
+    token: string
+    lpToken: string
+    pair: string
+  }
   // Collateral
   provided?: number
   notProvided?: number
@@ -43,6 +48,11 @@ export interface AvailableAsset {
   image: string
   price: number // In USD
   prevPrice: number
+  addresses?: {
+    token: string
+    lpToken: string
+    pair: string
+  }
 }
 
 export interface BorrowInfo {

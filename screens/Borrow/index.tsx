@@ -96,7 +96,10 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
         mode={mode}
         denom={denom}
         amount={Number(amount)}
-        onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+        onConfirm={() => {
+          setIsConfirming(false)
+          getPasswordOrLedgerApp(onSubmit, type)
+        }}
       />
     </>
   )

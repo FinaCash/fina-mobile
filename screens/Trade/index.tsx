@@ -17,7 +17,8 @@ import { getMAssetDetail } from '../../utils/transformAssets'
 const Trade: React.FC = () => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
-  const { availableAssets, assets, fetchAvailableAssets, fetchAssets } = useAssetsContext()
+  const { availableAssets, assets, fetchAvailableAssets, fetchAssets, fetchBorrowInfo } =
+    useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const [search, setSearch] = React.useState('')
   const [loading, setLoading] = React.useState(false)
@@ -52,7 +53,7 @@ const Trade: React.FC = () => {
             refreshing={loading}
             onRefresh={async () => {
               setLoading(true)
-              await Promise.all([fetchAvailableAssets(), fetchAssets()])
+              await Promise.all([fetchAvailableAssets(), fetchAssets(), fetchBorrowInfo()])
               setLoading(false)
             }}
           />

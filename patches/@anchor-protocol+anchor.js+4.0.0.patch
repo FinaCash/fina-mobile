@@ -1,0 +1,309 @@
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js
+index 55fe889..9c63a09 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/addresses.js
+@@ -32,6 +32,7 @@ exports.columbus5 = {
+     airdrop: 'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm',
+     team_vesting: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
+     investor_vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
++    terraswapbethUstPair: 'terra1c0afrdc5253tkp5wt7rxhuj42xwyf2lcre0s7c',
+ };
+ exports.bombay12 = {
+     bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
+@@ -64,5 +65,6 @@ exports.bombay12 = {
+     airdrop: 'terra1u5ywhlve3wugzqslqvm8ks2j0nsvrqjx0mgxpk',
+     investor_vesting: '',
+     team_vesting: '',
++    terraswapbethUstPair: '',
+ };
+ //# sourceMappingURL=addresses.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts
+index b803ff7..c639c2a 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.d.ts
+@@ -30,6 +30,7 @@ export interface AddressMap {
+     airdrop: string;
+     investor_vesting: string;
+     team_vesting: string;
++    terraswapbethUstPair: string;
+ }
+ export declare type AllowedAddressKeys = keyof AddressMap;
+ export declare class AddressProviderFromJson implements AddressProvider {
+@@ -63,4 +64,5 @@ export declare class AddressProviderFromJson implements AddressProvider {
+     airdrop(): string;
+     investorLock(): string;
+     teamLock(): string;
++    terraswapbethUstPair(): string;
+ }
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
+index 749cda6..82687e1 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/address-provider/from-json.js
+@@ -97,6 +97,9 @@ class AddressProviderFromJson {
+     teamLock() {
+         return this.data.team_vesting;
+     }
++    terraswapbethUstPair() {
++        return this.data.terraswapbethUstPair;
++    }
+ }
+ exports.AddressProviderFromJson = AddressProviderFromJson;
+ //# sourceMappingURL=from-json.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.d.ts
+index 357a3ec..a1d4931 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.d.ts
+@@ -4,5 +4,6 @@ export * from './swap-anc';
+ export * from './swap-bluna';
+ export * from './swap-ust';
+ export * from './swap-luna';
++export * from './swap-beth';
+ export * from './withdraw-liquidity-anc';
+ export * from './withdraw-liquidity-bluna';
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.js b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.js
+index 6baa3b8..9467746 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/index.js
+@@ -18,4 +18,5 @@ __exportStar(require("./swap-ust"), exports);
+ __exportStar(require("./swap-luna"), exports);
+ __exportStar(require("./withdraw-liquidity-anc"), exports);
+ __exportStar(require("./withdraw-liquidity-bluna"), exports);
++__exportStar(require("./swap-beth"), exports);
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-beth.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-beth.d.ts
+new file mode 100644
+index 0000000..0b69cfb
+--- /dev/null
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-beth.d.ts
+@@ -0,0 +1,11 @@
++import { MsgExecuteContract } from '@terra-money/terra.js';
++import { AddressProvider } from '../../address-provider/provider';
++interface Option {
++    address: string;
++    amount: string;
++    to?: string;
++    belief_price?: string;
++    max_spread?: string;
++}
++export declare const fabricateTerraswapSwapbEth: ({ address, amount, to, belief_price, max_spread }: Option) => (addressProvider: AddressProvider) => MsgExecuteContract[];
++export {};
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-beth.js b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-beth.js
+new file mode 100644
+index 0000000..b956b71
+--- /dev/null
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-beth.js
+@@ -0,0 +1,34 @@
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.fabricateTerraswapSwapbEth = void 0;
++const terra_js_1 = require("@terra-money/terra.js");
++const validate_input_1 = require("@anchor-protocol/anchor.js/dist/utils/validate-input");
++const address_1 = require("@anchor-protocol/anchor.js/dist/utils/validation/address");
++const number_1 = require("@anchor-protocol/anchor.js/dist/utils/validation/number");
++const create_hook_msg_1 = require("@anchor-protocol/anchor.js/dist/utils/cw20/create-hook-msg");
++const fabricateTerraswapSwapbEth = ({ address, amount, to, belief_price, max_spread }) => (addressProvider) => {
++    (0, validate_input_1.validateInput)([
++        (0, address_1.validateAddress)(address),
++        (0, number_1.validateIsNumber)(amount),
++        (0, number_1.validateIsGreaterThanZero)(amount),
++    ]);
++    const bAssetTokenAddress = addressProvider.bEthToken();
++    const pairAddress = addressProvider.terraswapbethUstPair();
++    return [
++        new terra_js_1.MsgExecuteContract(address, bAssetTokenAddress, {
++            send: {
++                contract: pairAddress,
++                amount: new terra_js_1.Int(new terra_js_1.Dec(amount).mul(1000000)).toString(),
++                msg: (0, create_hook_msg_1.createHookMsg)({
++                    swap: {
++                        belief_price: belief_price,
++                        max_spread: max_spread,
++                        to: to,
++                    },
++                }),
++            },
++        }),
++    ];
++};
++exports.fabricateTerraswapSwapbEth = fabricateTerraswapSwapbEth;
++//# sourceMappingURL=swap-bluna.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.d.ts
+index 7ceb0cb..3b578d6 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.d.ts
+@@ -9,4 +9,5 @@ interface Option {
+     max_spread?: string;
+ }
+ export declare const fabricateExchangeSwapUSTANC: ({ address, amount, to, belief_price, max_spread, denom }: Option) => (addressProvider: AddressProvider) => MsgExecuteContract[];
++export declare const fabricateTerraswapSwapUSTbETH: ({ address, amount, to, belief_price, max_spread, denom }: Option) => (addressProvider: AddressProvider) => MsgExecuteContract[];
+ export {};
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.js b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.js
+index 829d296..f315bf2 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/fabricators/exchange/swap-ust.js
+@@ -34,4 +34,34 @@ const fabricateExchangeSwapUSTANC = ({ address, amount, to, belief_price, max_sp
+     ];
+ };
+ exports.fabricateExchangeSwapUSTANC = fabricateExchangeSwapUSTANC;
++const fabricateTerraswapSwapUSTbETH = ({ address, amount, to, belief_price, max_spread, denom }) => (addressProvider) => {
++        (0, validate_input_1.validateInput)([
++            (0, address_1.validateAddress)(address),
++            (0, number_1.validateIsNumber)(amount),
++            (0, number_1.validateIsGreaterThanZero)(amount),
++        ]);
++        const coins = new terra_js_1.Coins([
++            new terra_js_1.Coin(denom, new terra_js_1.Int(new terra_js_1.Dec(amount).mul(1000000)).toString()),
++        ]);
++        const pairAddress = addressProvider.terraswapbethUstPair();
++        return [
++            new terra_js_1.MsgExecuteContract(address, pairAddress, {
++                swap: {
++                    offer_asset: {
++                        info: {
++                            native_token: {
++                                denom: denom,
++                            },
++                        },
++                        amount: new terra_js_1.Int(new terra_js_1.Dec(amount).mul(1000000)).toString(),
++                    },
++                    belief_price: belief_price,
++                    max_spread: max_spread,
++                    to: to,
++                },
++            }, coins),
++        ];
++    };
++    exports.fabricateTerraswapSwapUSTbETH = fabricateTerraswapSwapUSTbETH;
++    
+ //# sourceMappingURL=swap-ust.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts
+index 0cbec92..f874334 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.d.ts
+@@ -1,11 +1,18 @@
+ import { LCDClient } from '@terra-money/terra.js';
++import { WhitelistResponseElem } from '../../queries';
+ import { AddressProvider, MARKET_DENOMS } from '../../address-provider';
+ import { fabricateMarketBorrow, fabricateMarketRepay, fabricateProvideCollateral, fabricateRedeemCollateral, OmitAddress, OptionType } from '../../fabricators';
+ import { Operation } from '../operation';
+-interface UserCollateral {
+-    collateral: string;
+-    balance: string;
++interface CollateralDetails extends WhitelistResponseElem {
++    price: string
+ }
++export interface UserCollateral {
++    collateral: CollateralDetails;
++    balance: {
++        provided: string
++        notProvided: string
++    };
++    }
+ export declare type BorrowBorrowOption = OmitAddress<OptionType<typeof fabricateMarketBorrow>>;
+ export declare type BorrowRepayOption = OmitAddress<OptionType<typeof fabricateMarketRepay>>;
+ export declare type BorrowProvideCollateralOption = OmitAddress<OptionType<typeof fabricateProvideCollateral>>;
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.js b/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.js
+index a9f9f24..5c50b4b 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/facade/borrow/borrow.js
+@@ -51,17 +51,21 @@ class Borrow {
+     }
+     getCollaterals(getCollateralsOption) {
+         return __awaiter(this, void 0, void 0, function* () {
++            // only bLuna is supported now, and the below requests are only about bLuna
++            const oraclePrice = yield (0, queries_1.queryOraclePrices)({ lcd: this._lcd, limit: 30 })(this._addressProvider);
+             // get user balances of all COLLATERAL_DENOMS
+             const whitelistedCollaterals = yield (0, queries_1.queryOverseerWhitelist)(Object.assign({ lcd: this._lcd }, getCollateralsOption))(this._addressProvider);
+             const collateralDenoms = yield Promise.all(whitelistedCollaterals.elems
+                 .map((whitelist) => __awaiter(this, void 0, void 0, function* () {
+-                const userBalance = yield (0, queries_1.queryCustodyBorrower)(Object.assign(Object.assign({ lcd: this._lcd }, getCollateralsOption), { custody: getCollateralsOption.market }))(this._addressProvider);
+-                if (userBalance.balance === '0') {
+-                    return null;
+-                }
++                const userBalance = yield (0, queries_1.queryCustodyBorrower)(Object.assign(Object.assign({ lcd: this._lcd }, getCollateralsOption), { custody: whitelist.custody_contract }))(this._addressProvider);
++                const notProvided = yield (0, queries_1.queryTokenBalance)(Object.assign(Object.assign({ lcd: this._lcd }, getCollateralsOption), { token_address: whitelist.collateral_token }))(this._addressProvider);
++                const price = oraclePrice.prices.find(p => p.asset === whitelist.collateral_token)
+                 return {
+-                    collateral: whitelist.collateral_token,
+-                    balance: new terra_js_1.Dec(userBalance.balance).toString(),
++                    collateral: {...whitelist, price: price ? price.price : '0'},
++                    balance: {
++                        provided: new terra_js_1.Dec(userBalance.balance).toString(),
++                        notProvided: new terra_js_1.Dec(notProvided.balance).toString(),
++                    }
+                 };
+             }))
+                 .filter(Boolean));
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js b/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
+index cbecd95..dd8ba0e 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
+@@ -37,7 +37,7 @@ class Earn {
+                 address: getTotalDepositOption.address,
+                 token_address: this._addressProvider.aTerra(getTotalDepositOption.market),
+             })(this._addressProvider);
+-            return new terra_js_1.Int(new terra_js_1.Dec(epochState.exchange_rate).mul(userATerraBalance.balance))
++            return new terra_js_1.Dec(new terra_js_1.Dec(epochState.exchange_rate).mul(userATerraBalance.balance))
+                 .div(1000000)
+                 .toString();
+         });
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js b/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js
+index b064bb6..3016503 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js
+@@ -18,7 +18,7 @@ const queryExchangeReverseTokenSimulation = ({ lcd, contractAddr, amount, pair_c
+         reverse_simulation: {
+             ask_asset: {
+                 info: {
+-                    ANC: {
++                    token: {
+                         contract_addr: contractAddr,
+                     },
+                 },
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/simulation.js b/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/simulation.js
+index 5fda3cf..5c23dd8 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/simulation.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/simulation.js
+@@ -18,7 +18,7 @@ const queryExchangeSimulation = ({ lcd, contractAddr, amount, pair_contract_addr
+         simulation: {
+             offer_asset: {
+                 info: {
+-                    ANC: {
++                    token: {
+                         contract_addr: contractAddr,
+                     },
+                 },
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/oracle-prices.js b/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/oracle-prices.js
+index 561ad49..5638cf2 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/oracle-prices.js
++++ b/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/oracle-prices.js
+@@ -18,8 +18,7 @@ const queryOraclePrices = ({ lcd, start_after, limit }) => (addressProvider) =>
+             start_after: start_after,
+             limit: limit,
+         },
+-    })
+-        .then((data) => data.Ok);
++    });
+ });
+ exports.queryOraclePrices = queryOraclePrices;
+ //# sourceMappingURL=oracle-prices.js.map
+\ No newline at end of file
+diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/overseer-whitelist.d.ts b/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/overseer-whitelist.d.ts
+index 04a9b2d..cdd6344 100644
+--- a/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/overseer-whitelist.d.ts
++++ b/node_modules/@anchor-protocol/anchor.js/dist/queries/money-market/overseer-whitelist.d.ts
+@@ -7,7 +7,7 @@ interface Option {
+     start_after?: string;
+     limit?: number;
+ }
+-interface WhitelistResponse {
++export interface WhitelistResponse {
+     elems: WhitelistResponseElem[];
+ }
+ interface WhitelistResponseElem {

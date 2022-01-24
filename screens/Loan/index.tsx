@@ -11,7 +11,6 @@ import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
 import CollateralItem from '../../components/CollateralItem'
 import RewardsItem from '../../components/RewardsItem'
 import ConfirmClaimBorrowRewardsModal from '../../components/ConfirmModals/ConfirmClaimBorrowRewardsModal'
-import { Portal } from '@gorhom/portal'
 import { MARKET_DENOMS } from '@anchor-protocol/anchor.js'
 import { Actions } from 'react-native-router-flux'
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -177,20 +176,18 @@ const Loan: React.FC = () => {
         ) : null}
       </ScrollView>
       {anc ? (
-        <Portal>
-          <ConfirmClaimBorrowRewardsModal
-            open={isClaiming}
-            onClose={() => setIsClaiming(false)}
-            onConfirm={() => {
-              getPasswordOrLedgerApp(onClaim, type)
-              setIsClaiming(false)
-            }}
-            availableAsset={anc}
-            rewards={borrowInfo.pendingRewards}
-            apr={borrowInfo.rewardsRate}
-            denom={MARKET_DENOMS.UUSD}
-          />
-        </Portal>
+        <ConfirmClaimBorrowRewardsModal
+          open={isClaiming}
+          onClose={() => setIsClaiming(false)}
+          onConfirm={() => {
+            getPasswordOrLedgerApp(onClaim, type)
+            setIsClaiming(false)
+          }}
+          availableAsset={anc}
+          rewards={borrowInfo.pendingRewards}
+          apr={borrowInfo.rewardsRate}
+          denom={MARKET_DENOMS.UUSD}
+        />
       ) : null}
     </>
   )

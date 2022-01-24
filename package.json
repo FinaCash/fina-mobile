@@ -13,7 +13,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@anchor-protocol/anchor.js": "^2.0.0",
+    "@anchor-protocol/anchor.js": "^4.0.0",
     "@config-plugins/react-native-ble-plx": "^0.0.2",
     "@expo/react-native-action-sheet": "^3.9.0",
     "@gorhom/portal": "^1.0.11",

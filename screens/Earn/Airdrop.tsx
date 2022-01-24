@@ -7,7 +7,6 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { getTokenAssetDetail } from '../../utils/transformAssets'
 import AssetItem from '../../components/AssetItem'
 import { Airdrop, Asset } from '../../types/assets'
-import { Portal } from '@gorhom/portal'
 import ConfirmClaimAirdropModal from '../../components/ConfirmModals/ConfirmClaimAirdropModal'
 import { Actions } from 'react-native-router-flux'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
@@ -86,17 +85,15 @@ const AirdropTab: React.FC = () => {
           </View>
         }
       />
-      <Portal>
-        <ConfirmClaimAirdropModal
-          open={!!claimingAirdrops.length}
-          onClose={() => setClaimingAirdrops([])}
-          airdrops={claimingAirdrops}
-          onConfirm={() => {
-            getPasswordOrLedgerApp(onClaim, type)
-            setClaimingAirdrops([])
-          }}
-        />
-      </Portal>
+      <ConfirmClaimAirdropModal
+        open={!!claimingAirdrops.length}
+        onClose={() => setClaimingAirdrops([])}
+        airdrops={claimingAirdrops}
+        onConfirm={() => {
+          getPasswordOrLedgerApp(onClaim, type)
+          setClaimingAirdrops([])
+        }}
+      />
     </>
   )
 }

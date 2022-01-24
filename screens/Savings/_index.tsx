@@ -152,7 +152,10 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
           mode={mode}
           apr={apr}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+          onConfirm={() => {
+            setIsConfirming(false)
+            getPasswordOrLedgerApp(onSubmit, type)
+          }}
         />
       ) : null}
     </>

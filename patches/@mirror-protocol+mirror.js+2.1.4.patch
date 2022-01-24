@@ -1,0 +1,15 @@
+diff --git a/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js b/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js
+index 9514866..e094fe1 100644
+--- a/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js
++++ b/node_modules/@mirror-protocol/mirror.js/dist/client/Mirror.js
+@@ -45,8 +45,8 @@ exports.DEFAULT_MIRROR_OPTIONS = {
+             symbol: 'MIR',
+             name: 'Mirror',
+             token: 'terra15gwkyepfc6xgca5t5zefzwy42uts8l2m4g40k6',
+-            pair: 'terra1amv303y8kzxuegvurh0gug2xe9wkgj65enq2ux',
+-            lpToken: 'terra17gjf2zehfvnyjtdgua9p9ygquk6gukxe7ucgwh'
++            pair: 'terra143xxfw5xf62d5m32k3t4eu9s82ccw80lcprzl9',
++            lpToken: 'terra17trxzqjetl0q6xxep0s2w743dhw2cay0x47puc'
+         },
+         mAAPL: {
+             symbol: 'mAAPL',

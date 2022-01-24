@@ -16,7 +16,6 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 import StakingItem from '../../components/StakingItem'
 import Button from '../../components/Button'
 import ConfirmClaimStakingRewardsModal from '../../components/ConfirmModals/ConfirmClaimStakingRewardsModal'
-import { Portal } from '@gorhom/portal'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import TerraApp from '@terra-money/ledger-terra-js'
@@ -237,20 +236,18 @@ const Stake: React.FC = () => {
         )}
       />
       {lunaAvailableAsset ? (
-        <Portal>
-          <ConfirmClaimStakingRewardsModal
-            open={claimingRewards}
-            onClose={() => setClaimingRewards(false)}
-            availableAsset={lunaAvailableAsset}
-            totalRewards={stakingInfo.totalRewards}
-            rewards={stakingInfo.rewards}
-            apr={stakingInfo.stakingApr}
-            onConfirm={() => {
-              getPasswordOrLedgerApp(onClaim, type)
-              setClaimingRewards(false)
-            }}
-          />
-        </Portal>
+        <ConfirmClaimStakingRewardsModal
+          open={claimingRewards}
+          onClose={() => setClaimingRewards(false)}
+          availableAsset={lunaAvailableAsset}
+          totalRewards={stakingInfo.totalRewards}
+          rewards={stakingInfo.rewards}
+          apr={stakingInfo.stakingApr}
+          onConfirm={() => {
+            getPasswordOrLedgerApp(onClaim, type)
+            setClaimingRewards(false)
+          }}
+        />
       ) : null}
     </>
   )

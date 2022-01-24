@@ -156,7 +156,10 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
           amount={Number(amount)}
           fromValidator={validator}
           toValidator={toValidator}
-          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+          onConfirm={() => {
+            setConfirmRedelegationModalOpen(false)
+            getPasswordOrLedgerApp(onSubmit, type)
+          }}
         />
       ) : null}
     </>

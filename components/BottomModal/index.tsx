@@ -5,6 +5,7 @@ import CloseIcon from '../../assets/images/icons/close.svg'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import Typography from '../Typography'
+import { Portal } from '@gorhom/portal'
 
 interface BottomModalProps extends ModalizeProps {
   title: string
@@ -42,31 +43,37 @@ const BottomModal: React.FC<BottomModalProps> = ({
   )
 
   return flatListProps || sectionListProps ? (
-    <Modalize
-      ref={modalizeRef}
-      modalStyle={styles.modal}
-      withHandle={false}
-      onClosed={onClose}
-      useNativeDriver
-      flatListProps={flatListProps ? { ListHeaderComponent: header, ...flatListProps } : undefined}
-      sectionListProps={
-        sectionListProps ? { ListHeaderComponent: header, ...sectionListProps } : undefined
-      }
-      {...props}
-    />
+    <Portal>
+      <Modalize
+        ref={modalizeRef}
+        modalStyle={styles.modal}
+        withHandle={false}
+        onClosed={onClose}
+        useNativeDriver
+        flatListProps={
+          flatListProps ? { ListHeaderComponent: header, ...flatListProps } : undefined
+        }
+        sectionListProps={
+          sectionListProps ? { ListHeaderComponent: header, ...sectionListProps } : undefined
+        }
+        {...props}
+      />
+    </Portal>
   ) : (
-    <Modalize
-      ref={modalizeRef}
-      modalStyle={styles.modal}
-      withHandle={false}
-      scrollViewProps={{ scrollEnabled: false }}
-      onClosed={onClose}
-      useNativeDriver
-      {...props}
-    >
-      {header}
-      {children}
-    </Modalize>
+    <Portal>
+      <Modalize
+        ref={modalizeRef}
+        modalStyle={styles.modal}
+        withHandle={false}
+        scrollViewProps={{ scrollEnabled: false }}
+        onClosed={onClose}
+        useNativeDriver
+        {...props}
+      >
+        {header}
+        {children}
+      </Modalize>
+    </Portal>
   )
 }
 

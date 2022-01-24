@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@anchor-protocol/anchor.js@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@anchor-protocol/anchor.js/-/anchor.js-2.0.0.tgz#91f1d84d16ee2168b38053e3cf5e873d2d24037c"
-  integrity sha512-bfPU5NaMoMgFCMXZ7xAYsPa/uFrH++4k6AIDpTaEFN69ye+qx+UqqjI0lcs8IEEwon0q1SgMkN9SK7W2kPtWDQ==
+"@anchor-protocol/anchor.js@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@anchor-protocol/anchor.js/-/anchor.js-4.0.0.tgz#6b817c047067c2bcfcab1d5ae29ffd7688c7147c"
+  integrity sha512-6a5KfJgXZWvGdu2SC7iH/kpHf3M2+lu8cvJ5W7qZIHZp9svE1Fnrfj1srb7ahTd0cBDkNpWEQ5hty3RVXWu1qw==
 
 "@babel/code-frame@7.10.4", "@babel/code-frame@~7.10.4":
   version "7.10.4"

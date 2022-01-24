@@ -100,7 +100,10 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
       <ConfirmCollateralModal
         open={isConfirming}
         onClose={() => setIsConfirming(false)}
-        onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+        onConfirm={() => {
+          setIsConfirming(false)
+          getPasswordOrLedgerApp(onSubmit, type)
+        }}
         availableAsset={availableAsset}
         amount={Number(amount)}
         mode={mode}

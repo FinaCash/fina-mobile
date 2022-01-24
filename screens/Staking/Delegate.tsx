@@ -150,7 +150,10 @@ const Delegate: React.FC<DelegateProps> = () => {
           onClose={() => setConfirmDelegationModalOpen(false)}
           amount={Number(amount)}
           validator={validator}
-          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+          onConfirm={() => {
+            setConfirmDelegationModalOpen(false)
+            getPasswordOrLedgerApp(onSubmit, type)
+          }}
         />
       ) : null}
     </>

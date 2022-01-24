@@ -96,7 +96,10 @@ const Undelegate: React.FC<UndelegateProps> = ({ validator, amount: totalAmount 
           onClose={() => setConfirmUndelegationModalOpen(false)}
           amount={Number(amount)}
           validator={validator}
-          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+          onConfirm={() => {
+            setConfirmUndelegationModalOpen(false)
+            getPasswordOrLedgerApp(onSubmit, type)
+          }}
         />
       ) : null}
     </>

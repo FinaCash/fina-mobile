@@ -1,13 +1,13 @@
 import React from 'react'
-import { Keyboard, ScrollView, View } from 'react-native'
+import { Keyboard, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import {
-  queryTerraswapNativeSimulation,
-  queryTerraswapReverseNativeSimulation,
-  queryTerraswapSimulation,
-  queryTerraswapReverseTokenSimulation,
-} from '@anchor-protocol/anchor.js/dist/queries/terraswap'
+  queryExchangeNativeSimulation,
+  queryExchangeReverseNativeSimulation,
+  queryExchangeSimulation,
+  queryExchangeReverseTokenSimulation,
+} from '@anchor-protocol/anchor.js/dist/queries/exchange'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Asset, AssetTypes, AvailableAsset } from '../../types/assets'
@@ -85,8 +85,8 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
         // LUNA
         if ((defaultSymbol || asset.symbol) === 'LUNA') {
           rate = await (which === 'from'
-            ? queryTerraswapNativeSimulation
-            : queryTerraswapReverseNativeSimulation)({
+            ? queryExchangeNativeSimulation
+            : queryExchangeReverseNativeSimulation)({
             lcd: terraLCDClient as any,
             pair_contract_address: terraUstPairContract,
             denom: isUstBase ? currentAsset.coin.denom : 'uluna',
@@ -100,10 +100,10 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           let pairContract = ''
           let contract = ''
           if ((defaultSymbol || asset.symbol) === 'ANC') {
-            pairContract = anchorAddressProvider.terraswapAncUstPair()
+            pairContract = anchorAddressProvider.ancUstPair()
             contract = anchorAddressProvider.ANC()
           } else if ((defaultSymbol || asset.symbol) === 'BLUNA') {
-            pairContract = anchorAddressProvider.terraswapblunaLunaPair()
+            pairContract = anchorAddressProvider.bLunaLunaPair()
             contract = anchorAddressProvider.bLunaToken()
           } else if ((defaultSymbol || asset.symbol) === 'BETH') {
             pairContract = anchorAddressProvider.terraswapbethUstPair()
@@ -111,8 +111,8 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           }
           if (isUstBase) {
             rate = await (which === 'from'
-              ? queryTerraswapNativeSimulation
-              : queryTerraswapReverseNativeSimulation)({
+              ? queryExchangeNativeSimulation
+              : queryExchangeReverseNativeSimulation)({
               lcd: terraLCDClient as any,
               pair_contract_address: pairContract,
               denom: currentAsset.coin.denom,
@@ -120,8 +120,8 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
             })(anchorAddressProvider)
           } else {
             rate = await (which === 'from'
-              ? queryTerraswapSimulation
-              : queryTerraswapReverseTokenSimulation)({
+              ? queryExchangeSimulation
+              : queryExchangeReverseTokenSimulation)({
               lcd: terraLCDClient as any,
               pair_contract_address: pairContract,
               contractAddr: contract,
@@ -331,7 +331,10 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           from={fromAsset as any}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+          onConfirm={() => {
+            setIsConfirming(false)
+            getPasswordOrLedgerApp(onSubmit, type)
+          }}
         />
       ) : null}
     </>

@@ -205,7 +205,10 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
           from={fromAssetWithAmount}
           to={toAsset}
           onClose={() => setIsConfirming(false)}
-          onConfirm={() => getPasswordOrLedgerApp(onSubmit, type)}
+          onConfirm={() => {
+            setIsConfirming(false)
+            getPasswordOrLedgerApp(onSubmit, type)
+          }}
         />
       ) : null}
     </>
