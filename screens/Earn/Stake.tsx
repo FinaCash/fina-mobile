@@ -183,14 +183,15 @@ const Stake: React.FC = () => {
         ListHeaderComponent={
           <>
             <StatCard
-              title={t('staking apr')}
+              title={luna[0].symbol + ' ' + t('staking apr')}
               value={formatPercentage(stakingInfo.stakingApr, 2)}
+              valueColor={theme.palette.green}
               mb={0}
             />
             <View style={styles.buttonsRow}>
               <StatCard
                 title={t('total delegated')}
-                value={formatCurrency(totalDelegated, luna[0].symbol) + ' ' + luna[0].symbol}
+                value={formatCurrency(totalDelegated, luna[0].symbol)}
                 mr={2}
               >
                 <Typography type="Small" color={theme.palette.grey[7]}>
@@ -201,20 +202,24 @@ const Stake: React.FC = () => {
                 title={t('pending rewards')}
                 value={formatCurrency(stakingInfo.totalRewards * currencyRate, currency, true)}
                 ml={2}
-              />
+              >
+                <Typography type="Small" color={theme.palette.grey[7]}>
+                  {stakingInfo.rewards.length + ' ' + t('tokens')}
+                </Typography>
+              </StatCard>
             </View>
             <View style={styles.buttonsRow}>
               <Button
                 disabled={Number(luna[0].coin.amount) === 0}
                 icon={<EarnIcon fill={theme.palette.white} />}
-                style={styles.stakingButton}
+                style={[styles.stakingButton, { marginRight: 2 * theme.baseSpace }]}
                 onPress={() => Actions.Delegate()}
               >
                 {t('delegate')}
               </Button>
               <Button
                 icon={<ReceiveIcon fill={theme.palette.white} />}
-                style={styles.stakingButton}
+                style={[styles.stakingButton, { marginLeft: 2 * theme.baseSpace }]}
                 onPress={() => setClaimingRewards(true)}
               >
                 {t('claim')}

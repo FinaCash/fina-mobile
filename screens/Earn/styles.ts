@@ -39,7 +39,7 @@ export default (theme: Theme) => ({
   },
   stakingButton: {
     flex: 1,
-    marginHorizontal: theme.baseSpace * 8,
+    marginHorizontal: theme.baseSpace * 4,
     marginBottom: theme.baseSpace * 2,
   },
   centered: {

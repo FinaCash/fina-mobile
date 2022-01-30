@@ -7,13 +7,23 @@ import Typography from '../Typography'
 interface StarCardProps {
   title: string
   value: string
+  valueColor?: string
   ml?: number
   mr?: number
   mt?: number
   mb?: number
 }
 
-const StarCard: React.FC<StarCardProps> = ({ title, value, children, ml, mr, mt, mb }) => {
+const StarCard: React.FC<StarCardProps> = ({
+  title,
+  value,
+  valueColor,
+  children,
+  ml,
+  mr,
+  mt,
+  mb,
+}) => {
   const { styles, theme } = useStyles(getStyles)
 
   return (
@@ -29,7 +39,9 @@ const StarCard: React.FC<StarCardProps> = ({ title, value, children, ml, mr, mt,
       <Typography style={styles.title} type="Small" color={theme.palette.grey[7]}>
         {title}
       </Typography>
-      <Typography type="H4">{value}</Typography>
+      <Typography type="H4" style={valueColor ? { color: valueColor } : {}}>
+        {value}
+      </Typography>
       {children}
     </View>
   )
