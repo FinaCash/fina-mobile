@@ -13,6 +13,7 @@ import { Coin, Int } from '@terra-money/terra.js'
 import get from 'lodash/get'
 import flatten from 'lodash/flatten'
 import last from 'lodash/last'
+import keyBy from 'lodash/keyBy'
 import {
   Airdrop,
   AssetTypes,
@@ -27,10 +28,12 @@ import {
   anchorAirdropApiUrl,
   anchorApiUrl,
   anchorClient,
+  astroportGeneratorContract,
   colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
   terraFCDUrl,
+  terraHiveUrl,
   terraLCDClient,
   terraMantleUrl,
 } from './terraConfig'
@@ -376,7 +379,7 @@ export const fetchClaimableAirdrops = async (address: string): Promise<Airdrop[]
   return airdrops
 }
 
-export const fetchAvailableFarms = async (address: string): Promise<Farm[]> => {
+export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
   const {
     data: { assets },
   } = await fetch(mirrorGraphqlUrl, {
@@ -409,20 +412,168 @@ export const fetchAvailableFarms = async (address: string): Promise<Farm[]> => {
         `,
     }),
   }).then((r) => r.json())
-  return assets.map((a: any) => ({
-    symbol: a.symbol,
-    addresses: {
-      token: a.token,
-      lpToken: a.lpToken,
-      pair: a.pair,
+  const {
+    data: {
+      WasmContractsContractAddressStore: { Result: rewardsResult },
     },
-    rate: {
-      token: Number(a.positions.pool) / Number(a.positions.lpShares),
-      ust: Number(a.positions.uusdPool) / Number(a.positions.lpShares),
+  } = await fetch(`${terraMantleUrl}?stakingRewardInfo`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
     },
-    apr: {
-      [FarmType.Long]: Number(a.statistic.apr.long),
-      [FarmType.Short]: Number(a.statistic.apr.short),
+    body: JSON.stringify({
+      query: `
+        query WasmContractsContractAddressStore($contract: String, $msg: String) {
+          WasmContractsContractAddressStore(
+            ContractAddress: $contract
+            QueryMsg: $msg
+          ) {
+            Height
+            Result
+          }
+        }
+      `,
+      variables: {
+        contract: mirrorOptions.staking,
+        msg: JSON.stringify({
+          reward_info: {
+            staker_addr: address,
+          },
+        }),
+      },
+    }),
+  }).then((r) => r.json())
+  const {
+    data: {
+      [mirrorOptions.assets.MIR.lpToken]: { contractQuery: mirLongRewards },
     },
-  }))
+  } = await fetch(terraHiveUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        {
+          ${mirrorOptions.assets.MIR.lpToken}: wasm {
+            contractQuery(
+              contractAddress: "${astroportGeneratorContract}"
+              query: {
+                pending_token: {
+                  lp_token: "${mirrorOptions.assets.MIR.lpToken}"
+                  user: "${address}"
+                }
+              }
+            )
+          }
+        }
+      `,
+    }),
+  }).then((r) => r.json())
+  const {
+    data: {
+      [mirrorOptions.assets.MIR.lpToken]: { contractQuery: mirLongBalance },
+      [mirrorOptions.assets.MIR.pair]: { contractQuery: mirPool },
+    },
+  } = await fetch(terraHiveUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        {
+          ${mirrorOptions.assets.MIR.lpToken}: wasm {
+            contractQuery(
+              contractAddress: "${astroportGeneratorContract}"
+              query: {
+                deposit: {
+                  lp_token: "${mirrorOptions.assets.MIR.lpToken}"
+                  user: "${address}"
+                }
+              }
+            )
+          }
+          ${mirrorOptions.assets.MIR.pair}: wasm {
+            contractQuery(
+              contractAddress: "${mirrorOptions.assets.MIR.pair}"
+              query: {
+                pool: { }
+              }
+            )
+          }
+        }
+      `,
+    }),
+  }).then((r) => r.json())
+
+  console.log(mirPool)
+
+  const rewardsInfo = keyBy(JSON.parse(rewardsResult).reward_infos, 'asset_token')
+
+  const sortedMAssets = assets
+    .filter((a: any) => a.symbol !== 'MIR')
+    .sort((a: any, b: any) => (a.symbol > b.symbol ? 1 : -1))
+  return [
+    ...assets
+      .filter((a: any) => a.symbol === 'MIR')
+      .map((a: any) => ({
+        type: FarmType.Long,
+        symbol: a.symbol,
+        addresses: {
+          token: a.token,
+          lpToken: a.lpToken,
+          pair: a.pair,
+        },
+        rate: {
+          token:
+            Number(get(mirPool, ['assets', 0, 'amount'], 0)) /
+            Number(get(mirPool, 'total_share', 1)),
+          ust:
+            Number(get(mirPool, ['assets', 1, 'amount'], 0)) /
+            Number(get(mirPool, 'total_share', 1)),
+        },
+        apr: Number(a.statistic.apr.long),
+        balance: Number(mirLongBalance),
+        rewards: [
+          { denom: 'MIR', amount: Number(mirLongRewards.pending) },
+          // { denom: 'ASTRO', amount: Number(mirLongRewards.pending_on_proxy) },
+        ],
+      })),
+    ...sortedMAssets.map((a: any) => ({
+      type: FarmType.Long,
+      symbol: a.symbol,
+      addresses: {
+        token: a.token,
+        lpToken: a.lpToken,
+        pair: a.pair,
+      },
+      rate: {
+        token: Number(a.positions.pool) / Number(a.positions.lpShares),
+        ust: Number(a.positions.uusdPool) / Number(a.positions.lpShares),
+      },
+      apr: Number(a.statistic.apr.long),
+      balance: Number(get(rewardsInfo, [a.token, 'bond_amount'], 0)),
+      rewards: [get(rewardsInfo, [a.token, 'pending_reward'], 0)]
+        .filter((a: any) => a > 0)
+        .map((amount) => ({ amount, denom: 'MIR' })),
+    })),
+    ...sortedMAssets.map((a: any) => ({
+      type: FarmType.Short,
+      symbol: a.symbol,
+      addresses: {
+        token: a.token,
+        lpToken: a.lpToken,
+        pair: a.pair,
+      },
+      rate: {
+        token: 1,
+        ust: 0,
+      },
+      apr: Number(a.statistic.apr.short),
+      // TODO
+      balance: 0,
+      rewards: [],
+    })),
+  ]
 }

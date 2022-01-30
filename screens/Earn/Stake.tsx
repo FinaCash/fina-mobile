@@ -20,6 +20,7 @@ import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { Actions } from 'react-native-router-flux'
+import StatCard from '../../components/StatCard'
 
 const Stake: React.FC = () => {
   const { t } = useLocalesContext()
@@ -181,32 +182,26 @@ const Stake: React.FC = () => {
         stickySectionHeadersEnabled={false}
         ListHeaderComponent={
           <>
-            <View style={styles.splitRow}>
-              <View style={styles.centered}>
-                <Typography type="Small" color={theme.palette.grey[7]}>
-                  {t('staking apr')}
-                </Typography>
-                <Typography color={theme.palette.green} type="H4">
-                  {formatPercentage(stakingInfo.stakingApr, 2)}
-                </Typography>
-              </View>
-              <View style={styles.centered}>
-                <Typography type="Small" color={theme.palette.grey[7]}>
-                  {t('total delegated')}
-                </Typography>
-                <Typography type="H4">{formatCurrency(totalDelegated, luna[0].symbol)}</Typography>
+            <StatCard
+              title={t('staking apr')}
+              value={formatPercentage(stakingInfo.stakingApr, 2)}
+              mb={0}
+            />
+            <View style={styles.buttonsRow}>
+              <StatCard
+                title={t('total delegated')}
+                value={formatCurrency(totalDelegated, luna[0].symbol) + ' ' + luna[0].symbol}
+                mr={2}
+              >
                 <Typography type="Small" color={theme.palette.grey[7]}>
                   {formatCurrency(totalDelegated * luna[0].price * currencyRate, currency, true)}
                 </Typography>
-              </View>
-              <View style={styles.centered}>
-                <Typography type="Small" color={theme.palette.grey[7]}>
-                  {t('pending rewards')}
-                </Typography>
-                <Typography type="H4">
-                  {formatCurrency(stakingInfo.totalRewards * currencyRate, currency, true)}
-                </Typography>
-              </View>
+              </StatCard>
+              <StatCard
+                title={t('pending rewards')}
+                value={formatCurrency(stakingInfo.totalRewards * currencyRate, currency, true)}
+                ml={2}
+              />
             </View>
             <View style={styles.buttonsRow}>
               <Button

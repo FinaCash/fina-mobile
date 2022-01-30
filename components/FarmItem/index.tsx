@@ -2,20 +2,25 @@ import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import { FontAwesome as Icon } from '@expo/vector-icons'
 import useStyles from '../../theme/useStyles'
-import { AvailableAsset } from '../../types/assets'
+import { AvailableAsset, FarmType } from '../../types/assets'
 import { formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
+import { getCurrentAssetDetail } from '../../utils/transformAssets'
 
 export interface FarmItemProps extends TouchableOpacityProps {
   asset: AvailableAsset
-  asset2?: AvailableAsset
+  farmType: FarmType
   apr: number
   hideBorder?: boolean
 }
 
-const FarmItem: React.FC<FarmItemProps> = ({ asset, asset2, apr, hideBorder, ...props }) => {
+const FarmItem: React.FC<FarmItemProps> = ({ asset, farmType, apr, hideBorder, ...props }) => {
   const { styles, theme } = useStyles(getStyles)
+  const ust =
+    farmType === FarmType.Long
+      ? getCurrentAssetDetail({ denom: 'uusd', amount: '0' }, 1)
+      : undefined
 
   return (
     <TouchableOpacity {...props}>
@@ -23,10 +28,11 @@ const FarmItem: React.FC<FarmItemProps> = ({ asset, asset2, apr, hideBorder, ...
         <View style={styles.topContainer}>
           <View style={styles.row}>
             <Image source={{ uri: asset.image }} style={styles.avatar} />
-            {asset2 ? <Image source={{ uri: asset2.image }} style={styles.avatar} /> : null}
+            {ust ? <Image source={{ uri: ust.image }} style={styles.avatar} /> : null}
             <View>
               <Typography style={styles.gutterBottom} type="H6">
                 {asset.symbol}
+                {ust ? ` + ${ust.symbol}` : ''}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
                 {asset.name}

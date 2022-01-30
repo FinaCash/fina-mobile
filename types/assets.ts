@@ -101,12 +101,13 @@ export interface Airdrop {
 }
 
 export enum FarmType {
-  Long = 'Long',
-  Short = 'Short',
-  Gov = 'Gov',
+  Long = 'long farm',
+  Short = 'short farm',
+  Gov = 'gov staking',
 }
 
 export interface Farm {
+  type: FarmType
   symbol: string
   addresses: {
     token: string
@@ -117,7 +118,7 @@ export interface Farm {
     token: number
     ust: number
   }
-  apr: {
-    [key in FarmType]: number
-  }
+  apr: number
+  balance: number
+  rewards: { amount: number; denom: string }[]
 }

@@ -91,7 +91,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
                     )
                   }
                 >
-                  <Typography bold color={theme.palette.secondary}>
+                  <Typography bold color={theme.palette.lightPrimary}>
                     {t('max')}
                   </Typography>
                 </TouchableOpacity>

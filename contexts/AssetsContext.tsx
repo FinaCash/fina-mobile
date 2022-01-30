@@ -49,7 +49,7 @@ import {
   fetchAvailableMirrorAssets,
   fetchMirrorBalance,
   fetchLunaStakingInfo,
-  fetchAvailableFarms,
+  fetchFarmingInfo,
 } from '../utils/fetches'
 import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
@@ -60,7 +60,6 @@ import uniqBy from 'lodash/uniqBy'
 
 interface AssetsState {
   availableAssets: AvailableAsset[]
-  availableFarms: Farm[]
   assets: Asset[]
   fetchAvailableAssets(): void
   fetchFarmInfo(): void
@@ -69,6 +68,7 @@ interface AssetsState {
   fetchStakingInfo(): void
   fetchAirdrops(): void
   availableCurrencies: { denom: string; price: number; hidden?: boolean }[]
+  farmInfo: Farm[]
   borrowInfo: BorrowInfo
   stakingInfo: StakingInfo
   validators: Validator[]
@@ -171,7 +171,6 @@ interface AssetsState {
 
 const initialState: AssetsState = {
   availableAssets: [],
-  availableFarms: [],
   assets: [],
   fetchAvailableAssets: () => null,
   fetchFarmInfo: () => null,
@@ -196,6 +195,7 @@ const initialState: AssetsState = {
     totalRewards: 0,
     stakingApr: 0,
   },
+  farmInfo: [],
   validators: [],
   airdrops: [],
   swap: () => null,
@@ -228,10 +228,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [availableCurrencies, setAvailableCurrencies] = usePersistedState<
     { denom: string; price: number }[]
   >('availableCurrencies', initialState.availableCurrencies)
-  const [availableFarms, setAvailableFarms] = usePersistedState<Farm[]>(
-    'availableAssets',
-    initialState.availableFarms
-  )
+  const [farmInfo, setFarmInfo] = usePersistedState<Farm[]>('farmInfo', initialState.farmInfo)
 
   const assets = React.useMemo(
     () => transformCoinsToAssets(rawAssets, availableAssets, availableCurrencies),
@@ -315,9 +312,9 @@ const AssetsProvider: React.FC = ({ children }) => {
   }, [address, setAirdrops])
 
   const fetchFarmInfo = React.useCallback(async () => {
-    const result = await fetchAvailableFarms(address)
-    setAvailableFarms(result)
-  }, [address, setAvailableFarms])
+    const result = await fetchFarmingInfo(address)
+    setFarmInfo(result)
+  }, [address, setFarmInfo])
 
   React.useEffect(() => {
     if (address) {
@@ -821,7 +818,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         assets,
         availableAssets,
         availableCurrencies,
-        availableFarms,
+        farmInfo,
         validators,
         borrowInfo,
         stakingInfo,

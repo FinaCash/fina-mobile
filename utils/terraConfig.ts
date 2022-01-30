@@ -19,7 +19,8 @@ export const terraLCDClient = new LCDClient({
 })
 
 export const terraFCDUrl = 'https://fcd.terra.dev'
-
+export const terraHiveUrl = 'https://hive.terra.dev/graphql' // Astroport
+export const astroportGeneratorContract = 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9'
 export const terraUstPairContract = 'terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552'
 
 export const supportedTokens = {

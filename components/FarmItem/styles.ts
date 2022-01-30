@@ -23,7 +23,7 @@ export default (theme: Theme) => ({
     width: theme.baseSpace * 10,
     height: theme.baseSpace * 10,
     borderRadius: theme.baseSpace * 4,
-    marginRight: theme.baseSpace * 6,
+    marginRight: theme.baseSpace * 4,
   },
   badge: {
     paddingHorizontal: 1.5 * theme.baseSpace,

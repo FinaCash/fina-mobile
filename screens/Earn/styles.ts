@@ -17,6 +17,7 @@ export default (theme: Theme) => ({
   },
   list: {
     backgroundColor: theme.palette.background,
+    flex: 1,
   },
   titleContainer: {
     marginHorizontal: 4 * theme.baseSpace,
@@ -33,12 +34,6 @@ export default (theme: Theme) => ({
     paddingHorizontal: 4 * theme.baseSpace,
     paddingTop: 4 * theme.baseSpace,
   },
-  splitRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    margin: 4 * theme.baseSpace,
-    marginTop: 6 * theme.baseSpace,
-  },
   buttonsRow: {
     flexDirection: 'row',
   },
@@ -52,5 +47,15 @@ export default (theme: Theme) => ({
   },
   margin: {
     margin: 4 * theme.baseSpace,
+  },
+  tabButton: {
+    marginHorizontal: 2 * theme.baseSpace,
+    width: '25%',
+  },
+  farmTabs: {
+    paddingLeft: 2 * theme.baseSpace,
+    marginVertical: 2 * theme.baseSpace,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
 })
