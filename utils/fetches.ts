@@ -537,7 +537,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
         balance: Number(mirLongBalance),
         rewards: [
           { denom: 'MIR', amount: Number(mirLongRewards.pending) },
-          // { denom: 'ASTRO', amount: Number(mirLongRewards.pending_on_proxy) },
+          { denom: 'ASTRO', amount: Number(mirLongRewards.pending_on_proxy) },
         ],
       })),
     ...sortedMAssets.map((a: any) => ({
@@ -556,7 +556,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
       balance: Number(get(rewardsInfo, [a.token, 'bond_amount'], 0)),
       rewards: [get(rewardsInfo, [a.token, 'pending_reward'], 0)]
         .filter((a: any) => a > 0)
-        .map((amount) => ({ amount, denom: 'MIR' })),
+        .map((a) => ({ amount: Number(a), denom: 'MIR' })),
     })),
     ...sortedMAssets.map((a: any) => ({
       type: FarmType.Short,

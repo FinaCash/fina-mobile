@@ -164,5 +164,7 @@
   "long farm": "Long Farm",
   "short farm": "Short Farm",
   "gov staking": "Gov Staking",
-  "total farm assets": "Total Farm Assets"
+  "total farm assets": "Total Farm Assets",
+  "my farm": "My {{farm}}",
+  "assets": "Assets"
 }

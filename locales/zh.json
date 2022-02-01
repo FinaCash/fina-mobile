@@ -164,5 +164,7 @@
   "long farm": "流量供應",
   "short farm": "做空農場",
   "gov staking": "治理質押",
-  "total farm assets": "總農場資產"
+  "total farm assets": "總農場資產",
+  "my farm": "我的{{farm}}",
+  "assets": "資產"
 }

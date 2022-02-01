@@ -58,4 +58,14 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    paddingHorizontal: 2 * theme.baseSpace,
+    marginHorizontal: 4 * theme.baseSpace,
+    borderBottomWidth: 1,
+    borderColor: theme.palette.border,
+    justifyContent: 'space-between',
+    paddingTop: 2 * theme.baseSpace,
+    paddingBottom: theme.baseSpace,
+  },
 })

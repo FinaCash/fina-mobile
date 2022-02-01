@@ -12,6 +12,8 @@ import Button from '../../components/Button'
 import StatCard from '../../components/StatCard'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import Typography from '../../components/Typography'
+import MyFarmItem from '../../components/MyFarmItem'
 
 const FarmTab: React.FC = () => {
   const { t } = useLocalesContext()
@@ -50,6 +52,22 @@ const FarmTab: React.FC = () => {
     [farmInfo, availableAssetsMap]
   )
 
+  const totalRewardTokens = React.useMemo(() => {
+    const tokens: { [denom: string]: number } = {}
+    farmInfo.forEach((farm) =>
+      farm.rewards.forEach((r) => {
+        if (tokens[r.denom]) {
+          tokens[r.denom] += r.amount
+        } else {
+          tokens[r.denom] = r.amount
+        }
+      })
+    )
+    return Object.keys(tokens).map((denom) => ({ denom, amount: tokens[denom] }))
+  }, [farmInfo])
+
+  const myFarms = farmInfo.filter((f) => f.type === farmType && f.balance > 0)
+
   return (
     <FlatList
       style={styles.list}
@@ -78,7 +96,13 @@ const FarmTab: React.FC = () => {
               title={t('pending rewards')}
               value={formatCurrency(totalRewards * currencyRate, currency, true)}
               ml={2}
-            />
+            >
+              <Typography type="Small" color={theme.palette.grey[7]}>
+                {totalRewardTokens
+                  .map((token) => formatCurrency(token.amount, token.denom) + ' ' + token.denom)
+                  .join('\n')}
+              </Typography>
+            </StatCard>
           </View>
           <View style={styles.farmTabs}>
             {Object.values(FarmType).map((f) => (
@@ -92,6 +116,26 @@ const FarmTab: React.FC = () => {
                 {t(f)}
               </Button>
             ))}
+          </View>
+          <Typography
+            style={{ marginHorizontal: 6 * theme.baseSpace, marginTop: 6 * theme.baseSpace }}
+            type="H6"
+          >
+            {t('my farm', { farm: t(farmType) })}
+          </Typography>
+          {myFarms.map((f) => (
+            <MyFarmItem farm={f} availableAssetsMap={availableAssetsMap} />
+          ))}
+
+          <Typography
+            style={{ marginHorizontal: 6 * theme.baseSpace, marginTop: 6 * theme.baseSpace }}
+            type="H6"
+          >
+            {t(farmType)}
+          </Typography>
+          <View style={styles.sectionHeader}>
+            <Typography color={theme.palette.grey[7]}>{t('tokens')}</Typography>
+            <Typography color={theme.palette.grey[7]}>{t('apr')}</Typography>
           </View>
         </>
       }
