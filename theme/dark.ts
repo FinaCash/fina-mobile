@@ -25,7 +25,7 @@ export default {
     google: '#DB4437',
     background: '#1F2A50',
     altBackground: '#171E39',
-    border: '#484c63',
+    border: '#32427E',
     active: '#ffffff',
     button: '#4361EE',
     borderButton: '#ffffff',

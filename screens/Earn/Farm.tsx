@@ -14,6 +14,7 @@ import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import Typography from '../../components/Typography'
 import MyFarmItem from '../../components/MyFarmItem'
+import { Actions } from 'react-native-router-flux'
 
 const FarmTab: React.FC = () => {
   const { t } = useLocalesContext()
@@ -21,7 +22,7 @@ const FarmTab: React.FC = () => {
   const { farmInfo, availableAssets, fetchFarmInfo } = useAssetsContext()
   const { currency, currencyRate } = useSettingsContext()
   const availableAssetsMap = React.useMemo(
-    () => keyBy(availableAssets, 'symbol'),
+    () => ({ ...keyBy(availableAssets, 'symbol'), UST: { price: 1 } }),
     [availableAssets]
   )
   const [loading, setLoading] = React.useState(false)
@@ -124,7 +125,7 @@ const FarmTab: React.FC = () => {
             {t('my farm', { farm: t(farmType) })}
           </Typography>
           {myFarms.map((f) => (
-            <MyFarmItem farm={f} availableAssetsMap={availableAssetsMap} />
+            <MyFarmItem key={f.symbol} farm={f} availableAssetsMap={availableAssetsMap as any} />
           ))}
 
           <Typography
@@ -141,10 +142,10 @@ const FarmTab: React.FC = () => {
       }
       renderItem={({ item }) => (
         <FarmItem
-          asset={availableAssetsMap[item.symbol]}
+          asset={(availableAssetsMap as any)[item.symbol]}
           apr={item.apr}
           farmType={farmType}
-          onPress={() => {}}
+          onPress={() => Actions.ProvideLiquidity({ farm: item })}
         />
       )}
     />

@@ -1,6 +1,7 @@
 import { Anchor, bombay12, AddressProviderFromJson, columbus5 } from '@anchor-protocol/anchor.js'
 import { DEFAULT_BOMBAY_MIRROR_OPTIONS, DEFAULT_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
+import get from 'lodash/get'
 
 export const deafultHdPath = [44, 330, 0, 0, 0]
 export const defaultPrefix = 'terra'
@@ -15,7 +16,7 @@ export const terraLCDClient = new LCDClient({
   gasPrices: {
     uusd: 0.15,
   },
-  gasAdjustment: 2,
+  gasAdjustment: 1.5,
 })
 
 export const terraFCDUrl = 'https://fcd.terra.dev'
@@ -44,7 +45,15 @@ export const supportedTokens = {
     denom: 'MIR',
     name: 'Mirror Token',
     image: 'https://whitelist.mirror.finance/icon/MIR.png',
-    priceFetcher: async () => null, // Price fetch handled in fetchMAssets
+    priceFetcher: async () => {
+      const result = await fetch(
+        `${terraLCDUrl}/terra/wasm/v1beta1/contracts/${mirrorOptions.assets.MIR.pair}/store?query_msg=eyJwb29sIjp7fX0%3D`
+      ).then((r) => r.json())
+      const price =
+        Number(get(result, ['query_result', 'assets', 1, 'amount'], '0')) /
+        Number(get(result, ['query_result', 'assets', 0, 'amount'], '0'))
+      return { price }
+    },
   },
   ANC: {
     symbol: 'ANC',

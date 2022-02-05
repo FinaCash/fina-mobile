@@ -37,6 +37,7 @@ import Delegate from '../screens/Staking/Delegate'
 import SelectValidator from '../screens/SelectValidator'
 import Undelegate from '../screens/Staking/Undelegate'
 import Redelegate from '../screens/Staking/Redelegate'
+import ProvideLiquidity from '../screens/ProvideLiquidity'
 
 const Tab: React.FC<{
   sceneKey: string
@@ -148,6 +149,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="Undelegate" hideNavBar component={Undelegate} />
               <Scene key="Redelegate" hideNavBar component={Redelegate} />
               <Scene key="SelectValidator" hideNavBar component={SelectValidator} />
+              <Scene key="ProvideLiquidity" hideNavBar component={ProvideLiquidity} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />

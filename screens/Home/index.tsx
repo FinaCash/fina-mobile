@@ -313,7 +313,17 @@ const Home: React.FC = () => {
               (hideSmallBalance
                 ? a.type === AssetTypes.Savings ||
                   a.type === AssetTypes.Collaterals ||
-                  (Number(a.coin.amount) * a.price) / 10 ** 6 > 0.1
+                  (Number(
+                    a.coin.amount +
+                      (a.coin.denom === 'uluna'
+                        ? [...stakingInfo.delegated, ...stakingInfo.unbonding]
+                            .map((d) => d.amount)
+                            .reduce((a, b) => a + b, 0)
+                        : 0)
+                  ) *
+                    a.price) /
+                    10 ** 6 >
+                    0.1
                 : true)
           ),
           // ListHeaderComponent: smallBalanceAssets.length ? (

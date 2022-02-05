@@ -166,5 +166,6 @@
   "gov staking": "治理質押",
   "total farm assets": "總農場資產",
   "my farm": "我的{{farm}}",
-  "assets": "資產"
+  "assets": "資產",
+  "provide liquidity": "提供流量"
 }

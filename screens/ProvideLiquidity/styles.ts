@@ -5,8 +5,6 @@ export default (theme: Theme) => ({
     backgroundColor: theme.palette.background,
     paddingHorizontal: 4 * theme.baseSpace,
     paddingBottom: theme.bottomSpace,
-    justifyContent: 'space-between',
-    alignItems: 'stretch',
     flex: 1,
   },
   button: {

@@ -155,7 +155,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
         ;(which === 'from' ? setToAmount : setFromAmount)('')
       }
     },
-    [asset, mode, currentAsset, address]
+    [asset, mode, currentAsset]
   )
   // TODO: calculate non USD base currency
   const fromAsset = React.useMemo(
@@ -232,7 +232,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
     <>
       <HeaderBar title={t(mode)} back />
       <View style={styles.container}>
-        <KeyboardAwareScrollView>
+        <KeyboardAwareScrollView style={{ paddingTop: theme.baseSpace * 4 }}>
           {mode === 'buy' ? (
             <AssetAmountInput
               asset={currentAsset}

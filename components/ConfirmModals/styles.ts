@@ -37,4 +37,7 @@ export default (theme: Theme) => ({
     marginBottom: -2 * theme.baseSpace,
     marginHorizontal: 4 * theme.baseSpace,
   },
+  arrow: {
+    alignSelf: 'center',
+  },
 })

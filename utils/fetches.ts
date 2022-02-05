@@ -507,8 +507,6 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     }),
   }).then((r) => r.json())
 
-  console.log(mirPool)
-
   const rewardsInfo = keyBy(JSON.parse(rewardsResult).reward_infos, 'asset_token')
 
   const sortedMAssets = assets

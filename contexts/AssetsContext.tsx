@@ -9,6 +9,7 @@ import {
   MsgWithdrawDelegatorReward,
   MsgExecuteContract,
   MnemonicKey,
+  Int,
 } from '@terra-money/terra.js'
 import { Mirror, MirrorAirdrop, UST } from '@mirror-protocol/mirror.js'
 import {
@@ -167,6 +168,14 @@ interface AssetsState {
     terraApp?: TerraApp,
     simulate?: boolean
   ): void
+  provideLiquidity(
+    farm: Farm,
+    amount: number,
+    ustAmount: number,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
 }
 
 const initialState: AssetsState = {
@@ -212,6 +221,7 @@ const initialState: AssetsState = {
   redelegate: () => null,
   claimStakingRewards: () => null,
   claimAirdrops: () => null,
+  provideLiquidity: () => null,
 }
 
 const AssetsContext = React.createContext<AssetsState>(initialState)
@@ -267,6 +277,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         ...result,
       })
     }
+    // Patch incorrect MIR price on graphql
+    const { price } = await supportedTokens.MIR.priceFetcher()
+    mAssets[mAssets.findIndex((m) => m.symbol === 'MIR')].price = price
     const availableResult = sortBy(
       [...tokenAssets, ...mAssets, ...availableCollaterals],
       ['-type', 'symbol']
@@ -279,12 +292,16 @@ const AssetsProvider: React.FC = ({ children }) => {
   const fetchAssets = React.useCallback(async () => {
     // Fetch my assets
     const balances = await terra.bank.balance(address)
+    const nativeBalances = JSON.parse(balances[0].toJSON())
+    if (!nativeBalances.find((b: any) => b.denom === 'uluna')) {
+      nativeBalances.push({ denom: 'uluna', amount: '0' })
+    }
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
     setRawAssets((a) => {
       return uniqBy(
         [
-          ...JSON.parse(balances[0].toJSON()),
+          ...nativeBalances,
           ...anchorBalances,
           ...mAssetsBalances,
           ...a.filter((aa) => aa.denom.match(/^b/)), // Do not replace collaterals
@@ -414,10 +431,11 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       if (!simulate) {
         fetchAssets()
+        fetchBorrowInfo()
       }
       return result
     },
-    [fetchAssets, decryptSeedPhrase, availableAssets, address, hdPath]
+    [fetchAssets, fetchBorrowInfo, decryptSeedPhrase, availableAssets, address, hdPath]
   )
 
   const send = React.useCallback(
@@ -792,6 +810,71 @@ const AssetsProvider: React.FC = ({ children }) => {
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchAirdrops]
   )
 
+  const provideLiquidity = React.useCallback(
+    async (
+      farm: Farm,
+      amount: number,
+      ustAmount: number,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
+      const result = await signAndBroadcastTx(
+        decryptSeedPhrase(password),
+        terraApp,
+        hdPath,
+        {
+          msgs: [
+            new MsgExecuteContract(address, farm.addresses.token, {
+              increase_allowance: {
+                amount: (amount * 10 ** 6).toFixed(0),
+                spender: farm.addresses.pair,
+              },
+            }),
+            new MsgExecuteContract(
+              address,
+              farm.addresses.pair,
+              {
+                provide_liquidity: {
+                  assets: [
+                    {
+                      amount: (amount * 10 ** 6).toFixed(0),
+                      info: {
+                        token: {
+                          contract_addr: farm.addresses.token,
+                        },
+                      },
+                    },
+                    {
+                      amount: (ustAmount * 10 ** 6).toFixed(0),
+                      info: {
+                        native_token: {
+                          denom: 'uusd',
+                        },
+                      },
+                    },
+                  ],
+                  auto_stake: true,
+                  slippage_tolerance: '0.01',
+                },
+              },
+              [new Coin('uusd', new Int(ustAmount * 10 ** 6))]
+            ),
+          ],
+        },
+        address,
+        simulate
+      )
+
+      if (!simulate) {
+        fetchAssets()
+        fetchFarmInfo()
+      }
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
+  )
+
   // On logout
   React.useEffect(() => {
     if (!address) {
@@ -843,6 +926,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         redelegate,
         claimStakingRewards,
         claimAirdrops,
+        provideLiquidity,
       }}
     >
       {children}
