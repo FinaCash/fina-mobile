@@ -32,7 +32,7 @@ interface ProvideLiquidityProps {
 const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
   const { styles, theme } = useStyles(getStyles)
   const { type } = useAccountsContext()
-  const { depositSavings, withdrawSavings, assets, availableAssets } = useAssetsContext()
+  const { provideLiquidity, assets, availableAssets } = useAssetsContext()
   const asset =
     assets.find((a) => a.symbol === farm.symbol) ||
     getMAssetDetail({ denom: farm.symbol, amount: '0' }, availableAssets) ||
@@ -55,48 +55,31 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
   const onSubmit = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
       const message = {
-        type: 'swap',
-        // from: (mode === 'deposit' ? getCurrentAssetDetail : getSavingAssetDetail)(
-        //   {
-        //     denom: mode === 'deposit' ? denom : `a${denom.slice(1)}`,
-        //     amount: String(
-        //       (Number(amount) * 10 ** 6) / (mode === 'deposit' ? 1 : savingAsset.price)
-        //     ),
-        //     apr,
-        //   },
-        //   mode === 'deposit' ? 1 : savingAsset.price
-        // ),
-        // to: (mode === 'withdraw' ? getCurrentAssetDetail : getSavingAssetDetail)(
-        //   {
-        //     denom: mode === 'withdraw' ? denom : `a${denom.slice(1)}`,
-        //     amount: String(
-        //       (Number(amount) * 10 ** 6) / (mode === 'withdraw' ? 1 : savingAsset.price)
-        //     ),
-        //     apr,
-        //   },
-        //   mode === 'withdraw' ? 1 : savingAsset.price
-        // ),
+        type: 'provide liquidity',
+        asset: {
+          ...asset,
+          coin: { denom: asset?.coin.denom, amount: String(Number(amount) * 10 ** 6) },
+        },
+        ustAsset: {
+          ...ustAsset,
+          coin: { denom: ustAsset?.coin.denom, amount: String(Number(ustAmount) * 10 ** 6) },
+        },
       }
       try {
-        // await (mode === 'deposit' ? depositSavings : withdrawSavings)(
-        //   MARKET_DENOMS.UUSD,
-        //   Number(amount),
-        //   password,
-        //   terraApp
-        // )
+        await provideLiquidity(farm, Number(amount), Number(ustAmount), password, terraApp)
         Actions.Success({
           message,
-          onClose: () => Actions.jump('Home'),
+          onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {
         Actions.Success({
           message,
           error: err.message,
-          onClose: () => Actions.popTo('Savings'),
+          onClose: () => Actions.popTo('ProvideLiquidity'),
         })
       }
     },
-    [amount]
+    [amount, ustAmount, asset, ustAsset, provideLiquidity, farm]
   )
 
   React.useEffect(() => {

@@ -819,6 +819,8 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
+      const isMAsset = farm.symbol.match(/^m/)
+
       const result = await signAndBroadcastTx(
         decryptSeedPhrase(password),
         terraApp,
@@ -828,14 +830,14 @@ const AssetsProvider: React.FC = ({ children }) => {
             new MsgExecuteContract(address, farm.addresses.token, {
               increase_allowance: {
                 amount: (amount * 10 ** 6).toFixed(0),
-                spender: farm.addresses.pair,
+                spender: isMAsset ? mirrorOptions.staking : farm.addresses.pair,
               },
             }),
             new MsgExecuteContract(
               address,
-              farm.addresses.pair,
+              isMAsset ? mirrorOptions.staking : farm.addresses.pair,
               {
-                provide_liquidity: {
+                [isMAsset ? 'auto_stake' : 'provide_liquidity']: {
                   assets: [
                     {
                       amount: (amount * 10 ** 6).toFixed(0),
@@ -854,11 +856,11 @@ const AssetsProvider: React.FC = ({ children }) => {
                       },
                     },
                   ],
-                  auto_stake: true,
                   slippage_tolerance: '0.01',
+                  ...(isMAsset ? {} : { auto_stake: true }),
                 },
               },
-              [new Coin('uusd', new Int(ustAmount * 10 ** 6))]
+              [new Coin('uusd', new Int((ustAmount * 10 ** 6).toFixed(0)))]
             ),
           ],
         },

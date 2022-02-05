@@ -68,6 +68,11 @@ interface SuccessProps {
         type: 'claim airdrops'
         airdrops: Airdrop[]
       }
+    | {
+        type: 'provide liquidity'
+        asset: Asset
+        ustAsset: Asset
+      }
   error?: string
   onClose(): void
 }
@@ -129,6 +134,9 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
           ) : null}
           {message.type === 'swap' ? (
             <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
               <AssetItem disabled asset={message.from} hideBorder hideApr />
               <Icon
                 name="arrow-down"
@@ -142,7 +150,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
           {message.type === 'claim' ? (
             <>
               <Typography type="H6" style={styles.title2}>
-                {t('claim')}
+                {t(message.type)}
               </Typography>
               <RewardsItem disabled hideValue hideBorder {...message} />
             </>
@@ -220,6 +228,21 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               ).map((a) => (
                 <AssetItem asset={a} disabled />
               ))}
+            </>
+          ) : null}
+          {message.type === 'provide liquidity' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              <AssetItem disabled asset={message.asset} hideBorder hideApr />
+              <Icon
+                name="plus"
+                size={theme.baseSpace * 8}
+                color={theme.palette.grey[10]}
+                style={styles.arrow}
+              />
+              <AssetItem asset={message.ustAsset} hideBorder hideApr />
             </>
           ) : null}
         </View>
