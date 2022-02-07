@@ -125,7 +125,12 @@ const FarmTab: React.FC = () => {
             {t('my farm', { farm: t(farmType) })}
           </Typography>
           {myFarms.map((f) => (
-            <MyFarmItem key={f.symbol} farm={f} availableAssetsMap={availableAssetsMap as any} />
+            <MyFarmItem
+              key={f.symbol}
+              onPress={() => Actions.WithdrawLiquidity({ farm: f })}
+              farm={f}
+              availableAssetsMap={availableAssetsMap as any}
+            />
           ))}
 
           <Typography

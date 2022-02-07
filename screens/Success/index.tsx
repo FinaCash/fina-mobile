@@ -141,7 +141,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               <Icon
                 name="arrow-down"
                 size={theme.baseSpace * 8}
-                color={theme.palette.grey[10]}
+                color={theme.fonts.H6.color}
                 style={styles.arrow}
               />
               <AssetItem asset={message.to} hideBorder hideApr />
@@ -204,7 +204,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               <Icon
                 name="arrow-down"
                 size={theme.baseSpace * 8}
-                color={theme.palette.grey[10]}
+                color={theme.fonts.H6.color}
                 style={styles.arrow}
               />
               <StakingItem
@@ -239,7 +239,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               <Icon
                 name="plus"
                 size={theme.baseSpace * 8}
-                color={theme.palette.grey[10]}
+                color={theme.fonts.H6.color}
                 style={styles.arrow}
               />
               <AssetItem asset={message.ustAsset} hideBorder hideApr />

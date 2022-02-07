@@ -2,7 +2,7 @@ import React from 'react'
 import get from 'lodash/get'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { View } from 'react-native'
+import { TouchableOpacityProps, View, TouchableOpacity } from 'react-native'
 import Typography from '../Typography'
 import { AvailableAsset, Farm, FarmType } from '../../types/assets'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -10,12 +10,12 @@ import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import { getSymbolFromDenom } from '../../utils/transformAssets'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 
-interface MyFarmItemProps {
+interface MyFarmItemProps extends TouchableOpacityProps {
   farm: Farm
   availableAssetsMap: { [symbol: string]: AvailableAsset }
 }
 
-const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap }) => {
+const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...props }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { currency, currencyRate } = useSettingsContext()
@@ -33,7 +33,7 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap }) => 
   ].filter((a) => a.amount > 0)
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} {...props}>
       <View style={{ width: 26 * theme.baseSpace }}>
         <Typography style={styles.title} type="Small" color={theme.palette.grey[7]}>
           {t('name')}
@@ -88,7 +88,7 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap }) => 
           )}
         </Typography>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 

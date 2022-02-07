@@ -1,6 +1,6 @@
 import { Coin } from '@terra-money/terra.js'
 import React from 'react'
-import { useColorScheme } from 'react-native'
+import { Appearance, useColorScheme } from 'react-native'
 import { ThemeType } from '../types/misc'
 import { terraLCDClient } from '../utils/terraConfig'
 import usePersistedState from '../utils/usePersistedState'
@@ -74,6 +74,13 @@ const SettingsProvider: React.FC = ({ children }) => {
       setTheme((colorScheme as any) || 'light')
     }
   }, [systemDefaultTheme, colorScheme, setTheme])
+
+  React.useEffect(() => {
+    if (systemDefaultTheme) {
+      const themeNow = Appearance.getColorScheme()
+      setTheme((themeNow as any) || 'light')
+    }
+  }, [systemDefaultTheme, setTheme])
 
   return (
     <SettingsContext.Provider

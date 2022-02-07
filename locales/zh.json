@@ -167,5 +167,6 @@
   "total farm assets": "總農場資產",
   "my farm": "我的{{farm}}",
   "assets": "資產",
-  "provide liquidity": "提供流量"
+  "provide liquidity": "供應流量",
+  "withdraw liquidity": "提取流量"
 }

@@ -1,7 +1,6 @@
 {
   "private": true,
   "name": "fina",
-  "version": "1.0.3",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -44,7 +43,7 @@
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "expo-system-ui": "~1.1.0",
-    "expo-updates": "~0.11.3",
+    "expo-updates": "^0.11.6",
     "expo-web-browser": "~10.1.0",
     "lodash": "^4.17.21",
     "node-libs-expo": "^0.0.3",

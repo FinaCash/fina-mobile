@@ -4,7 +4,8 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.0.3',
+  version: '1.1.1',
+  runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
@@ -16,6 +17,7 @@ export default {
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: 'https://u.expo.dev/c124fefd-261e-4dee-a6f4-f93f629894bd',
   },
   assetBundlePatterns: ['**/*'],
   ios: {

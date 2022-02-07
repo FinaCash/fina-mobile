@@ -25,48 +25,35 @@ import { AvailableAsset, Farm } from '../../types/assets'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import ConfirmProvideLiquidityModal from '../../components/ConfirmModals/ConfirmProvideLiquidityModal'
 
-interface ProvideLiquidityProps {
+interface WithdrawLiquidityProps {
   farm: Farm
 }
 
-const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
+const WithdrawLiquidity: React.FC<WithdrawLiquidityProps> = ({ farm }) => {
   const { styles, theme } = useStyles(getStyles)
   const { type } = useAccountsContext()
-  const { provideLiquidity, assets, availableAssets } = useAssetsContext()
-  const asset =
-    assets.find((a) => a.symbol === farm.symbol) ||
-    getMAssetDetail({ denom: farm.symbol, amount: '0' }, availableAssets) ||
-    getTokenAssetDetail(
-      { denom: farm.symbol === 'LUNA' ? 'uluna' : farm.symbol, amount: '0' },
-      availableAssets
-    ) ||
-    undefined
-
-  const ustAsset =
-    assets.find((a) => a.symbol === 'UST') ||
-    getCurrentAssetDetail({ denom: 'uusd', amount: '0' }, 1) ||
-    undefined
+  const { withdrawLiquidity, assets, availableAssets } = useAssetsContext()
+  const availableAsset = availableAssets.find((a) => a.symbol === farm.symbol)!
 
   const { t } = useLocalesContext()
   const [amount, setAmount] = React.useState('')
-  const [ustAmount, setUstAmount] = React.useState('')
   const [isConfirming, setIsConfirming] = React.useState(false)
 
   const onSubmit = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
       const message = {
         type: 'provide liquidity',
-        asset: {
-          ...asset,
-          coin: { denom: asset?.coin.denom, amount: String(Number(amount) * 10 ** 6) },
-        },
-        ustAsset: {
-          ...ustAsset,
-          coin: { denom: ustAsset?.coin.denom, amount: String(Number(ustAmount) * 10 ** 6) },
-        },
+        // asset: {
+        //   ...asset,
+        //   coin: { denom: asset?.coin.denom, amount: String(Number(amount) * 10 ** 6) },
+        // },
+        // ustAsset: {
+        //   ...ustAsset,
+        //   coin: { denom: ustAsset?.coin.denom, amount: String(Number(ustAmount) * 10 ** 6) },
+        // },
       }
       try {
-        await provideLiquidity(farm, Number(amount), Number(ustAmount), password, terraApp)
+        await withdrawLiquidity(farm, Number(amount), password, terraApp)
         Actions.Success({
           message,
           onClose: () => Actions.jump('Earn'),
@@ -79,7 +66,7 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
         })
       }
     },
-    [amount, ustAmount, asset, ustAsset, provideLiquidity, farm]
+    [amount, withdrawLiquidity, farm]
   )
 
   React.useEffect(() => {
@@ -90,46 +77,27 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
 
   return (
     <>
-      <HeaderBar back title={t(`provide liquidity`)} />
+      <HeaderBar back title={t(`withdraw liquidity`)} />
       <View style={styles.container}>
         <KeyboardAwareScrollView contentContainerStyle={{ paddingTop: 4 * theme.baseSpace }}>
           <AssetAmountInput
-            asset={asset}
+            availableAsset={availableAsset}
+            farm={farm}
             amount={amount}
             setAmount={(a) => {
               setAmount(a)
-              if (asset) {
-                setUstAmount(a ? String(Number(a) * asset.price) : '')
-              }
-            }}
-            assetItemProps={{ disabled: true }}
-          />
-          <Icon
-            name="plus"
-            size={theme.baseSpace * 8}
-            color={theme.fonts.H6.color}
-            style={styles.arrow}
-          />
-          <AssetAmountInput
-            asset={ustAsset}
-            amount={ustAmount}
-            setAmount={(a) => {
-              setUstAmount(a)
-              if (asset) {
-                setAmount(a ? String(Number(a) / asset.price) : '')
-              }
             }}
             assetItemProps={{ disabled: true }}
           />
         </KeyboardAwareScrollView>
         <Button
-          disabled={
-            asset &&
-            (!Number(amount) ||
-              Number(amount) * 10 ** 6 > Number(asset.coin.amount) ||
-              !Number(ustAmount) ||
-              Number(ustAmount) * 10 ** 6 > Number(ustAsset.coin.amount))
-          }
+          // disabled={
+          //   asset &&
+          //   (!Number(amount) ||
+          //     Number(amount) * 10 ** 6 > Number(asset.coin.amount) ||
+          //     !Number(ustAmount) ||
+          //     Number(ustAmount) * 10 ** 6 > Number(ustAsset.coin.amount))
+          // }
           style={styles.button}
           size="Large"
           onPress={() => setIsConfirming(true)}
@@ -137,7 +105,7 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
           {t('next')}
         </Button>
       </View>
-      {amount ? (
+      {/* {amount ? (
         <ConfirmProvideLiquidityModal
           open={isConfirming}
           farm={farm}
@@ -149,9 +117,9 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
             setIsConfirming(false)
           }}
         />
-      ) : null}
+      ) : null} */}
     </>
   )
 }
 
-export default ProvideLiquidity
+export default WithdrawLiquidity

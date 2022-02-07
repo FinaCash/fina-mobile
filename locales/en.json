@@ -167,5 +167,6 @@
   "total farm assets": "Total Farm Assets",
   "my farm": "My {{farm}}",
   "assets": "Assets",
-  "provide liquidity": "Provide Liquidity"
+  "provide liquidity": "Provide Liquidity",
+  "withdraw liquidity": "Withdraw Liquidity"
 }

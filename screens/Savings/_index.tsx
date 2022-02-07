@@ -119,7 +119,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
           <Icon
             name="arrow-down"
             size={theme.baseSpace * 8}
-            color={theme.palette.grey[10]}
+            color={theme.fonts.H6.color}
             style={styles.arrow}
           />
           <AssetAmountInput

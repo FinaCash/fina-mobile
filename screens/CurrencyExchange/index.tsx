@@ -162,7 +162,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
           <Icon
             name="arrow-down"
             size={theme.baseSpace * 8}
-            color={theme.palette.grey[10]}
+            color={theme.fonts.H6.color}
             style={styles.arrow}
           />
           <AssetAmountInput

@@ -18,6 +18,7 @@ import {
   anchorClient,
   supportedTokens,
   anchorAddressProvider,
+  astroportGeneratorContract,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import {
@@ -176,6 +177,13 @@ interface AssetsState {
     terraApp?: TerraApp,
     simulate?: boolean
   ): void
+  withdrawLiquidity(
+    farm: Farm,
+    amount: number,
+    password?: string,
+    terraApp?: TerraApp,
+    simulate?: boolean
+  ): void
 }
 
 const initialState: AssetsState = {
@@ -222,6 +230,7 @@ const initialState: AssetsState = {
   claimStakingRewards: () => null,
   claimAirdrops: () => null,
   provideLiquidity: () => null,
+  withdrawLiquidity: () => null,
 }
 
 const AssetsContext = React.createContext<AssetsState>(initialState)
@@ -279,7 +288,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     }
     // Patch incorrect MIR price on graphql
     const { price } = await supportedTokens.MIR.priceFetcher()
-    mAssets[mAssets.findIndex((m) => m.symbol === 'MIR')].price = price
+    mAssets[mAssets.findIndex((m: any) => m.symbol === 'MIR')].price = price
     const availableResult = sortBy(
       [...tokenAssets, ...mAssets, ...availableCollaterals],
       ['-type', 'symbol']
@@ -877,6 +886,51 @@ const AssetsProvider: React.FC = ({ children }) => {
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
   )
 
+  const withdrawLiquidity = React.useCallback(
+    async (
+      farm: Farm,
+      amount: number,
+      password?: string,
+      terraApp?: TerraApp,
+      simulate?: boolean
+    ) => {
+      const isMAsset = farm.symbol.match(/^m/)
+
+      const result = await signAndBroadcastTx(
+        decryptSeedPhrase(password),
+        terraApp,
+        hdPath,
+        {
+          msgs: [
+            new MsgExecuteContract(address, astroportGeneratorContract, {
+              withdraw: {
+                account: address,
+                amount: (amount * 10 ** 6).toFixed(0),
+                lp_token: farm.addresses.lpToken,
+              },
+            }),
+            new MsgExecuteContract(address, farm.addresses.lpToken, {
+              send: {
+                amount: (amount * 10 ** 6).toFixed(0),
+                contract: farm.addresses.pair,
+                msg: 'eyJ3aXRoZHJhd19saXF1aWRpdHkiOnt9fQ==',
+              },
+            }),
+          ],
+        },
+        address,
+        simulate
+      )
+
+      if (!simulate) {
+        fetchAssets()
+        fetchFarmInfo()
+      }
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
+  )
+
   // On logout
   React.useEffect(() => {
     if (!address) {
@@ -929,6 +983,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         claimStakingRewards,
         claimAirdrops,
         provideLiquidity,
+        withdrawLiquidity,
       }}
     >
       {children}

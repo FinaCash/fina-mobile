@@ -121,7 +121,7 @@ const ConfirmProvideLiquidityModal: React.FC<ConfirmProvideLiquidityModalProps> 
       <Icon
         name="plus"
         size={theme.baseSpace * 8}
-        color={theme.palette.grey[10]}
+        color={theme.fonts.H6.color}
         style={styles.arrow}
       />
       <AssetItem disabled asset={ustAsset} hideApr />

@@ -3,7 +3,7 @@ import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-nati
 import { FontAwesome as Icon } from '@expo/vector-icons'
 import useStyles from '../../theme/useStyles'
 import { AvailableAsset, FarmType } from '../../types/assets'
-import { formatPercentage } from '../../utils/formatNumbers'
+import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
 import { getCurrentAssetDetail } from '../../utils/transformAssets'
@@ -11,11 +11,24 @@ import { getCurrentAssetDetail } from '../../utils/transformAssets'
 export interface FarmItemProps extends TouchableOpacityProps {
   asset: AvailableAsset
   farmType: FarmType
-  apr: number
+  apr?: number
+  balance?: number
+  rate?: {
+    token: number
+    ust: number
+  }
   hideBorder?: boolean
 }
 
-const FarmItem: React.FC<FarmItemProps> = ({ asset, farmType, apr, hideBorder, ...props }) => {
+const FarmItem: React.FC<FarmItemProps> = ({
+  asset,
+  farmType,
+  apr,
+  balance,
+  rate,
+  hideBorder,
+  ...props
+}) => {
   const { styles, theme } = useStyles(getStyles)
   const ust =
     farmType === FarmType.Long
@@ -41,7 +54,7 @@ const FarmItem: React.FC<FarmItemProps> = ({ asset, farmType, apr, hideBorder, .
           </View>
           <View style={styles.rightAligned}>
             <Typography style={styles.gutterBottom} type="H6">
-              {formatPercentage(apr)}
+              {apr ? formatPercentage(apr) : formatCurrency(balance || 0, '')}
             </Typography>
           </View>
         </View>
