@@ -1,7 +1,7 @@
 import React from 'react'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { Asset, AssetTypes, AvailableAsset, Validator, Farm } from '../../types/assets'
+import { Asset, AssetTypes, AvailableAsset, Validator, Farm, FarmType } from '../../types/assets'
 import { TouchableOpacity, View } from 'react-native'
 import AssetItem, { AssetItemProps } from '../../components/AssetItem'
 import Typography from '../../components/Typography'
@@ -62,6 +62,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           farmType={farm.type}
           balance={farm.balance}
           rate={farm.rate}
+          dex={farm.dex}
           {...assetItemProps}
         />
       ) : availableAsset ? (
@@ -86,7 +87,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
             asset || (availableAsset && stakedAmount) || farm ? (
               <View style={styles.row}>
                 <Typography color={theme.palette.grey[10]} bold>
-                  {asset ? asset.symbol : availableAsset?.symbol}
+                  {asset
+                    ? asset.symbol
+                    : farm && farm.type === FarmType.Long && availableAsset
+                    ? availableAsset?.symbol + '-UST'
+                    : availableAsset?.symbol}
                 </Typography>
                 <View style={styles.verticalDivider} />
                 <TouchableOpacity
@@ -116,7 +121,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           {...inputProps}
         />
         <Typography color={theme.palette.grey[7]} type="Small">
-          ~
+          {farm && farm.type === FarmType.Long
+            ? `${formatCurrency(Number(amount) * farm.rate.token * 10 ** 6, farm.symbol)} ${
+                farm.symbol
+              } + ${formatCurrency(Number(amount) * farm.rate.ust * 10 ** 6, 'UST')} UST = `
+            : '~'}
           {formatCurrency(
             Number(amount) *
               (asset ? asset.price : farm ? farm.rate.ust * 2 : 0) *

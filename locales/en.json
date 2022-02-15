@@ -165,8 +165,9 @@
   "short farm": "Short Farm",
   "gov staking": "Gov Staking",
   "total farm assets": "Total Farm Assets",
-  "my farm": "My {{farm}}",
+  "my farm": "My Farm",
   "assets": "Assets",
   "provide liquidity": "Provide Liquidity",
-  "withdraw liquidity": "Withdraw Liquidity"
+  "withdraw liquidity": "Withdraw Liquidity",
+  "claim farm rewards": "Claim Farm Rewards"
 }

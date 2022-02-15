@@ -13,7 +13,6 @@ import ContactIcon from '../../assets/images/icons/recipients.svg'
 import QRCodeIcon from '../../assets/images/icons/qrcode.svg'
 import { formatCurrency } from '../../utils/formatNumbers'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { getCurrencyFromDenom } from '../../utils/transformAssets'
 import isAddressValid from '../../utils/isAddressValid'
 import ConfirmTransferModal from '../../components/ConfirmModals/ConfirmTransferModal'
 import { Actions } from 'react-native-router-flux'
@@ -42,13 +41,21 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
 
   const [address, setAddress] = React.useState(get(defaultRecipient, 'address', ''))
   const [memo, setMemo] = React.useState(get(defaultRecipient, 'memo', ''))
-  const [isConfirming, setIsConfirming] = React.useState(!!defaultRecipient)
+  const [isConfirming, setIsConfirming] = React.useState(false)
 
   React.useEffect(() => {
     if (isConfirming) {
       Keyboard.dismiss()
     }
   }, [isConfirming])
+
+  React.useEffect(() => {
+    if (defaultRecipient) {
+      setTimeout(() => {
+        setIsConfirming(true)
+      }, 500)
+    }
+  }, [defaultRecipient])
 
   return (
     <>
@@ -184,7 +191,10 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
         address={address}
         amount={amount}
         memo={memo}
-        onConfirm={() => onSubmit(address, memo)}
+        onConfirm={() => {
+          onSubmit(address, memo)
+          setIsConfirming(false)
+        }}
       />
     </>
   )

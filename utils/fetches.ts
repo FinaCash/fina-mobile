@@ -66,15 +66,17 @@ export const fetchAvailableMirrorAssets = async () => {
         },
       }),
     }).then((r) => r.json())
-    return result.data.assets.map((a: any) => ({
-      type: a.symbol === 'MIR' ? AssetTypes.Tokens : AssetTypes.Investments,
-      name: a.name,
-      symbol: a.symbol,
-      coin: { denom: a.symbol },
-      image: `https://whitelist.mirror.finance/icon/${a.symbol.replace(/^m/, '')}.png`,
-      price: Number(a.prices.price || a.prices.oraclePrice),
-      prevPrice: Number(a.prices.priceAt || a.prices.oraclePriceAt),
-    }))
+    return result.data.assets
+      .filter((a: any) => a.symbol !== 'MIR')
+      .map((a: any) => ({
+        type: AssetTypes.Investments,
+        name: a.name,
+        symbol: a.symbol,
+        coin: { denom: a.symbol },
+        image: `https://whitelist.mirror.finance/icon/${a.symbol.replace(/^m/, '')}.png`,
+        price: Number(a.prices.price || a.prices.oraclePrice),
+        prevPrice: Number(a.prices.priceAt || a.prices.oraclePriceAt),
+      }))
   } catch (err: any) {
     console.log(err)
   }
@@ -518,6 +520,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
       .map((a: any) => ({
         type: FarmType.Long,
         symbol: a.symbol,
+        dex: 'Astroport',
         addresses: {
           token: a.token,
           lpToken: a.lpToken,
@@ -541,6 +544,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     ...sortedMAssets.map((a: any) => ({
       type: FarmType.Long,
       symbol: a.symbol,
+      dex: 'Mirror',
       addresses: {
         token: a.token,
         lpToken: a.lpToken,
@@ -559,6 +563,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     ...sortedMAssets.map((a: any) => ({
       type: FarmType.Short,
       symbol: a.symbol,
+      dex: 'Mirror',
       addresses: {
         token: a.token,
         lpToken: a.lpToken,

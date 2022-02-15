@@ -2,7 +2,7 @@ import React from 'react'
 import { Feather as Icon } from '@expo/vector-icons'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
-import { Airdrop, Asset, AvailableAsset, Validator } from '../../types/assets'
+import { Airdrop, Asset, AvailableAsset, Farm, Validator } from '../../types/assets'
 import useStyles from '../../theme/useStyles'
 import { View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -17,6 +17,7 @@ import AvailableAssetItem from '../../components/AvailableAssetItem'
 import StakingItem from '../../components/StakingItem'
 import { getTokenAssetDetail } from '../../utils/transformAssets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
+import FarmItem from '../../components/FarmItem'
 
 interface SuccessProps {
   message:
@@ -73,6 +74,16 @@ interface SuccessProps {
         asset: Asset
         ustAsset: Asset
       }
+    | {
+        type: 'withdraw liquidity'
+        availableAsset: AvailableAsset
+        farm: Farm
+        amount: number
+      }
+    | {
+        type: 'claim farm rewards'
+        farms: Farm[]
+      }
   error?: string
   onClose(): void
 }
@@ -84,6 +95,24 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
   const { recipients } = useRecipientsContext()
   const recipient =
     message.type === 'send' ? recipients.find((r) => r.address === message.address) : undefined
+
+  const totalRewardTokens = React.useMemo(() => {
+    if (message.type !== 'claim farm rewards') {
+      return []
+    }
+    const tokens: { [denom: string]: number } = {}
+    message.farms.forEach((farm) =>
+      farm.rewards.forEach((r) => {
+        if (tokens[r.denom]) {
+          tokens[r.denom] += r.amount
+        } else {
+          tokens[r.denom] = r.amount
+        }
+      })
+    )
+    return Object.keys(tokens).map((denom) => ({ denom, amount: tokens[denom] }))
+  }, [message])
+
   return (
     <View style={styles.container}>
       <View>
@@ -243,6 +272,41 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 style={styles.arrow}
               />
               <AssetItem asset={message.ustAsset} hideBorder hideApr />
+            </>
+          ) : null}
+          {message.type === 'withdraw liquidity' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              <FarmItem
+                asset={message.availableAsset}
+                farmType={message.farm.type}
+                balance={message.amount * 10 ** 6}
+                rate={message.farm.rate}
+                dex={message.farm.dex}
+                hideBorder
+              />
+            </>
+          ) : null}
+          {message.type === 'claim farm rewards' ? (
+            <>
+              <Typography type="H6" style={styles.title2}>
+                {t(message.type)}
+              </Typography>
+              {totalRewardTokens.map((reward, i) => (
+                <AssetItem
+                  key={reward.denom}
+                  disabled
+                  hideBorder={i === totalRewardTokens.length - 1}
+                  asset={
+                    getTokenAssetDetail(
+                      { denom: reward.denom, amount: String(reward.amount) },
+                      availableAssets
+                    )!
+                  }
+                />
+              ))}
             </>
           ) : null}
         </View>

@@ -108,6 +108,7 @@ export enum FarmType {
 
 export interface Farm {
   type: FarmType
+  dex: string
   symbol: string
   addresses: {
     token: string

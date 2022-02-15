@@ -1,10 +1,10 @@
 import React from 'react'
 import getStyles from './styles'
 import useStyles from '../../theme/useStyles'
-import { View } from 'react-native'
+import { TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import Typography from '../Typography'
 
-interface StarCardProps {
+interface StarCardProps extends TouchableOpacityProps {
   title: string
   value: string
   valueColor?: string
@@ -23,11 +23,12 @@ const StarCard: React.FC<StarCardProps> = ({
   mr,
   mt,
   mb,
+  ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
 
   return (
-    <View
+    <TouchableOpacity
       style={[
         styles.container,
         ml !== undefined ? { marginLeft: theme.baseSpace * ml } : {},
@@ -35,6 +36,7 @@ const StarCard: React.FC<StarCardProps> = ({
         mt !== undefined ? { marginTop: theme.baseSpace * mt } : {},
         mb !== undefined ? { marginBottom: theme.baseSpace * mb } : {},
       ]}
+      {...props}
     >
       <Typography style={styles.title} type="Small" color={theme.palette.grey[7]}>
         {title}
@@ -43,7 +45,7 @@ const StarCard: React.FC<StarCardProps> = ({
         {value}
       </Typography>
       {children}
-    </View>
+    </TouchableOpacity>
   )
 }
 

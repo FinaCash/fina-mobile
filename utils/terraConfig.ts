@@ -24,48 +24,36 @@ export const terraHiveUrl = 'https://hive.terra.dev/graphql' // Astroport
 export const astroportGeneratorContract = 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9'
 export const terraUstPairContract = 'terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552'
 
+export const extraterrestrialPriceApiUrl = 'https://api.extraterrestrial.money/v1/api/prices'
+
 export const supportedTokens = {
   uluna: {
     symbol: 'LUNA',
     denom: 'uluna',
     name: 'Terra LUNA',
     image: 'https://assets.terra.money/icon/600/Luna.png',
-    priceFetcher: async () => {
-      const result = await fetch(`${terraFCDUrl}/v1/market/price?denom=uusd&interval=15m`).then(
-        (r) => r.json()
-      )
-      return {
-        price: result.lastPrice,
-        prevPrice: result.lastPrice - Number(result.oneDayVariation),
-      }
-    },
   },
   MIR: {
     symbol: 'MIR',
     denom: 'MIR',
     name: 'Mirror Token',
     image: 'https://whitelist.mirror.finance/icon/MIR.png',
-    priceFetcher: async () => {
-      const result = await fetch(
-        `${terraLCDUrl}/terra/wasm/v1beta1/contracts/${mirrorOptions.assets.MIR.pair}/store?query_msg=eyJwb29sIjp7fX0%3D`
-      ).then((r) => r.json())
-      const price =
-        Number(get(result, ['query_result', 'assets', 1, 'amount'], '0')) /
-        Number(get(result, ['query_result', 'assets', 0, 'amount'], '0'))
-      return { price }
-    },
   },
   ANC: {
     symbol: 'ANC',
     denom: 'ANC',
     name: 'Anchor Token',
     image: 'https://whitelist.anchorprotocol.com/logo/ANC.png',
-    priceFetcher: async () => {
-      const result = await fetch(`${anchorApiUrl}/v1/anc/1d`).then((r) => r.json())
-      return {
-        price: Number(result[0].anc_price),
-        prevPrice: Number(result[1].anc_price),
-      }
+  },
+  ASTRO: {
+    symbol: 'ASTRO',
+    denom: 'ASTRO',
+    name: 'Astroport Token',
+    image: 'https://app.astroport.fi/tokens/astro.png',
+    addresses: {
+      pair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
+      token: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
+      lpToken: 'terra17n5sunn88hpy965mzvt3079fqx3rttnplg779g',
     },
   },
 }

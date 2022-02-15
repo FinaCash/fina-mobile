@@ -187,12 +187,14 @@ const Stake: React.FC = () => {
               value={formatPercentage(stakingInfo.stakingApr, 2)}
               valueColor={theme.palette.green}
               mb={0}
+              disabled
             />
             <View style={styles.buttonsRow}>
               <StatCard
                 title={t('total delegated')}
                 value={formatCurrency(totalDelegated, luna[0].symbol)}
                 mr={2}
+                disabled
               >
                 <Typography type="Small" color={theme.palette.grey[7]}>
                   {formatCurrency(totalDelegated * luna[0].price * currencyRate, currency, true)}
@@ -202,6 +204,7 @@ const Stake: React.FC = () => {
                 title={t('pending rewards')}
                 value={formatCurrency(stakingInfo.totalRewards * currencyRate, currency, true)}
                 ml={2}
+                disabled
               >
                 <Typography type="Small" color={theme.palette.grey[7]}>
                   {stakingInfo.rewards.length + ' ' + t('tokens')}

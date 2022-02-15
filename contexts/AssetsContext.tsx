@@ -19,6 +19,7 @@ import {
   supportedTokens,
   anchorAddressProvider,
   astroportGeneratorContract,
+  extraterrestrialPriceApiUrl,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import {
@@ -59,6 +60,7 @@ import signAndBroadcastTx from '../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
 import flatten from 'lodash/flatten'
 import uniqBy from 'lodash/uniqBy'
+import get from 'lodash/get'
 
 interface AssetsState {
   availableAssets: AvailableAsset[]
@@ -184,6 +186,7 @@ interface AssetsState {
     terraApp?: TerraApp,
     simulate?: boolean
   ): void
+  claimFarmRewards(farms: Farm[], password?: string, terraApp?: TerraApp, simulate?: boolean): void
 }
 
 const initialState: AssetsState = {
@@ -231,6 +234,7 @@ const initialState: AssetsState = {
   claimAirdrops: () => null,
   provideLiquidity: () => null,
   withdrawLiquidity: () => null,
+  claimFarmRewards: () => null,
 }
 
 const AssetsContext = React.createContext<AssetsState>(initialState)
@@ -271,24 +275,23 @@ const AssetsProvider: React.FC = ({ children }) => {
   const fetchAvailableAssets = React.useCallback(async () => {
     const mAssets = await fetchAvailableMirrorAssets()
     const availableCollaterals = await fetchAvailableCollaterals()
-    const tokens = Object.values(supportedTokens).filter(
-      (t) => !mAssets.find((m: any) => m.symbol === t.symbol)
-    )
+    const tokens = Object.values(supportedTokens)
+
     const tokenAssets = []
+    const prices = await fetch(extraterrestrialPriceApiUrl).then((r) => r.json())
     for (let i = 0; i < tokens.length; i += 1) {
-      const result = await tokens[i].priceFetcher()
+      const price = get(prices, ['prices', tokens[i].symbol, 'price'], 0)
       tokenAssets.push({
         type: AssetTypes.Tokens,
         name: tokens[i].name,
         symbol: tokens[i].symbol,
         coin: { denom: tokens[i].denom },
         image: tokens[i].image,
-        ...result,
+        price,
+        prevPrice: price / (1 + get(prices, ['prices', tokens[i].symbol, 'pct_change_24h'], 0)),
       })
     }
-    // Patch incorrect MIR price on graphql
-    const { price } = await supportedTokens.MIR.priceFetcher()
-    mAssets[mAssets.findIndex((m: any) => m.symbol === 'MIR')].price = price
+
     const availableResult = sortBy(
       [...tokenAssets, ...mAssets, ...availableCollaterals],
       ['-type', 'symbol']
@@ -902,19 +905,64 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         {
           msgs: [
-            new MsgExecuteContract(address, astroportGeneratorContract, {
-              withdraw: {
-                account: address,
-                amount: (amount * 10 ** 6).toFixed(0),
-                lp_token: farm.addresses.lpToken,
-              },
-            }),
+            isMAsset
+              ? new MsgExecuteContract(address, mirrorOptions.staking, {
+                  unbond: {
+                    amount: (amount * 10 ** 6).toFixed(0),
+                    asset_token: farm.addresses.token,
+                  },
+                })
+              : new MsgExecuteContract(address, astroportGeneratorContract, {
+                  withdraw: {
+                    account: address,
+                    amount: (amount * 10 ** 6).toFixed(0),
+                    lp_token: farm.addresses.lpToken,
+                  },
+                }),
             new MsgExecuteContract(address, farm.addresses.lpToken, {
               send: {
                 amount: (amount * 10 ** 6).toFixed(0),
                 contract: farm.addresses.pair,
                 msg: 'eyJ3aXRoZHJhd19saXF1aWRpdHkiOnt9fQ==',
               },
+            }),
+          ],
+        },
+        address,
+        simulate
+      )
+
+      if (!simulate) {
+        fetchAssets()
+        fetchFarmInfo()
+      }
+      return result
+    },
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
+  )
+
+  const claimFarmRewards = React.useCallback(
+    async (farms: Farm[], password?: string, terraApp?: TerraApp, simulate?: boolean) => {
+      const result = await signAndBroadcastTx(
+        decryptSeedPhrase(password),
+        terraApp,
+        hdPath,
+        {
+          msgs: [
+            ...farms
+              .filter((f) => !f.symbol.match(/^m/))
+              .map(
+                (f) =>
+                  new MsgExecuteContract(address, astroportGeneratorContract, {
+                    withdraw: {
+                      account: address,
+                      amount: '0',
+                      lp_token: f.addresses.lpToken,
+                    },
+                  })
+              ),
+            new MsgExecuteContract(address, mirrorOptions.staking, {
+              withdraw: {},
             }),
           ],
         },
@@ -984,6 +1032,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         claimAirdrops,
         provideLiquidity,
         withdrawLiquidity,
+        claimFarmRewards,
       }}
     >
       {children}

@@ -165,8 +165,9 @@
   "short farm": "做空農場",
   "gov staking": "治理質押",
   "total farm assets": "總農場資產",
-  "my farm": "我的{{farm}}",
+  "my farm": "我的農場",
   "assets": "資產",
   "provide liquidity": "供應流量",
-  "withdraw liquidity": "提取流量"
+  "withdraw liquidity": "提取流量",
+  "claim farm rewards": "領取農場獎勵"
 }
