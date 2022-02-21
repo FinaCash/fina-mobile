@@ -118,7 +118,9 @@ const FarmTab: React.FC = () => {
             refreshing={loading}
             onRefresh={async () => {
               setLoading(true)
+              const timeout = setTimeout(() => setLoading(false), 5000)
               await fetchFarmInfo()
+              clearTimeout(timeout)
               setLoading(false)
             }}
           />

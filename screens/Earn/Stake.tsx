@@ -172,7 +172,9 @@ const Stake: React.FC = () => {
             refreshing={loading}
             onRefresh={async () => {
               setLoading(true)
+              const timeout = setTimeout(() => setLoading(false), 5000)
               await Promise.all([fetchAssets(), fetchStakingInfo(), fetchAvailableAssets()])
+              clearTimeout(timeout)
               setLoading(false)
             }}
           />

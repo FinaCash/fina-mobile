@@ -53,7 +53,9 @@ const Trade: React.FC = () => {
             refreshing={loading}
             onRefresh={async () => {
               setLoading(true)
+              const timeout = setTimeout(() => setLoading(false), 5000)
               await Promise.all([fetchAvailableAssets(), fetchAssets(), fetchBorrowInfo()])
+              clearTimeout(timeout)
               setLoading(false)
             }}
           />

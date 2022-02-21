@@ -62,7 +62,9 @@ const AirdropTab: React.FC = () => {
             refreshing={loading}
             onRefresh={async () => {
               setLoading(true)
+              const timeout = setTimeout(() => setLoading(false), 5000)
               await fetchAirdrops()
+              clearTimeout(timeout)
               setLoading(false)
             }}
           />

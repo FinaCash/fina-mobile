@@ -158,12 +158,14 @@ const Home: React.FC = () => {
 
   const refresh = React.useCallback(async () => {
     setLoading(true)
+    const timeout = setTimeout(() => setLoading(false), 5000)
     await Promise.all([
       fetchAssets(),
       fetchAvailableAssets(),
       fetchBorrowInfo(),
       fetchStakingInfo(),
     ])
+    clearTimeout(timeout)
     setLoading(false)
   }, [fetchAssets, fetchAvailableAssets, fetchBorrowInfo, fetchStakingInfo, setLoading])
 
@@ -311,14 +313,14 @@ const Home: React.FC = () => {
                 : true) &&
               // Filter small balance tokens/currents/mAssets
               (hideSmallBalance
-                ? a.type === AssetTypes.Savings ||
-                  a.type === AssetTypes.Collaterals ||
+                ? (filterAsset !== 'overview' && a.type === AssetTypes.Savings) ||
+                  (filterAsset !== 'overview' && a.type === AssetTypes.Collaterals) ||
                   (Number(
-                    a.coin.amount +
+                    Number(a.coin.amount) +
                       (a.coin.denom === 'uluna'
                         ? [...stakingInfo.delegated, ...stakingInfo.unbonding]
                             .map((d) => d.amount)
-                            .reduce((a, b) => a + b, 0)
+                            .reduce((c, b) => c + b, 0)
                         : 0)
                   ) *
                     a.price) /

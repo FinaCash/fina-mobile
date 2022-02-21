@@ -486,19 +486,18 @@ const AssetsProvider: React.FC = ({ children }) => {
           }
         )
       }
-      console.log(msg)
       const result = await signAndBroadcastTx(
         decryptSeedPhrase(password),
         terraApp,
         hdPath,
         { msgs: [msg as any] },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchBorrowInfo()
-      }
       return result
     },
     [fetchAssets, fetchBorrowInfo, decryptSeedPhrase, availableAssets, address, hdPath]
@@ -522,11 +521,9 @@ const AssetsProvider: React.FC = ({ children }) => {
           memo,
         },
         address,
-        simulate
+        simulate,
+        () => fetchAssets()
       )
-      if (!simulate) {
-        fetchAssets()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath]
@@ -547,11 +544,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => fetchAssets()
       )
-      if (!simulate) {
-        fetchAssets()
-      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -574,11 +569,9 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => fetchAssets()
       )
-      if (!simulate) {
-        fetchAssets()
-      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath]
@@ -599,12 +592,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchBorrowInfo()
-      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
@@ -625,12 +618,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchBorrowInfo()
-      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
@@ -645,12 +638,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchBorrowInfo()
-      }
       return result
     },
     [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
@@ -676,11 +669,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchBorrowInfo()
+        }
       )
-      if (!simulate) {
-        fetchBorrowInfo()
-      }
       return result
     },
     [decryptSeedPhrase, address, hdPath, fetchBorrowInfo]
@@ -706,11 +699,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs: ops.generateWithAddress(address) as any },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchBorrowInfo()
+        }
       )
-      if (!simulate) {
-        fetchBorrowInfo()
-      }
       return result
     },
     [decryptSeedPhrase, address, hdPath, fetchBorrowInfo]
@@ -732,12 +725,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           msgs: [new MsgDelegate(address, validator, new Coin(coin.denom, coin.amount * 10 ** 6))],
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchStakingInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchStakingInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
@@ -761,12 +754,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           ],
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchStakingInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchStakingInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
@@ -796,12 +789,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           ],
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchStakingInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchStakingInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
@@ -819,12 +812,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           ),
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchStakingInfo()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchStakingInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, stakingInfo, fetchStakingInfo]
@@ -865,12 +858,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         { msgs },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchAirdrops()
+        }
       )
-      if (!simulate) {
-        fetchAssets()
-        fetchAirdrops()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchAirdrops]
@@ -931,13 +924,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           ],
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchFarmInfo()
+        }
       )
-
-      if (!simulate) {
-        fetchAssets()
-        fetchFarmInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
@@ -983,13 +975,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           ],
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchFarmInfo()
+        }
       )
-
-      if (!simulate) {
-        fetchAssets()
-        fetchFarmInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
@@ -1021,13 +1012,12 @@ const AssetsProvider: React.FC = ({ children }) => {
           ],
         },
         address,
-        simulate
+        simulate,
+        () => {
+          fetchAssets()
+          fetchFarmInfo()
+        }
       )
-
-      if (!simulate) {
-        fetchAssets()
-        fetchFarmInfo()
-      }
       return result
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]

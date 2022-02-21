@@ -110,7 +110,9 @@ const Loan: React.FC = () => {
             refreshing={loading}
             onRefresh={async () => {
               setLoading(true)
+              const timeout = setTimeout(() => setLoading(false), 5000)
               await Promise.all([fetchBorrowInfo(), fetchAssets(), fetchAvailableAssets()])
+              clearTimeout(timeout)
               setLoading(false)
             }}
           />

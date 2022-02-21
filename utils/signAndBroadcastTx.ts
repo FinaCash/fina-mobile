@@ -47,7 +47,8 @@ const signAndBroadcastTx = async (
   hdPath: number[],
   options: CreateTxOptions,
   address: string,
-  simulate?: boolean
+  simulate?: boolean,
+  onFinish?: () => void
 ) => {
   // TODO: use rn mnemonic key
   let key: Key = new MnemonicKey({
@@ -77,6 +78,10 @@ const signAndBroadcastTx = async (
   if (result.height === 0 || !result.raw_log.match(/^\[/)) {
     throw new Error(result.raw_log)
   }
+  onFinish &&
+    setTimeout(() => {
+      onFinish()
+    }, 2000)
   return result
 }
 
