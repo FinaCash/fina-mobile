@@ -1,4 +1,4 @@
-package com.fina.wallet;
+package com.fina.cash;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 import android.content.Intent;
 import expo.modules.devlauncher.DevLauncherController;

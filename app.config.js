@@ -1,10 +1,10 @@
 import 'dotenv/config'
 
 export default {
-  name: 'Fina',
+  name: 'Fina Wallet',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.1.1',
+  version: '1.0.0',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -21,12 +21,12 @@ export default {
   },
   assetBundlePatterns: ['**/*'],
   ios: {
-    bundleIdentifier: 'com.fina.wallet',
+    bundleIdentifier: 'com.fina.cash',
     supportsTablet: true,
     userInterfaceStyle: 'automatic',
   },
   android: {
-    package: 'com.fina.wallet',
+    package: 'com.fina.cash',
     userInterfaceStyle: 'automatic',
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
