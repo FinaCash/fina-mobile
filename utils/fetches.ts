@@ -28,10 +28,12 @@ import {
   anchorAirdropApiUrl,
   anchorApiUrl,
   anchorClient,
+  astroApiUrl,
   astroportGeneratorContract,
   colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
+  supportedTokens,
   terraFCDUrl,
   terraHiveUrl,
   terraLCDClient,
@@ -288,10 +290,12 @@ export const fetchLunaStakingInfo = async (address: string) => {
     completion: new Date(u.releaseTime).getTime(),
   }))
   const rewards = stakingResult.rewards.denoms.map((r: any) => ({ ...r, amount: Number(r.amount) }))
-  const total = await terraLCDClient.market.swapRate(
-    new Coin('uluna', Number(stakingResult.rewards.total)),
-    'uusd'
-  )
+  const total = Number(stakingResult.rewards.total)
+    ? await terraLCDClient.market.swapRate(
+        new Coin('uluna', Number(stakingResult.rewards.total)),
+        'uusd'
+      )
+    : { amount: { toNumber: () => 0 } }
   const totalRewards = total.amount.toNumber()
 
   const stakingInfo: StakingInfo = {
@@ -381,7 +385,10 @@ export const fetchClaimableAirdrops = async (address: string): Promise<Airdrop[]
   return airdrops
 }
 
-export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
+export const fetchFarmingInfo = async (
+  address: string,
+  availableAssets: AvailableAsset[]
+): Promise<Farm[]> => {
   const {
     data: { assets },
   } = await fetch(mirrorGraphqlUrl, {
@@ -445,10 +452,41 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
       },
     }),
   }).then((r) => r.json())
-  const {
-    data: {
-      [mirrorOptions.assets.MIR.lpToken]: { contractQuery: mirLongRewards },
+  const { data: tokenRewardsInfo } = await fetch(terraHiveUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
     },
+    body: JSON.stringify({
+      query: `
+        {
+          ${Object.values(supportedTokens)
+            .map(
+              (t) => `
+            ${t.addresses.lpToken}: wasm {
+              contractQuery(
+                contractAddress: "${astroportGeneratorContract}"
+                query: {
+                  pending_token: {
+                    lp_token: "${t.addresses.lpToken}"
+                    user: "${address}"
+                  }
+                }
+              )
+            }
+          `
+            )
+            .reduce((a, b) => a + b, '')}
+        }
+      `,
+    }),
+  }).then((r) => r.json())
+  const {
+    data: tokensInfo,
+    // {
+    //   [mirrorOptions.assets.MIR.lpToken]: { contractQuery: mirLongBalance },
+    //   [mirrorOptions.assets.MIR.pair]: { contractQuery: mirPool },
+    // }
   } = await fetch(terraHiveUrl, {
     method: 'POST',
     headers: {
@@ -457,57 +495,56 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     body: JSON.stringify({
       query: `
         {
-          ${mirrorOptions.assets.MIR.lpToken}: wasm {
-            contractQuery(
-              contractAddress: "${astroportGeneratorContract}"
-              query: {
-                pending_token: {
-                  lp_token: "${mirrorOptions.assets.MIR.lpToken}"
-                  user: "${address}"
+          ${Object.values(supportedTokens)
+            .map(
+              (t) => `
+                ${t.addresses.lpToken}: wasm {
+                  contractQuery(
+                    contractAddress: "${astroportGeneratorContract}"
+                    query: {
+                      deposit: {
+                        lp_token: "${t.addresses.lpToken}"
+                        user: "${address}"
+                      }
+                    }
+                  )
                 }
-              }
+                ${t.addresses.pair}: wasm {
+                  contractQuery(
+                    contractAddress: "${t.addresses.pair}"
+                    query: {
+                      pool: { }
+                    }
+                  )
+                }
+              `
             )
-          }
+            .reduce((a, b) => a + b, '')}
         }
       `,
     }),
   }).then((r) => r.json())
   const {
-    data: {
-      [mirrorOptions.assets.MIR.lpToken]: { contractQuery: mirLongBalance },
-      [mirrorOptions.assets.MIR.pair]: { contractQuery: mirPool },
-    },
-  } = await fetch(terraHiveUrl, {
+    data: { pools },
+  } = await fetch(astroApiUrl, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
     },
     body: JSON.stringify({
       query: `
-        {
-          ${mirrorOptions.assets.MIR.lpToken}: wasm {
-            contractQuery(
-              contractAddress: "${astroportGeneratorContract}"
-              query: {
-                deposit: {
-                  lp_token: "${mirrorOptions.assets.MIR.lpToken}"
-                  user: "${address}"
-                }
-              }
-            )
-          }
-          ${mirrorOptions.assets.MIR.pair}: wasm {
-            contractQuery(
-              contractAddress: "${mirrorOptions.assets.MIR.pair}"
-              query: {
-                pool: { }
-              }
-            )
+        query {
+          pools {
+            pool_address
+            total_rewards {
+              apr
+            }
           }
         }
       `,
     }),
   }).then((r) => r.json())
+  const astroRewardsInfo = keyBy(pools, 'pool_address')
 
   const rewardsInfo = keyBy(JSON.parse(rewardsResult).reward_infos, 'asset_token')
 
@@ -515,30 +552,100 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     .filter((a: any) => a.symbol !== 'MIR')
     .sort((a: any, b: any) => (a.symbol > b.symbol ? 1 : -1))
   return [
-    ...assets
-      .filter((a: any) => a.symbol === 'MIR')
-      .map((a: any) => ({
+    ...availableAssets
+      .filter((a) => !!(supportedTokens as any)[a.coin.denom])
+      .map((a) => ({
         type: FarmType.Long,
         symbol: a.symbol,
         dex: 'Astroport',
-        addresses: {
-          token: a.token,
-          lpToken: a.lpToken,
-          pair: a.pair,
-        },
+        addresses: (supportedTokens as any)[a.coin.denom].addresses,
         rate: {
           token:
-            Number(get(mirPool, ['assets', 0, 'amount'], 0)) /
-            Number(get(mirPool, 'total_share', 1)),
+            Number(
+              get(
+                tokensInfo,
+                [
+                  (supportedTokens as any)[a.coin.denom].addresses.pair,
+                  'contractQuery',
+                  'assets',
+                  0,
+                  'amount',
+                ],
+                0
+              )
+            ) /
+            Number(
+              get(
+                tokensInfo,
+                [
+                  (supportedTokens as any)[a.coin.denom].addresses.pair,
+                  'contractQuery',
+                  'total_share',
+                ],
+                1
+              )
+            ),
           ust:
-            Number(get(mirPool, ['assets', 1, 'amount'], 0)) /
-            Number(get(mirPool, 'total_share', 1)),
+            Number(
+              get(
+                tokensInfo,
+                [
+                  (supportedTokens as any)[a.coin.denom].addresses.pair,
+                  'contractQuery',
+                  'assets',
+                  1,
+                  'amount',
+                ],
+                0
+              )
+            ) /
+            Number(
+              get(
+                tokensInfo,
+                [
+                  (supportedTokens as any)[a.coin.denom].addresses.pair,
+                  'contractQuery',
+                  'total_share',
+                ],
+                1
+              )
+            ),
         },
-        apr: Number(a.statistic.apr.long),
-        balance: Number(mirLongBalance),
+        apr: Number(
+          get(
+            astroRewardsInfo,
+            [(supportedTokens as any)[a.coin.denom].addresses.pair, 'total_rewards', 'apr'],
+            0
+          )
+        ),
+        balance: Number(
+          get(
+            tokensInfo,
+            [(supportedTokens as any)[a.coin.denom].addresses.lpToken, 'contractQuery'],
+            0
+          )
+        ),
         rewards: [
-          { denom: 'MIR', amount: Number(mirLongRewards.pending) },
-          { denom: 'ASTRO', amount: Number(mirLongRewards.pending_on_proxy) },
+          {
+            denom: 'MIR',
+            amount: Number(
+              get(
+                tokenRewardsInfo,
+                [mirrorOptions.assets.MIR.lpToken, 'contractQuery', 'pending'],
+                '0'
+              )
+            ),
+          },
+          {
+            denom: 'ASTRO',
+            amount: Number(
+              get(
+                tokenRewardsInfo,
+                [mirrorOptions.assets.MIR.lpToken, 'contractQuery', 'pending_on_proxy'],
+                '0'
+              )
+            ),
+          },
         ],
       })),
     ...sortedMAssets.map((a: any) => ({

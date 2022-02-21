@@ -17,8 +17,8 @@ import { useAssetsContext } from '../../contexts/AssetsContext'
 import {
   anchorAddressProvider,
   mirrorOptions,
+  supportedTokens,
   terraLCDClient,
-  terraUstPairContract,
 } from '../../utils/terraConfig'
 import {
   getCurrentAssetDetail,
@@ -34,6 +34,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import get from 'lodash/get'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -88,14 +89,15 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
             ? queryExchangeNativeSimulation
             : queryExchangeReverseNativeSimulation)({
             lcd: terraLCDClient as any,
-            pair_contract_address: terraUstPairContract,
+            pair_contract_address: supportedTokens.uluna.addresses.pair,
             denom: isUstBase ? currentAsset.coin.denom : 'uluna',
             amount: a,
           })(anchorAddressProvider)
           // ANC / Collateral
         } else if (
           (defaultSymbol || asset.symbol) === 'ANC' ||
-          (defaultSymbol || asset.symbol).match(/^B/)
+          (defaultSymbol || asset.symbol).match(/^B/) ||
+          (defaultSymbol || asset.symbol) === 'ASTRO'
         ) {
           let pairContract = ''
           let contract = ''
@@ -108,6 +110,17 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
           } else if ((defaultSymbol || asset.symbol) === 'BETH') {
             pairContract = anchorAddressProvider.terraswapbethUstPair()
             contract = anchorAddressProvider.bEthToken()
+          } else {
+            pairContract = get(
+              supportedTokens,
+              [defaultSymbol || asset.symbol, 'addresses', 'pair'],
+              ''
+            )
+            contract = get(
+              supportedTokens,
+              [defaultSymbol || asset.symbol, 'addresses', 'token'],
+              ''
+            )
           }
           if (isUstBase) {
             rate = await (which === 'from'

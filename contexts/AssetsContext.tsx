@@ -12,6 +12,7 @@ import {
   Int,
 } from '@terra-money/terra.js'
 import { Mirror, MirrorAirdrop, UST } from '@mirror-protocol/mirror.js'
+import base64 from 'react-native-base64'
 import {
   terraLCDClient as terra,
   mirrorOptions,
@@ -310,12 +311,16 @@ const AssetsProvider: React.FC = ({ children }) => {
     }
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
+    const astroBalance = await fetch(
+      `https://lcd.terra.dev/wasm/contracts/${supportedTokens.ASTRO.addresses.token}/store?query_msg={"balance":{"address":"${address}"}}`
+    ).then((r) => r.json())
     setRawAssets((a) => {
       return uniqBy(
         [
           ...nativeBalances,
           ...anchorBalances,
           ...mAssetsBalances,
+          { denom: 'ASTRO', amount: astroBalance.result.balance },
           ...a.filter((aa) => aa.denom.match(/^b/)), // Do not replace collaterals
         ],
         'denom'
@@ -341,9 +346,9 @@ const AssetsProvider: React.FC = ({ children }) => {
   }, [address, setAirdrops])
 
   const fetchFarmInfo = React.useCallback(async () => {
-    const result = await fetchFarmingInfo(address)
+    const result = await fetchFarmingInfo(address, availableAssets)
     setFarmInfo(result)
-  }, [address, setFarmInfo])
+  }, [address, setFarmInfo, availableAssets])
 
   React.useEffect(() => {
     if (address) {
@@ -426,13 +431,62 @@ const AssetsProvider: React.FC = ({ children }) => {
         )
         msg.sender = address
         // Native
-      } else {
+      } else if (from.denom.match(/^u/) && toDenom.match(/^u/)) {
         msg = new MsgSwap(
           address,
           new Coin(from.denom, (Number(from.amount) * 10 ** 6).toString()),
           toDenom
         )
+        // Buy Other Token
+      } else if (from.denom === 'uusd' && Object.keys(supportedTokens).includes(toDenom)) {
+        msg = new MsgExecuteContract(
+          address,
+          get(supportedTokens, [toDenom, 'addresses', 'pair'], ''),
+          {
+            swap: {
+              belief_price: String(
+                get(
+                  availableAssets.find((a) => a.symbol === toDenom),
+                  'price'
+                )
+              ),
+              max_spread: '0.005',
+              offer_asset: {
+                amount: (Number(from.amount) * 10 ** 6).toFixed(0),
+                info: {
+                  native_token: {
+                    denom: 'uusd',
+                  },
+                },
+              },
+            },
+          },
+          [new Coin('uusd', new Int((from.amount * 10 ** 6).toFixed(0)))]
+        )
+        // Sell Other Token
+      } else if (toDenom === 'uusd' && Object.keys(supportedTokens).includes(from.denom)) {
+        msg = new MsgExecuteContract(
+          address,
+          get(supportedTokens, [from.denom, 'addresses', 'token'], ''),
+          {
+            send: {
+              amount: (Number(from.amount) * 10 ** 6).toFixed(0),
+              contract: get(supportedTokens, [from.denom, 'addresses', 'pair'], ''),
+              msg: base64.encode(
+                `{"swap":{"max_spread":"0.005","belief_price":"${
+                  1 /
+                  get(
+                    availableAssets.find((a) => a.symbol === from.denom),
+                    'price',
+                    1
+                  )
+                }"}}`
+              ),
+            },
+          }
+        )
       }
+      console.log(msg)
       const result = await signAndBroadcastTx(
         decryptSeedPhrase(password),
         terraApp,

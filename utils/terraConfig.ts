@@ -21,42 +21,10 @@ export const terraLCDClient = new LCDClient({
 
 export const terraFCDUrl = 'https://fcd.terra.dev'
 export const terraHiveUrl = 'https://hive.terra.dev/graphql' // Astroport
+export const astroApiUrl = 'https://api.astroport.fi/graphql'
 export const astroportGeneratorContract = 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9'
-export const terraUstPairContract = 'terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552'
 
 export const extraterrestrialPriceApiUrl = 'https://api.extraterrestrial.money/v1/api/prices'
-
-export const supportedTokens = {
-  uluna: {
-    symbol: 'LUNA',
-    denom: 'uluna',
-    name: 'Terra LUNA',
-    image: 'https://assets.terra.money/icon/600/Luna.png',
-  },
-  MIR: {
-    symbol: 'MIR',
-    denom: 'MIR',
-    name: 'Mirror Token',
-    image: 'https://whitelist.mirror.finance/icon/MIR.png',
-  },
-  ANC: {
-    symbol: 'ANC',
-    denom: 'ANC',
-    name: 'Anchor Token',
-    image: 'https://whitelist.anchorprotocol.com/logo/ANC.png',
-  },
-  ASTRO: {
-    symbol: 'ASTRO',
-    denom: 'ASTRO',
-    name: 'Astroport Token',
-    image: 'https://app.astroport.fi/tokens/astro.png',
-    addresses: {
-      pair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
-      token: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
-      lpToken: 'terra17n5sunn88hpy965mzvt3079fqx3rttnplg779g',
-    },
-  },
-}
 
 export const anchorAddressProvider = new AddressProviderFromJson(columbus5)
 
@@ -71,6 +39,52 @@ export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'
 export const terraStationUrl = 'https://station.terra.money'
 
 export const mirrorOptions = DEFAULT_MIRROR_OPTIONS
+
+export const supportedTokens = {
+  uluna: {
+    symbol: 'LUNA',
+    denom: 'uluna',
+    name: 'Terra LUNA',
+    image: 'https://assets.terra.money/icon/600/Luna.png',
+    addresses: {
+      pair: 'terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552',
+      lpToken: 'terra1m24f7k4g66gnh9f7uncp32p722v0kyt3q4l3u5',
+    },
+  },
+  MIR: {
+    symbol: 'MIR',
+    denom: 'MIR',
+    name: 'Mirror Token',
+    image: 'https://whitelist.mirror.finance/icon/MIR.png',
+    addresses: {
+      pair: mirrorOptions.assets.MIR.pair,
+      token: mirrorOptions.assets.MIR.token,
+      lpToken: mirrorOptions.assets.MIR.lpToken,
+    },
+  },
+  ANC: {
+    symbol: 'ANC',
+    denom: 'ANC',
+    name: 'Anchor Token',
+    image: 'https://whitelist.anchorprotocol.com/logo/ANC.png',
+    addresses: {
+      pair: anchorAddressProvider.ancUstPair(),
+      token: anchorAddressProvider.ANC(),
+      lpToken: anchorAddressProvider.ancUstLPToken(),
+    },
+  },
+  ASTRO: {
+    symbol: 'ASTRO',
+    denom: 'ASTRO',
+    name: 'Astroport Token',
+    image: 'https://app.astroport.fi/tokens/astro.png',
+    addresses: {
+      pair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
+      token: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
+      lpToken: 'terra17n5sunn88hpy965mzvt3079fqx3rttnplg779g',
+    },
+  },
+}
 
 export const colleteralsInfo = {
   BETH: {
