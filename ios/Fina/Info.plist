@@ -25,7 +25,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.fina.cash</string>
+          <string>com.fina.wallet</string>
         </array>
       </dict>
       <dict>

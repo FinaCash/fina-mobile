@@ -10,7 +10,7 @@ import SearchIcon from '../../assets/images/icons/search.svg'
 import TransakIcon from '../../assets/images/icons/transak.svg'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
 import ReceiveIcon from '../../assets/images/icons/receive.svg'
-// import TradeIcon from '../../assets/images/icons/swap.svg'
+// import EmptyImage from '../../assets/images/empty.svg'
 import AssetItem from '../../components/AssetItem'
 import { LinearGradient } from 'expo-linear-gradient'
 import Typography from '../../components/Typography'
@@ -367,6 +367,7 @@ const Home: React.FC = () => {
               ) : null}
             </View>
           ),
+          ListEmptyComponent: <View style={styles.emptyContainer}>{/* <EmptyImage /> */}</View>,
         }}
       />
     </LinearGradient>

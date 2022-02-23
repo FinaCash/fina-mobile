@@ -74,6 +74,9 @@ const AirdropTab: React.FC = () => {
         renderItem={({ item }) => (
           <AssetItem
             asset={item}
+            disabled={
+              !airdrops.find((a) => a.coin.denom === item.coin.denom && Number(a.coin.amount) > 0)
+            }
             onPress={() =>
               setClaimingAirdrops([airdrops.find((a) => a.coin.denom === item.coin.denom)!])
             }
@@ -81,7 +84,11 @@ const AirdropTab: React.FC = () => {
         )}
         ListFooterComponent={
           <View style={styles.margin}>
-            <Button size="Large" onPress={() => setClaimingAirdrops(airdrops)}>
+            <Button
+              size="Large"
+              onPress={() => setClaimingAirdrops(airdrops.filter((a) => Number(a.coin.amount) > 0))}
+              disabled={!airdrops.find((a) => Number(a.coin.amount) > 0)}
+            >
               {t('claim all')}
             </Button>
           </View>

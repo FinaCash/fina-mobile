@@ -112,13 +112,14 @@
   "distribution APR": "Distribution APR",
   "LTV": "Loan To Value",
   "borrow limit": "Borrow Limit",
-  "max ltv": "60% (Max)",
-  "recommended ltv": "45% (Recommended)",
+  "max ltv": "95% (Max)",
+  "recommended ltv": "75% (Recommended)",
   "collaterals": "Collaterals",
   "repay": "Repay",
   "not provided": "Available",
   "provided": "Provided",
   "collateral max ltv": "Max LTV",
+  "borrow usage": "Borrow Usage",
   "borrow APR calculation": "Reward APR - Borrow APR\n{{rewardsRate}} - {{borrowRate}}\n= {{netApr}}",
   "provide": "Provide",
   "pending rewards": "Pending Rewards",
@@ -169,5 +170,6 @@
   "assets": "Assets",
   "provide liquidity": "Provide Liquidity",
   "withdraw liquidity": "Withdraw Liquidity",
-  "claim farm rewards": "Claim Farm Rewards"
+  "claim farm rewards": "Claim Farm Rewards",
+  "claim airdrops": "Claim Airdrops"
 }

@@ -35,6 +35,7 @@ const Stake: React.FC = () => {
     fetchStakingInfo,
     fetchAssets,
     fetchAvailableAssets,
+    fetchBorrowInfo,
   } = useAssetsContext()
   const [loading, setLoading] = React.useState(false)
   const { showActionSheetWithOptions } = useActionSheet()
@@ -173,7 +174,12 @@ const Stake: React.FC = () => {
             onRefresh={async () => {
               setLoading(true)
               const timeout = setTimeout(() => setLoading(false), 5000)
-              await Promise.all([fetchAssets(), fetchStakingInfo(), fetchAvailableAssets()])
+              await Promise.all([
+                fetchAssets(),
+                fetchStakingInfo(),
+                fetchAvailableAssets(),
+                fetchBorrowInfo(),
+              ])
               clearTimeout(timeout)
               setLoading(false)
             }}

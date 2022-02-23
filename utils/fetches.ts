@@ -481,13 +481,7 @@ export const fetchFarmingInfo = async (
       `,
     }),
   }).then((r) => r.json())
-  const {
-    data: tokensInfo,
-    // {
-    //   [mirrorOptions.assets.MIR.lpToken]: { contractQuery: mirLongBalance },
-    //   [mirrorOptions.assets.MIR.pair]: { contractQuery: mirPool },
-    // }
-  } = await fetch(terraHiveUrl, {
+  const { data: tokensInfo } = await fetch(terraHiveUrl, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -551,7 +545,7 @@ export const fetchFarmingInfo = async (
   const sortedMAssets = assets
     .filter((a: any) => a.symbol !== 'MIR')
     .sort((a: any, b: any) => (a.symbol > b.symbol ? 1 : -1))
-  return [
+  const farms = [
     ...availableAssets
       .filter((a) => !!(supportedTokens as any)[a.coin.denom])
       .map((a) => ({
@@ -568,7 +562,7 @@ export const fetchFarmingInfo = async (
                   (supportedTokens as any)[a.coin.denom].addresses.pair,
                   'contractQuery',
                   'assets',
-                  0,
+                  a.coin.denom === 'uluna' ? 1 : 0,
                   'amount',
                 ],
                 0
@@ -593,7 +587,7 @@ export const fetchFarmingInfo = async (
                   (supportedTokens as any)[a.coin.denom].addresses.pair,
                   'contractQuery',
                   'assets',
-                  1,
+                  a.coin.denom === 'uluna' ? 0 : 1,
                   'amount',
                 ],
                 0
@@ -627,11 +621,15 @@ export const fetchFarmingInfo = async (
         ),
         rewards: [
           {
-            denom: 'MIR',
+            denom: a.coin.denom,
             amount: Number(
               get(
                 tokenRewardsInfo,
-                [mirrorOptions.assets.MIR.lpToken, 'contractQuery', 'pending'],
+                [
+                  (supportedTokens as any)[a.coin.denom].addresses.lpToken,
+                  'contractQuery',
+                  'pending_on_proxy',
+                ],
                 '0'
               )
             ),
@@ -641,12 +639,16 @@ export const fetchFarmingInfo = async (
             amount: Number(
               get(
                 tokenRewardsInfo,
-                [mirrorOptions.assets.MIR.lpToken, 'contractQuery', 'pending_on_proxy'],
+                [
+                  (supportedTokens as any)[a.coin.denom].addresses.lpToken,
+                  'contractQuery',
+                  'pending',
+                ],
                 '0'
               )
             ),
           },
-        ],
+        ].filter((a: any) => a.amount > 0),
       })),
     ...sortedMAssets.map((a: any) => ({
       type: FarmType.Long,
@@ -667,23 +669,25 @@ export const fetchFarmingInfo = async (
         .filter((a: any) => a > 0)
         .map((a) => ({ amount: Number(a), denom: 'MIR' })),
     })),
-    ...sortedMAssets.map((a: any) => ({
-      type: FarmType.Short,
-      symbol: a.symbol,
-      dex: 'Mirror',
-      addresses: {
-        token: a.token,
-        lpToken: a.lpToken,
-        pair: a.pair,
-      },
-      rate: {
-        token: 1,
-        ust: 0,
-      },
-      apr: Number(a.statistic.apr.short),
-      // TODO
-      balance: 0,
-      rewards: [],
-    })),
+    // ...sortedMAssets.map((a: any) => ({
+    //   type: FarmType.Short,
+    //   symbol: a.symbol,
+    //   dex: 'Mirror',
+    //   addresses: {
+    //     token: a.token,
+    //     lpToken: a.lpToken,
+    //     pair: a.pair,
+    //   },
+    //   rate: {
+    //     token: 1,
+    //     ust: 0,
+    //   },
+    //   apr: Number(a.statistic.apr.short),
+    //   // TODO
+    //   balance: 0,
+    //   rewards: [],
+    // })),
   ]
+  console.log(farms)
+  return farms
 }

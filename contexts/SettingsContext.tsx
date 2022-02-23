@@ -23,7 +23,7 @@ const initialState: SettingsState = {
   currencyRate: 1,
   theme: ThemeType.Light,
   systemDefaultTheme: true,
-  hideSmallBalance: false,
+  hideSmallBalance: true,
   setCurrency: () => null,
   setTheme: () => null,
   setSystemDefaultTheme: () => null,

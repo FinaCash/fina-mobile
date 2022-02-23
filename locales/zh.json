@@ -112,13 +112,14 @@
   "distribution APR": "獎賞 APR",
   "LTV": "貸款價值比",
   "borrow limit": "借貸上限",
-  "max ltv": "60% (最大)",
-  "recommended ltv": "45% (建議)",
+  "max ltv": "95% (最大)",
+  "recommended ltv": "75% (建議)",
   "collaterals": "抵押品",
   "repay": "還款",
   "not provided": "可用",
   "provided": "已抵押",
   "collateral max ltv": "最大 LTV",
+  "borrow usage": "借貸比率",
   "borrow APR calculation": "獎賞 APR - 借貸 APR\n{{rewardsRate}} - {{borrowRate}}\n= {{netApr}}",
   "provide": "抵押",
   "pending rewards": "待領獎賞",
@@ -169,5 +170,6 @@
   "assets": "資產",
   "provide liquidity": "供應流量",
   "withdraw liquidity": "提取流量",
-  "claim farm rewards": "領取農場獎勵"
+  "claim farm rewards": "領取農場獎勵",
+  "claim airdrops": "領取空投"
 }

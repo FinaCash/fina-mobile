@@ -71,4 +71,7 @@ export default (theme: Theme) => ({
   buttonIcon: {
     marginRight: 0,
   },
+  emptyContainer: {
+    margin: 8 * theme.baseSpace,
+  },
 })

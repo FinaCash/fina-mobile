@@ -20,6 +20,7 @@ import ConfirmClaimFarmRewardsModal from '../../components/ConfirmModals/Confirm
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { useAccountsContext } from '../../contexts/AccountsContext'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 
 const FarmTab: React.FC = () => {
   const { t } = useLocalesContext()
@@ -27,6 +28,7 @@ const FarmTab: React.FC = () => {
   const { farmInfo, availableAssets, fetchFarmInfo, claimFarmRewards } = useAssetsContext()
   const { currency, currencyRate } = useSettingsContext()
   const { type } = useAccountsContext()
+  const { showActionSheetWithOptions } = useActionSheet()
   const availableAssetsMap = React.useMemo(
     () => ({ ...keyBy(availableAssets, 'symbol'), UST: { price: 1 } }),
     [availableAssets]
@@ -180,7 +182,21 @@ const FarmTab: React.FC = () => {
                   .map((f) => (
                     <MyFarmItem
                       key={f.symbol}
-                      onPress={() => Actions.WithdrawLiquidity({ farm: f })}
+                      onPress={() => {
+                        showActionSheetWithOptions(
+                          {
+                            options: [t('provide liquidity'), t('withdraw liquidity'), t('cancel')],
+                            cancelButtonIndex: 2,
+                          },
+                          (i) => {
+                            if (i === 0) {
+                              Actions.ProvideLiquidity({ farm: f })
+                            } else if (i === 1) {
+                              Actions.WithdrawLiquidity({ farm: f })
+                            }
+                          }
+                        )
+                      }}
                       farm={f}
                       availableAssetsMap={availableAssetsMap as any}
                     />

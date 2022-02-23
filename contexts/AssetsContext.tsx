@@ -21,6 +21,7 @@ import {
   anchorAddressProvider,
   astroportGeneratorContract,
   extraterrestrialPriceApiUrl,
+  terraLCDUrl,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets } from '../utils/transformAssets'
 import {
@@ -306,13 +307,13 @@ const AssetsProvider: React.FC = ({ children }) => {
     // Fetch my assets
     const balances = await terra.bank.balance(address)
     const nativeBalances = JSON.parse(balances[0].toJSON())
-    if (!nativeBalances.find((b: any) => b.denom === 'uluna')) {
-      nativeBalances.push({ denom: 'uluna', amount: '0' })
-    }
+    // if (!nativeBalances.find((b: any) => b.denom === 'uluna')) {
+    //   nativeBalances.push({ denom: 'uluna', amount: '0' })
+    // }
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
     const astroBalance = await fetch(
-      `https://lcd.terra.dev/wasm/contracts/${supportedTokens.ASTRO.addresses.token}/store?query_msg={"balance":{"address":"${address}"}}`
+      `${terraLCDUrl}/wasm/contracts/${supportedTokens.ASTRO.addresses.token}/store?query_msg={"balance":{"address":"${address}"}}`
     ).then((r) => r.json())
     setRawAssets((a) => {
       return uniqBy(
@@ -320,9 +321,11 @@ const AssetsProvider: React.FC = ({ children }) => {
           ...nativeBalances,
           ...anchorBalances,
           ...mAssetsBalances,
-          { denom: 'ASTRO', amount: astroBalance.result.balance },
+          Number(astroBalance.result.balance) > 0
+            ? { denom: 'ASTRO', amount: astroBalance.result.balance }
+            : undefined,
           ...a.filter((aa) => aa.denom.match(/^b/)), // Do not replace collaterals
-        ],
+        ].filter((a) => a),
         'denom'
       )
     })
@@ -886,12 +889,14 @@ const AssetsProvider: React.FC = ({ children }) => {
         hdPath,
         {
           msgs: [
-            new MsgExecuteContract(address, farm.addresses.token, {
-              increase_allowance: {
-                amount: (amount * 10 ** 6).toFixed(0),
-                spender: isMAsset ? mirrorOptions.staking : farm.addresses.pair,
-              },
-            }),
+            farm.symbol === 'LUNA'
+              ? undefined
+              : new MsgExecuteContract(address, farm.addresses.token, {
+                  increase_allowance: {
+                    amount: (amount * 10 ** 6).toFixed(0),
+                    spender: isMAsset ? mirrorOptions.staking : farm.addresses.pair,
+                  },
+                }),
             new MsgExecuteContract(
               address,
               isMAsset ? mirrorOptions.staking : farm.addresses.pair,
@@ -900,11 +905,18 @@ const AssetsProvider: React.FC = ({ children }) => {
                   assets: [
                     {
                       amount: (amount * 10 ** 6).toFixed(0),
-                      info: {
-                        token: {
-                          contract_addr: farm.addresses.token,
-                        },
-                      },
+                      info:
+                        farm.symbol === 'LUNA'
+                          ? {
+                              native_token: {
+                                denom: 'uluna',
+                              },
+                            }
+                          : {
+                              token: {
+                                contract_addr: farm.addresses.token,
+                              },
+                            },
                     },
                     {
                       amount: (ustAmount * 10 ** 6).toFixed(0),
@@ -919,9 +931,14 @@ const AssetsProvider: React.FC = ({ children }) => {
                   ...(isMAsset ? {} : { auto_stake: true }),
                 },
               },
-              [new Coin('uusd', new Int((ustAmount * 10 ** 6).toFixed(0)))]
+              [
+                new Coin('uusd', new Int((ustAmount * 10 ** 6).toFixed(0))),
+                farm.symbol === 'LUNA'
+                  ? new Coin('uluna', new Int((amount * 10 ** 6).toFixed(0)))
+                  : undefined,
+              ].filter((a) => a) as any
             ),
-          ],
+          ].filter((a) => a) as any,
         },
         address,
         simulate,

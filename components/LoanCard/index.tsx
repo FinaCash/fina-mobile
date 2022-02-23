@@ -55,22 +55,22 @@ const LoanCard: React.FC<LoanCardProps> = ({
   const netApr = borrowInfo.rewardsRate - borrowInfo.borrowRate
   const ltv =
     (borrowInfo.borrowedValue + (mode === 'borrow' ? 1 : -1) * (Number(amount) || 0)) /
-    (borrowInfo.collateralValue || 1)
+    (borrowInfo.borrowLimit || 1)
 
   const innerBarStyle = {
     backgroundColor: theme.palette.green,
-    width: formatPercentage(ltv / 0.6, 2),
+    width: formatPercentage(ltv, 2),
   }
-  if (ltv > 0.45) {
+  if (ltv > 0.75) {
     innerBarStyle.backgroundColor = theme.palette.yellow
   }
-  if (ltv > 0.5) {
+  if (ltv > 0.9) {
     innerBarStyle.backgroundColor = theme.palette.red
   }
 
   const originalLtv = borrowInfo.borrowedValue / borrowInfo.borrowLimit
   const min = mode === 'borrow' ? originalLtv : 0
-  const max = mode === 'borrow' ? 0.5 / 0.6 : originalLtv
+  const max = mode === 'borrow' ? 0.95 : originalLtv
   const minValue =
     (mode === 'borrow' ? 1 : -1) *
     Number(
@@ -143,7 +143,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
         </View>
         <View style={withInput ? styles.padded : {}}>
           <View style={styles.flexEndRow}>
-            <View style={[styles.myLtv, { right: formatPercentage(1 - ltv / 0.6, 2) }]}>
+            <View style={[styles.myLtv, { right: formatPercentage(1 - ltv, 2) }]}>
               <Typography
                 style={ltv < 0.06 ? { marginRight: theme.baseSpace * -8 } : {}}
                 type="Small"
@@ -158,9 +158,9 @@ const LoanCard: React.FC<LoanCardProps> = ({
             <Slider
               min={0}
               max={1}
-              sliderLength={theme.screenWidth - 24 * theme.baseSpace}
-              step={0.001 / 0.6}
-              values={[ltv / 0.6]}
+              sliderLength={theme.screenWidth - 16 * theme.baseSpace}
+              step={0.001}
+              values={[ltv]}
               selectedStyle={{ backgroundColor: innerBarStyle.backgroundColor }}
               unselectedStyle={{ backgroundColor: theme.palette.grey[1] }}
               onValuesChange={(v) => {
@@ -183,7 +183,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
 
         <View style={styles.spacedRow}>
           <Typography type="Small" color={theme.palette.grey[7]}>
-            {t('LTV')}
+            {t('borrow usage')}
           </Typography>
           <View style={styles.recommendedLtv}>
             <View style={styles.vertDivider} />
