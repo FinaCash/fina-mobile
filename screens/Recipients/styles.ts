@@ -5,7 +5,13 @@ export default (theme: Theme) => ({
     backgroundColor: theme.palette.background,
     flex: 1,
   },
-  button: {
-    margin: 4 * theme.baseSpace,
+  emptyContainer: {
+    margin: 8 * theme.baseSpace,
+    marginTop: 24 * theme.baseSpace,
+    alignItems: 'center',
+  },
+  emptyText: {
+    marginVertical: theme.baseSpace * 8,
+    alignItems: 'center',
   },
 })

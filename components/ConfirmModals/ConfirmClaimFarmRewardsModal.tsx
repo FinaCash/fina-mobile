@@ -75,7 +75,8 @@ const ConfirmClaimFarmRewardsModal: React.FC<ConfirmClaimFarmRewardsModalProps> 
       open={open}
       onClose={onClose}
       modalHeight={
-        theme.baseSpace * 46 * totalRewardTokens.length +
+        theme.baseSpace * 48 +
+        theme.baseSpace * 18 * totalRewardTokens.length +
         Object.keys(fee).length * 2 * theme.baseSpace +
         theme.bottomSpace
       }

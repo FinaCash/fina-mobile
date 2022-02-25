@@ -70,17 +70,15 @@ const Undelegate: React.FC<UndelegateProps> = ({ validator, amount: totalAmount 
     <>
       <HeaderBar back title={t('undelegate')} />
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
-        <ScrollView>
-          <AssetAmountInput
-            validator={validator}
-            stakedAmount={totalAmount / 10 ** 6}
-            availableAsset={availableAsset}
-            amount={amount}
-            setAmount={setAmount}
-            assetItemProps={{ disabled: true }}
-            inputProps={{ autoFocus: true }}
-          />
-        </ScrollView>
+        <AssetAmountInput
+          validator={validator}
+          stakedAmount={totalAmount / 10 ** 6}
+          availableAsset={availableAsset}
+          amount={amount}
+          setAmount={setAmount}
+          assetItemProps={{ disabled: true }}
+          inputProps={{ autoFocus: true }}
+        />
         <Button
           disabled={!Number(amount) || Number(amount) * 10 ** 6 > totalAmount || !validator}
           style={styles.button}

@@ -10,7 +10,7 @@ import SearchIcon from '../../assets/images/icons/search.svg'
 import TransakIcon from '../../assets/images/icons/transak.svg'
 import TransferIcon from '../../assets/images/icons/transfer.svg'
 import ReceiveIcon from '../../assets/images/icons/receive.svg'
-// import EmptyImage from '../../assets/images/empty.svg'
+import EmptyImage from '../../assets/images/empty.svg'
 import AssetItem from '../../components/AssetItem'
 import { LinearGradient } from 'expo-linear-gradient'
 import Typography from '../../components/Typography'
@@ -304,6 +304,13 @@ const Home: React.FC = () => {
           contentContainerStyle: { paddingBottom: theme.tabBarHeight + theme.bottomSpace },
           data: assets.filter(
             (a) =>
+              (a.coin.denom === 'uluna'
+                ? Number(a.coin.amount) +
+                    [...stakingInfo.delegated, ...stakingInfo.unbonding]
+                      .map((d) => d.amount)
+                      .reduce((c, b) => c + b, 0) >
+                  0
+                : true) &&
               (filterAsset === 'overview' || a.type === filterAsset) &&
               (a.symbol + a.name).toLowerCase().includes(search.toLowerCase()) &&
               // Filter empty savings/collateral assets on overview tab
@@ -341,7 +348,7 @@ const Home: React.FC = () => {
           //   </View>
           // ) : null,
           renderItem: ({ item }) =>
-            filterAsset === 'overview' || item.type !== AssetTypes.Collaterals ? (
+            item.type !== AssetTypes.Collaterals ? (
               <AssetItem
                 asset={item}
                 onPress={() => selectAsset(item)}
@@ -367,7 +374,27 @@ const Home: React.FC = () => {
               ) : null}
             </View>
           ),
-          ListEmptyComponent: <View style={styles.emptyContainer}>{/* <EmptyImage /> */}</View>,
+          ListEmptyComponent:
+            filterAsset === 'overview' || filterAsset === 'currents' ? (
+              <View style={styles.emptyContainer}>
+                <EmptyImage />
+                <View style={styles.emptyText}>
+                  <Typography style={{ marginBottom: theme.baseSpace * 2 }} type="H4">
+                    {t('wallet is empty')}
+                  </Typography>
+                  <Typography type="Large" color={theme.palette.grey[7]}>
+                    {t('empty wallet description')}
+                  </Typography>
+                </View>
+                <Button
+                  onPress={() => WebBrowser.openBrowserAsync(getTransakUrl(walletAddress))}
+                  size="Large"
+                  style={{ width: theme.baseSpace * 40 }}
+                >
+                  {t('buy ust')}
+                </Button>
+              </View>
+            ) : undefined,
         }}
       />
     </LinearGradient>

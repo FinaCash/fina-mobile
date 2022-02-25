@@ -171,5 +171,9 @@
   "provide liquidity": "供應流量",
   "withdraw liquidity": "提取流量",
   "claim farm rewards": "領取農場獎勵",
-  "claim airdrops": "領取空投"
+  "claim airdrops": "領取空投",
+  "wallet is empty": "錢包內沒有貨幣",
+  "empty wallet description": "購買或存入資產",
+  "no receipient": "沒有聯絡人",
+  "no receipient description": "新增聯絡人並開始轉帳"
 }

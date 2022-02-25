@@ -385,10 +385,7 @@ export const fetchClaimableAirdrops = async (address: string): Promise<Airdrop[]
   return airdrops
 }
 
-export const fetchFarmingInfo = async (
-  address: string,
-  availableAssets: AvailableAsset[]
-): Promise<Farm[]> => {
+export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
   const {
     data: { assets },
   } = await fetch(mirrorGraphqlUrl, {
@@ -546,110 +543,46 @@ export const fetchFarmingInfo = async (
     .filter((a: any) => a.symbol !== 'MIR')
     .sort((a: any, b: any) => (a.symbol > b.symbol ? 1 : -1))
   const farms = [
-    ...availableAssets
-      .filter((a) => !!(supportedTokens as any)[a.coin.denom])
-      .map((a) => ({
-        type: FarmType.Long,
-        symbol: a.symbol,
-        dex: 'Astroport',
-        addresses: (supportedTokens as any)[a.coin.denom].addresses,
-        rate: {
-          token:
-            Number(
-              get(
-                tokensInfo,
-                [
-                  (supportedTokens as any)[a.coin.denom].addresses.pair,
-                  'contractQuery',
-                  'assets',
-                  a.coin.denom === 'uluna' ? 1 : 0,
-                  'amount',
-                ],
-                0
-              )
-            ) /
-            Number(
-              get(
-                tokensInfo,
-                [
-                  (supportedTokens as any)[a.coin.denom].addresses.pair,
-                  'contractQuery',
-                  'total_share',
-                ],
-                1
-              )
-            ),
-          ust:
-            Number(
-              get(
-                tokensInfo,
-                [
-                  (supportedTokens as any)[a.coin.denom].addresses.pair,
-                  'contractQuery',
-                  'assets',
-                  a.coin.denom === 'uluna' ? 0 : 1,
-                  'amount',
-                ],
-                0
-              )
-            ) /
-            Number(
-              get(
-                tokensInfo,
-                [
-                  (supportedTokens as any)[a.coin.denom].addresses.pair,
-                  'contractQuery',
-                  'total_share',
-                ],
-                1
-              )
-            ),
+    ...Object.values(supportedTokens).map((a) => ({
+      type: FarmType.Long,
+      symbol: a.symbol,
+      dex: 'Astroport',
+      addresses: a.addresses,
+      rate: {
+        token:
+          Number(
+            get(
+              tokensInfo,
+              [a.addresses.pair, 'contractQuery', 'assets', a.denom === 'uluna' ? 1 : 0, 'amount'],
+              0
+            )
+          ) / Number(get(tokensInfo, [a.addresses.pair, 'contractQuery', 'total_share'], 1)),
+        ust:
+          Number(
+            get(
+              tokensInfo,
+              [a.addresses.pair, 'contractQuery', 'assets', a.denom === 'uluna' ? 0 : 1, 'amount'],
+              0
+            )
+          ) / Number(get(tokensInfo, [a.addresses.pair, 'contractQuery', 'total_share'], 1)),
+      },
+      apr: Number(get(astroRewardsInfo, [a.addresses.pair, 'total_rewards', 'apr'], 0)),
+      balance: Number(get(tokensInfo, [a.addresses.lpToken, 'contractQuery'], 0)),
+      rewards: [
+        {
+          denom: a.denom,
+          amount: Number(
+            get(tokenRewardsInfo, [a.addresses.lpToken, 'contractQuery', 'pending_on_proxy'], '0')
+          ),
         },
-        apr: Number(
-          get(
-            astroRewardsInfo,
-            [(supportedTokens as any)[a.coin.denom].addresses.pair, 'total_rewards', 'apr'],
-            0
-          )
-        ),
-        balance: Number(
-          get(
-            tokensInfo,
-            [(supportedTokens as any)[a.coin.denom].addresses.lpToken, 'contractQuery'],
-            0
-          )
-        ),
-        rewards: [
-          {
-            denom: a.coin.denom,
-            amount: Number(
-              get(
-                tokenRewardsInfo,
-                [
-                  (supportedTokens as any)[a.coin.denom].addresses.lpToken,
-                  'contractQuery',
-                  'pending_on_proxy',
-                ],
-                '0'
-              )
-            ),
-          },
-          {
-            denom: 'ASTRO',
-            amount: Number(
-              get(
-                tokenRewardsInfo,
-                [
-                  (supportedTokens as any)[a.coin.denom].addresses.lpToken,
-                  'contractQuery',
-                  'pending',
-                ],
-                '0'
-              )
-            ),
-          },
-        ].filter((a: any) => a.amount > 0),
-      })),
+        {
+          denom: 'ASTRO',
+          amount: Number(
+            get(tokenRewardsInfo, [a.addresses.lpToken, 'contractQuery', 'pending'], '0')
+          ),
+        },
+      ].filter((a: any) => a.amount > 0),
+    })),
     ...sortedMAssets.map((a: any) => ({
       type: FarmType.Long,
       symbol: a.symbol,

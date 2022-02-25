@@ -73,5 +73,10 @@ export default (theme: Theme) => ({
   },
   emptyContainer: {
     margin: 8 * theme.baseSpace,
+    alignItems: 'center',
+  },
+  emptyText: {
+    marginVertical: theme.baseSpace * 8,
+    alignItems: 'center',
   },
 })

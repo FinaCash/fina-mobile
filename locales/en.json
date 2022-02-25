@@ -171,5 +171,9 @@
   "provide liquidity": "Provide Liquidity",
   "withdraw liquidity": "Withdraw Liquidity",
   "claim farm rewards": "Claim Farm Rewards",
-  "claim airdrops": "Claim Airdrops"
+  "claim airdrops": "Claim Airdrops",
+  "wallet is empty": "Wallet is empty",
+  "empty wallet description": "Purchase or transfer crypto asset",
+  "no receipient": "You have no recipients",
+  "no receipient description": "Add a recipient to start sending assets"
 }

@@ -307,9 +307,9 @@ const AssetsProvider: React.FC = ({ children }) => {
     // Fetch my assets
     const balances = await terra.bank.balance(address)
     const nativeBalances = JSON.parse(balances[0].toJSON())
-    // if (!nativeBalances.find((b: any) => b.denom === 'uluna')) {
-    //   nativeBalances.push({ denom: 'uluna', amount: '0' })
-    // }
+    if (!nativeBalances.find((b: any) => b.denom === 'uluna')) {
+      nativeBalances.push({ denom: 'uluna', amount: '0' })
+    }
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
     const astroBalance = await fetch(
@@ -349,9 +349,9 @@ const AssetsProvider: React.FC = ({ children }) => {
   }, [address, setAirdrops])
 
   const fetchFarmInfo = React.useCallback(async () => {
-    const result = await fetchFarmingInfo(address, availableAssets)
+    const result = await fetchFarmingInfo(address)
     setFarmInfo(result)
-  }, [address, setFarmInfo, availableAssets])
+  }, [address, setFarmInfo])
 
   React.useEffect(() => {
     if (address) {

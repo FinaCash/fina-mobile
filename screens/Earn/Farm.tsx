@@ -145,6 +145,7 @@ const FarmTab: React.FC = () => {
                 value={formatCurrency(totalRewards * currencyRate, currency, true)}
                 ml={2}
                 onPress={() => setIsClaiming(true)}
+                disabled={totalRewards === 0}
               >
                 <Typography type="Small" color={theme.palette.grey[7]}>
                   {totalRewardTokens

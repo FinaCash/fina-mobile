@@ -1,8 +1,9 @@
 import React from 'react'
-import { FlatList, Alert } from 'react-native'
+import { FlatList, Alert, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import Toast from 'react-native-root-toast'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import EmptyImage from '../../assets/images/emptyReceipient.svg'
 import Button from '../../components/Button'
 import HeaderBar from '../../components/HeaderBar'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
@@ -13,6 +14,7 @@ import { Actions } from 'react-native-router-flux'
 import useSendToken from '../../utils/useSendToken'
 import RecipientItem from '../../components/RecipientItem'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import Typography from '../../components/Typography'
 
 const Recipients: React.FC = () => {
   const { t } = useLocalesContext()
@@ -89,22 +91,33 @@ const Recipients: React.FC = () => {
         renderItem={({ item }) => (
           <RecipientItem recipient={item} onPress={() => onItemPress(item)} />
         )}
-        ListFooterComponent={
-          <Button
-            style={styles.button}
-            size="Large"
-            onPress={() =>
-              Actions.UpdateRecipient({
-                onSave: (recipient: Recipient) => {
-                  addRecipient(recipient)
-                  Actions.pop()
-                  Toast.show(t('recipient added'))
-                },
-              })
-            }
-          >
-            {t('add recipient')}
-          </Button>
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <EmptyImage />
+            <View style={styles.emptyText}>
+              <Typography style={{ marginBottom: theme.baseSpace * 2 }} type="H4">
+                {t('no receipient')}
+              </Typography>
+              <Typography type="Large" color={theme.palette.grey[7]}>
+                {t('no receipient description')}
+              </Typography>
+            </View>
+            <Button
+              onPress={() =>
+                Actions.UpdateRecipient({
+                  onSave: (recipient: Recipient) => {
+                    addRecipient(recipient)
+                    Actions.pop()
+                    Toast.show(t('recipient added'))
+                  },
+                })
+              }
+              size="Large"
+              style={{ width: theme.baseSpace * 40 }}
+            >
+              {t('add recipient')}
+            </Button>
+          </View>
         }
       />
     </>

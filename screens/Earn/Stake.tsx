@@ -229,6 +229,7 @@ const Stake: React.FC = () => {
                 {t('delegate')}
               </Button>
               <Button
+                disabled={!stakingInfo.rewards.length}
                 icon={<ReceiveIcon fill={theme.palette.white} />}
                 style={[styles.stakingButton, { marginLeft: 2 * theme.baseSpace }]}
                 onPress={() => setClaimingRewards(true)}

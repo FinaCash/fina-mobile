@@ -122,10 +122,11 @@ const Loan: React.FC = () => {
         <View style={styles.row}>
           <Button
             icon={<TransferIcon fill={theme.palette.white} />}
+            disabled={!borrowInfo.borrowedValue}
             onPress={() => {
-              if (!borrowInfo.borrowedValue) {
-                return Alert.alert(t('no borrow value'), t('you have not borrowed anything yet'))
-              }
+              // if (!borrowInfo.borrowedValue) {
+              //   return Alert.alert(t('no borrow value'), t('you have not borrowed anything yet'))
+              // }
               Actions.Borrow({ mode: 'repay' })
             }}
             style={styles.button}
@@ -134,13 +135,14 @@ const Loan: React.FC = () => {
           </Button>
           <Button
             icon={<ReceiveIcon fill={theme.palette.white} />}
+            disabled={borrowInfo.borrowedValue >= 0.8 * borrowInfo.collateralValue}
             onPress={() => {
-              if (borrowInfo.borrowedValue >= 0.5 * borrowInfo.collateralValue) {
-                return Alert.alert(
-                  t('insufficient collateral'),
-                  t('please provide more collateral')
-                )
-              }
+              // if (borrowInfo.borrowedValue >= 0.5 * borrowInfo.collateralValue) {
+              //   return Alert.alert(
+              //     t('insufficient collateral'),
+              //     t('please provide more collateral')
+              //   )
+              // }
               Actions.Borrow({ mode: 'borrow' })
             }}
             style={styles.button}
@@ -174,6 +176,7 @@ const Loan: React.FC = () => {
             rewards={borrowInfo.pendingRewards}
             apr={borrowInfo.rewardsRate}
             onPress={() => setIsClaiming(true)}
+            disabled={borrowInfo.pendingRewards < 0.01}
           />
         ) : null}
       </ScrollView>
