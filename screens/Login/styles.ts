@@ -7,23 +7,23 @@ export default (theme: Theme) => ({
     flex: 1,
   },
   slogan: {
-    marginTop: 12 * theme.baseSpace,
+    marginTop: (theme.isSmallScreen ? 8 : 12) * theme.baseSpace,
   },
   logo: {
     alignSelf: 'center',
-    width: 60 * theme.baseSpace,
-    height: (60 * theme.baseSpace * 558) / 1800,
+    width: 0.5 * theme.screenWidth,
+    height: (0.5 * theme.screenWidth * 558) / 1800,
   },
   button: {
     marginBottom: theme.baseSpace * 4,
   },
   contentContainer: {
-    marginTop: 16 * theme.baseSpace,
+    marginTop: (theme.isSmallScreen ? 10 : 16) * theme.baseSpace,
     backgroundColor: theme.palette.altBackground,
     flex: 1,
     margin: theme.baseSpace * -12,
     marginBottom: theme.baseSpace * -120,
-    padding: theme.baseSpace * 12,
+    padding: theme.baseSpace * (theme.isSmallScreen ? 10 : 12),
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
   },

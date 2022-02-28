@@ -9,7 +9,6 @@ import Button from '../../components/Button'
 import useStateHistory from '../../utils/useStateHistory'
 import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
-import { ScrollView } from 'react-native'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import TerraApp from '@terra-money/ledger-terra-js'
@@ -100,15 +99,16 @@ const Login: React.FC<LoginProps> = () => {
         style={{ backgroundColor: theme.palette.background }}
         contentContainerStyle={styles.container}
       >
-        <View>
+        <View style={{ alignItems: 'center' }}>
           <Image style={styles.logo} source={uiTheme === 'light' ? Logo : LogoWhite} />
-          <Typography type="H2" style={styles.slogan}>
+          <Typography type={theme.isSmallScreen ? 'H3' : 'H2'} style={styles.slogan}>
             {t('slogan 1')}
-            <Typography type="H2" color={theme.palette.lightPrimary}>
+            <Typography type={theme.isSmallScreen ? 'H3' : 'H2'} color={theme.palette.lightPrimary}>
               {t('slogan highlight')}
             </Typography>
             {t('slogan 2')}
           </Typography>
+          <Typography type={theme.isSmallScreen ? 'H3' : 'H2'}>{t('slogan 3')}</Typography>
         </View>
         <View style={styles.contentContainer}>
           {stage === ContentStage.Start ? (

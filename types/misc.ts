@@ -49,4 +49,5 @@ export interface Theme {
   fonts: { [type in FontType]: Font }
   screenWidth: number
   screenHeight: number
+  isSmallScreen: boolean
 }

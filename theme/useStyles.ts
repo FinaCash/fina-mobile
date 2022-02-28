@@ -16,6 +16,7 @@ const useStyles = (getStyles?: (t: Theme) => any) => {
     statusBarHeight: Constants.statusBarHeight,
     screenWidth,
     screenHeight,
+    isSmallScreen: screenWidth < 400,
   }
   const styles = getStyles ? StyleSheet.create(getStyles(theme)) : {}
   return { styles, theme }
