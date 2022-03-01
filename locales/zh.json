@@ -180,5 +180,7 @@
   "optional fields": "選填項目",
   "optional fields descriptions": "填上後將會產生新的二維碼，並自動為對方填上轉帳數值",
   "reset": "重設",
-  "update qr code": "更新二維碼"
+  "update qr code": "更新二維碼",
+  "insufficient fund": "餘額不足",
+  "invalid qr code": "二維碼不正確"
 }

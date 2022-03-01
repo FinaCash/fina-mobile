@@ -13,7 +13,11 @@ import getStyles from './styles'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import Input from '../../components/Input'
-import { getSymbolFromDenom, getCurrentAssetDetail } from '../../utils/transformAssets'
+import {
+  getSymbolFromDenom,
+  getCurrentAssetDetail,
+  getTokenAssetDetail,
+} from '../../utils/transformAssets'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { useAssetsContext } from '../../contexts/AssetsContext'
@@ -77,7 +81,7 @@ const MyAddress: React.FC<MyAddressProps> = () => {
             {t('optional fields')}
           </Typography>
           <Typography
-            style={{ marginBottom: theme.baseSpace * 8 }}
+            style={{ marginBottom: theme.baseSpace * 4 }}
             color={theme.palette.grey[7]}
             type="Small"
           >
@@ -88,9 +92,12 @@ const MyAddress: React.FC<MyAddressProps> = () => {
             style={styles.inputButton}
             onPress={() => {
               Actions.SelectAsset({
-                assets: availableCurrencies
-                  .filter((c) => !c.hidden)
-                  .map((c) => getCurrentAssetDetail({ denom: c.denom, amount: '0' })),
+                assets: [
+                  getTokenAssetDetail({ denom: 'uluna', amount: '0' }),
+                  ...availableCurrencies
+                    .filter((c) => !c.hidden)
+                    .map((c) => getCurrentAssetDetail({ denom: c.denom, amount: '0' })),
+                ],
                 assetItemProps: { hideAmount: true },
                 onSelect: (a: Asset) => {
                   setDenom(a.coin.denom)
@@ -105,15 +112,17 @@ const MyAddress: React.FC<MyAddressProps> = () => {
           <Typography style={styles.smallMargin}>{t('amount')}</Typography>
           <Input
             style={styles.input}
+            size="Large"
             placeholder="0"
             keyboardType="numeric"
             value={amount}
             onChangeText={setAmount}
           />
           <Typography style={styles.smallMargin}>{t('memo')}</Typography>
-          <Input style={styles.input} value={memo} onChangeText={setMemo} />
+          <Input style={styles.input} size="Large" value={memo} onChangeText={setMemo} />
           <View style={styles.buttons}>
             <Button
+              size="Large"
               onPress={() => {
                 setDenom(currency)
                 setAmount('')
@@ -126,7 +135,7 @@ const MyAddress: React.FC<MyAddressProps> = () => {
               {t('reset')}
             </Button>
             <View style={{ width: 4 * theme.baseSpace }} />
-            <Button style={{ flex: 1 }} onPress={generatePayCode}>
+            <Button style={{ flex: 1 }} size="Large" onPress={generatePayCode}>
               {t('update qr code')}
             </Button>
           </View>

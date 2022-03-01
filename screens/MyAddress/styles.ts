@@ -24,24 +24,25 @@ export default (theme: Theme) => ({
     borderTopRightRadius: theme.borderRadius[2],
   },
   smallMargin: {
-    marginBottom: 2 * theme.baseSpace,
+    marginBottom: theme.baseSpace,
   },
   input: {
-    marginBottom: 4 * theme.baseSpace,
+    marginBottom: 3 * theme.baseSpace,
     backgroundColor: theme.palette.background,
   },
   inputButton: {
-    marginBottom: 4 * theme.baseSpace,
+    marginBottom: 3 * theme.baseSpace,
     backgroundColor: theme.palette.background,
     borderRadius: theme.borderRadius[0],
-    padding: theme.baseSpace * 2,
+    paddingVertical: theme.baseSpace * 3,
+    paddingHorizontal: theme.baseSpace * 4,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   buttons: {
     flexDirection: 'row',
-    marginTop: 4 * theme.baseSpace,
+    marginTop: 3 * theme.baseSpace,
   },
   borderButton: {
     borderWidth: 1,

@@ -180,5 +180,7 @@
   "optional fields": "OPTIONAL FIELDS",
   "optional fields descriptions": "Fill in to generate a new QR code with the following details auto-filled in for the sender",
   "reset": "Reset",
-  "update qr code": "Update QR Code"
+  "update qr code": "Update QR Code",
+  "insufficient fund": "Insufficient Fund",
+  "invalid qr code": "Invalid QR Code"
 }

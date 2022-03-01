@@ -14,57 +14,67 @@ const useSendToken = () => {
   const { t } = useLocalesContext()
   const { type } = useAccountsContext()
   const { hideSmallBalance } = useSettingsContext()
-  const transferAsset = React.useCallback(
-    ({ asset, recipient }: { asset: Asset; recipient?: Recipient }) => {
-      Actions.SelectAmount({
+
+  const selectRecipient = React.useCallback(
+    (asset: Asset, amount: number, recipient?: Recipient) =>
+      Actions.SelectRecipient({
         asset,
-        onSubmit: (amount: number) =>
-          Actions.SelectRecipient({
-            asset,
-            recipient,
-            amount,
-            onSubmit: (address: string, memo: string) =>
-              getPasswordOrLedgerApp(async (password?: string, terraApp?: TerraApp) => {
-                try {
-                  await send({ denom: asset.coin.denom, amount }, address, memo, password, terraApp)
-                  Actions.Success({
-                    message: {
-                      type: 'send',
-                      asset,
-                      amount,
-                      address,
-                      memo,
-                    },
-                    onClose: () => Actions.jump('Home'),
-                  })
-                } catch (err: any) {
-                  Actions.Success({
-                    message: {
-                      type: 'send',
-                      asset,
-                      amount,
-                      address,
-                      memo,
-                    },
-                    error: err.message,
-                    onClose: () => Actions.popTo('SelectRecipient'),
-                  })
-                }
-              }, type),
-          }),
-      })
+        recipient,
+        amount,
+        onSubmit: (address: string, memo: string) =>
+          getPasswordOrLedgerApp(async (password?: string, terraApp?: TerraApp) => {
+            try {
+              await send({ denom: asset.coin.denom, amount }, address, memo, password, terraApp)
+              Actions.Success({
+                message: {
+                  type: 'send',
+                  asset,
+                  amount,
+                  address,
+                  memo,
+                },
+                onClose: () => Actions.jump('Home'),
+              })
+            } catch (err: any) {
+              Actions.Success({
+                message: {
+                  type: 'send',
+                  asset,
+                  amount,
+                  address,
+                  memo,
+                },
+                error: err.message,
+                onClose: () => Actions.popTo('SelectRecipient'),
+              })
+            }
+          }, type),
+      }),
+    [send, type]
+  )
+
+  const transferAsset = React.useCallback(
+    ({ asset, recipient, amount }: { asset: Asset; recipient?: Recipient; amount?: number }) => {
+      if (amount) {
+        selectRecipient(asset, amount, recipient)
+      } else {
+        Actions.SelectAmount({
+          asset,
+          onSubmit: (a: number) => selectRecipient(asset, a, recipient),
+        })
+      }
     },
-    [send, t]
+    [selectRecipient]
   )
 
   const sendToken = React.useCallback(
-    (params?: { asset?: Asset; recipient?: Recipient }) => {
-      const { asset, recipient } = params || {}
+    (params?: { asset?: Asset; recipient?: Recipient; amount?: number }) => {
+      const { asset, recipient, amount } = params || {}
       if (asset) {
-        transferAsset({ asset, recipient })
+        transferAsset({ asset, recipient, amount })
       } else {
         Actions.SelectAsset({
-          onSelect: (a: Asset) => transferAsset({ asset: a, recipient }),
+          onSelect: (a: Asset) => transferAsset({ asset: a, recipient, amount }),
           // TODO: transfer other tokens
           assets: assets.filter(
             (a) =>
@@ -75,7 +85,7 @@ const useSendToken = () => {
         })
       }
     },
-    [assets, transferAsset]
+    [assets, transferAsset, hideSmallBalance]
   )
 
   return sendToken
