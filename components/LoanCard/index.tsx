@@ -86,11 +86,13 @@ const LoanCard: React.FC<LoanCardProps> = ({
       )
     )
 
+  console.log(theme.statusBarHeight)
+
   return (
     <>
       <LinearGradient
         start={[0, 0]}
-        end={[1.6, 1.7]}
+        end={[1.6, 1 + (theme.statusBarHeight - 24) / 28.57]}
         colors={theme.gradients.primary}
         style={styles.top}
       >
