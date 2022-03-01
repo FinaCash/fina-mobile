@@ -99,7 +99,7 @@ const Login: React.FC<LoginProps> = () => {
         style={{ backgroundColor: theme.palette.background }}
         contentContainerStyle={styles.container}
       >
-        <View style={{ alignItems: 'center' }}>
+        <View style={{ alignItems: 'center', marginHorizontal: theme.baseSpace * -4 }}>
           <Image style={styles.logo} source={uiTheme === 'light' ? Logo : LogoWhite} />
           <Typography type={theme.isSmallScreen ? 'H3' : 'H2'} style={styles.slogan}>
             {t('slogan 1')}

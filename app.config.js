@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 export default {
-  name: 'Fina Wallet',
+  name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
   version: '1.0.0',

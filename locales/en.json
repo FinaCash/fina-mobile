@@ -61,7 +61,7 @@
   "transaction sent": "Transaction Sent",
   "close": "Close",
   "my address": "My Address",
-  "share": "Share",
+  "share": "Share address",
   "address copied": "Address copied to clipboard",
   "scan": "Scan",
   "add recipient": "Add Recipient",
@@ -176,5 +176,9 @@
   "wallet is empty": "Wallet is empty",
   "empty wallet description": "Purchase or transfer crypto asset",
   "no receipient": "You have no recipients",
-  "no receipient description": "Add a recipient to start sending assets"
+  "no receipient description": "Add a recipient to start sending assets",
+  "optional fields": "OPTIONAL FIELDS",
+  "optional fields descriptions": "Fill in to generate a new QR code with the following details auto-filled in for the sender",
+  "reset": "Reset",
+  "update qr code": "Update QR Code"
 }

@@ -18,6 +18,7 @@ interface ButtonProps extends TouchableOpacityProps {
   color?: string
   iconStyle?: ViewStyle
   borderRadius?: number
+  bold?: boolean
 }
 
 const paddings = {
@@ -38,6 +39,7 @@ const Button: React.FC<ButtonProps> = ({
   borderRadius,
   onPress,
   iconStyle,
+  bold,
   ...props
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -74,7 +76,7 @@ const Button: React.FC<ButtonProps> = ({
         </View>
       ) : null}
       {loading ? null : typeof children === 'string' ? (
-        <Typography type={size} color={color || theme.palette.white}>
+        <Typography type={size} color={color || theme.palette.white} bold={bold}>
           {children}
         </Typography>
       ) : (

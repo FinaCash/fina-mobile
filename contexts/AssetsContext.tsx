@@ -525,11 +525,14 @@ const AssetsProvider: React.FC = ({ children }) => {
         },
         address,
         simulate,
-        () => fetchAssets()
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchBorrowInfo]
   )
 
   const depositSavings = React.useCallback(
@@ -548,11 +551,14 @@ const AssetsProvider: React.FC = ({ children }) => {
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate,
-        () => fetchAssets()
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
   )
 
   const withdrawSavings = React.useCallback(
@@ -573,11 +579,14 @@ const AssetsProvider: React.FC = ({ children }) => {
         { msgs: ops.generateWithAddress(address) as any },
         address,
         simulate,
-        () => fetchAssets()
+        () => {
+          fetchAssets()
+          fetchBorrowInfo()
+        }
       )
       return result
     },
-    [decryptSeedPhrase, fetchAssets, address, hdPath]
+    [decryptSeedPhrase, fetchAssets, address, hdPath, fetchBorrowInfo]
   )
 
   const borrow = React.useCallback(
@@ -732,11 +741,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchStakingInfo()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo, fetchBorrowInfo]
   )
 
   const unstake = React.useCallback(
@@ -761,11 +771,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchStakingInfo()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchStakingInfo, fetchBorrowInfo]
   )
 
   const redelegate = React.useCallback(
@@ -819,11 +830,20 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchStakingInfo()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, stakingInfo, fetchStakingInfo]
+    [
+      fetchAssets,
+      decryptSeedPhrase,
+      address,
+      hdPath,
+      stakingInfo,
+      fetchStakingInfo,
+      fetchBorrowInfo,
+    ]
   )
 
   const claimAirdrops = React.useCallback(
@@ -865,11 +885,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchAirdrops()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchAirdrops]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchAirdrops, fetchBorrowInfo]
   )
 
   const provideLiquidity = React.useCallback(
@@ -945,11 +966,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchFarmInfo()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo, fetchBorrowInfo]
   )
 
   const withdrawLiquidity = React.useCallback(
@@ -996,11 +1018,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchFarmInfo()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo, fetchBorrowInfo]
   )
 
   const claimFarmRewards = React.useCallback(
@@ -1033,11 +1056,12 @@ const AssetsProvider: React.FC = ({ children }) => {
         () => {
           fetchAssets()
           fetchFarmInfo()
+          fetchBorrowInfo()
         }
       )
       return result
     },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo]
+    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo, fetchBorrowInfo]
   )
 
   // On logout

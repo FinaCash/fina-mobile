@@ -61,7 +61,7 @@
   "transaction sent": "交易已發送",
   "close": "關閉",
   "my address": "我的地址",
-  "share": "分享",
+  "share": "分享地址",
   "address copied": "地址已複製",
   "scan": "掃碼",
   "add recipient": "新增收款人",
@@ -176,5 +176,9 @@
   "wallet is empty": "錢包內沒有貨幣",
   "empty wallet description": "購買或存入資產",
   "no receipient": "沒有聯絡人",
-  "no receipient description": "新增聯絡人並開始轉帳"
+  "no receipient description": "新增聯絡人並開始轉帳",
+  "optional fields": "選填項目",
+  "optional fields descriptions": "填上後將會產生新的二維碼，並自動為對方填上轉帳數值",
+  "reset": "重設",
+  "update qr code": "更新二維碼"
 }
