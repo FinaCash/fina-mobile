@@ -4,7 +4,7 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.0.1',
+  version: '1.0.2',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -22,7 +22,6 @@ export default {
   assetBundlePatterns: ['**/*'],
   ios: {
     bundleIdentifier: 'com.fina.cash',
-    supportsTablet: true,
     userInterfaceStyle: 'automatic',
   },
   android: {

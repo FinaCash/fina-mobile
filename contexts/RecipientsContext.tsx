@@ -37,8 +37,7 @@ const RecipientsProvider: React.FC = ({ children }) => {
         addRecipient: (recipient) => setRecipients((rs) => [...rs, recipient]),
         updateRecipient: (recipient) =>
           setRecipients((rs) => rs.map((r) => (r.address === recipient.address ? recipient : r))),
-        deleteRecipient: (address) =>
-          setRecipients((rs) => rs.filter((r) => r.address !== address)),
+        deleteRecipient: (adr) => setRecipients((rs) => rs.filter((r) => r.address !== adr)),
       }}
     >
       {children}
