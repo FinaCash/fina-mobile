@@ -86,7 +86,11 @@ const Password: React.FC<PasswordProps> = ({
         error={error}
       />
       {loading ? (
-        <ActivityIndicator style={{ marginTop: theme.baseSpace * 12 }} size="large" />
+        <ActivityIndicator
+          style={{ marginTop: theme.baseSpace * 12 }}
+          size="large"
+          color={theme.palette.white}
+        />
       ) : null}
     </KeyboardAvoidingView>
   )

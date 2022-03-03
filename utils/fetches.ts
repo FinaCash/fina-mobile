@@ -621,6 +621,5 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     //   rewards: [],
     // })),
   ]
-  console.log(farms)
   return farms
 }

@@ -92,7 +92,7 @@ const ConfirmClaimAirdropModal: React.FC<ConfirmClaimAirdropModalProps> = ({
               </Typography>
             ))
           ) : (
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.fonts.H1.color} />
           )}
         </View>
       </View>

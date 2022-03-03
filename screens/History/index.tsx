@@ -92,7 +92,7 @@ const History: React.FC = () => {
             }}
           />
         </View>
-        {loading ? <ActivityIndicator style={styles.loader} /> : null}
+        {loading ? <ActivityIndicator style={styles.loader} color={theme.fonts.H1.color} /> : null}
       </View>
     </>
   )

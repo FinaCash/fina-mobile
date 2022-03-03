@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import { Theme } from '../../types/misc'
 
 export default (theme: Theme) => ({
@@ -51,12 +52,19 @@ export default (theme: Theme) => ({
     marginTop: theme.statusBarHeight + 6 * theme.baseSpace,
     marginBottom: 12 * theme.baseSpace,
   },
-  modal: {
-    borderTopLeftRadius: theme.borderRadius[2],
-    borderTopRightRadius: theme.borderRadius[2],
-    marginTop: theme.statusBarHeight,
-    backgroundColor: theme.palette.background,
-  },
+  modal:
+    Platform.OS === 'android'
+      ? {
+          borderTopLeftRadius: theme.borderRadius[2],
+          borderTopRightRadius: theme.borderRadius[2],
+          backgroundColor: theme.palette.background,
+        }
+      : {
+          borderTopLeftRadius: theme.borderRadius[2],
+          borderTopRightRadius: theme.borderRadius[2],
+          marginTop: theme.statusBarHeight,
+          backgroundColor: theme.palette.background,
+        },
   buttonContainer: {
     padding: 4 * theme.baseSpace,
   },

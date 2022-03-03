@@ -100,7 +100,7 @@ const ConfirmWithdrawLiquidityModal: React.FC<ConfirmWithdrawLiquidityModalProps
               </Typography>
             ))
           ) : (
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.fonts.H1.color} />
           )}
         </View>
       </View>

@@ -4,7 +4,7 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.0.2',
+  version: '1.0.4',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -23,6 +23,13 @@ export default {
   ios: {
     bundleIdentifier: 'com.fina.cash',
     userInterfaceStyle: 'automatic',
+    infoPlist: {
+      NSBluetoothAlwaysUsageDescription:
+        'Allow $(PRODUCT_NAME) to connect to Ledger Nano X for transaction signing',
+      NSBluetoothPeripheralUsageDescription:
+        'Allow $(PRODUCT_NAME) to connect to Ledger Nano X for transaction signing',
+      NSCameraUsageDescription: 'Allow $(PRODUCT_NAME) to scan QR Code with your camera',
+    },
   },
   android: {
     package: 'com.fina.cash',

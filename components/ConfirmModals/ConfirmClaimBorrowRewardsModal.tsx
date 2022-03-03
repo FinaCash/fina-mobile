@@ -88,7 +88,7 @@ const ConfirmClaimBorrowRewardsModal: React.FC<ConfirmClaimBorrowRewardsModalPro
               </Typography>
             ))
           ) : (
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.fonts.H1.color} />
           )}
         </View>
       </View>

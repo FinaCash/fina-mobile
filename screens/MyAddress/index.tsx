@@ -53,7 +53,10 @@ const MyAddress: React.FC<MyAddressProps> = () => {
   return (
     <>
       <HeaderBar back title={t('receive')} />
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView
+        style={{ backgroundColor: theme.palette.background }}
+        contentContainerStyle={{ flex: 1 }}
+      >
         <View style={styles.container}>
           {qrString ? <QRCode value={qrString} size={120} /> : <View style={{ height: 120 }} />}
           <TouchableOpacity

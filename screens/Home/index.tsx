@@ -264,7 +264,7 @@ const Home: React.FC = () => {
           </Button>
         </View>
       </View>
-      {loading ? <ActivityIndicator size="large" /> : null}
+      {loading ? <ActivityIndicator size="large" color={theme.palette.white} /> : null}
       <Modalize
         alwaysOpen={
           theme.screenHeight -

@@ -109,7 +109,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
               </Typography>
             ))
           ) : (
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.fonts.H1.color} />
           )}
         </View>
       </View>

@@ -1,5 +1,8 @@
 import 'node-libs-expo/globals'
 import 'react-native-get-random-values'
+import 'intl'
+import 'intl/locale-data/jsonp/en'
+import 'intl/locale-data/jsonp/zh'
 import React from 'react'
 import * as Font from 'expo-font'
 import { StatusBar } from 'expo-status-bar'

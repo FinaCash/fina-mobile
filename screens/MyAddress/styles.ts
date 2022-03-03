@@ -22,6 +22,7 @@ export default (theme: Theme) => ({
     padding: 8 * theme.baseSpace,
     borderTopLeftRadius: theme.borderRadius[2],
     borderTopRightRadius: theme.borderRadius[2],
+    marginBottom: -40 * theme.baseSpace,
   },
   smallMargin: {
     marginBottom: theme.baseSpace,
@@ -34,7 +35,7 @@ export default (theme: Theme) => ({
     marginBottom: 3 * theme.baseSpace,
     backgroundColor: theme.palette.background,
     borderRadius: theme.borderRadius[0],
-    paddingVertical: theme.baseSpace * (theme.isSmallScreen ? 2 : 3),
+    paddingVertical: theme.baseSpace * (theme.isSmallScreen ? 2 : 4),
     paddingHorizontal: theme.baseSpace * (theme.isSmallScreen ? 3 : 4),
     flexDirection: 'row',
     justifyContent: 'space-between',

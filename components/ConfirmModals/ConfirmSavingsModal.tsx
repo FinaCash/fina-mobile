@@ -148,7 +148,7 @@ const ConfirmSavingsModal: React.FC<ConfirmSavingsModalProps> = ({
               </Typography>
             ))
           ) : (
-            <ActivityIndicator size="small" />
+            <ActivityIndicator size="small" color={theme.fonts.H1.color} />
           )}
         </View>
       </View>

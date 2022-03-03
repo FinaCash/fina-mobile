@@ -53,7 +53,7 @@ const ConnectLedger: React.FC<ConnectLedgerProps> = ({ onSubmit }) => {
     }
     setLoading(false)
     setIsScanning(true)
-    unsubscribe = scanLedgerDevices((d) => setDevices((ds: any) => [...ds, d]))
+    unsubscribe = await scanLedgerDevices((d) => setDevices((ds: any) => [...ds, d]))
   }, [onSubmit])
 
   const connect = React.useCallback(

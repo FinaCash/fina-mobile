@@ -86,8 +86,6 @@ const LoanCard: React.FC<LoanCardProps> = ({
       )
     )
 
-  console.log(theme.statusBarHeight)
-
   return (
     <>
       <LinearGradient
