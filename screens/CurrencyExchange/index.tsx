@@ -1,5 +1,5 @@
 import React from 'react'
-import { Keyboard, ScrollView, View } from 'react-native'
+import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -159,12 +159,17 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
               },
             }}
           />
-          <Icon
-            name="arrow-down"
-            size={theme.baseSpace * 8}
-            color={theme.fonts.H6.color}
+          <TouchableOpacity
             style={styles.arrow}
-          />
+            onPress={() => {
+              setTo(from)
+              setFrom(to)
+              setFromAmount('')
+              setToAmount('')
+            }}
+          >
+            <Icon name="arrow-down" size={theme.baseSpace * 8} color={theme.fonts.H6.color} />
+          </TouchableOpacity>
           <AssetAmountInput
             asset={toAsset}
             amount={toAmount}

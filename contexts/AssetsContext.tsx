@@ -315,7 +315,23 @@ const AssetsProvider: React.FC = ({ children }) => {
     const astroBalance = await fetch(
       `${terraLCDUrl}/wasm/contracts/${supportedTokens.ASTRO.addresses.token}/store?query_msg={"balance":{"address":"${address}"}}`
     ).then((r) => r.json())
+
     setRawAssets((a) => {
+      console.log(
+        a,
+        uniqBy(
+          [
+            ...nativeBalances,
+            ...anchorBalances,
+            ...mAssetsBalances,
+            Number(astroBalance.result.balance) > 0
+              ? { denom: 'ASTRO', amount: astroBalance.result.balance }
+              : undefined,
+            ...a.filter((aa) => aa.denom.match(/^B/)), // Do not replace collaterals
+          ].filter((a) => a),
+          'denom'
+        )
+      )
       return uniqBy(
         [
           ...nativeBalances,
@@ -324,7 +340,7 @@ const AssetsProvider: React.FC = ({ children }) => {
           Number(astroBalance.result.balance) > 0
             ? { denom: 'ASTRO', amount: astroBalance.result.balance }
             : undefined,
-          ...a.filter((aa) => aa.denom.match(/^b/)), // Do not replace collaterals
+          ...a.filter((aa) => aa.denom.match(/^B/)), // Do not replace collaterals
         ].filter((a) => a),
         'denom'
       )

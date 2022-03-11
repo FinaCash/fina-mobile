@@ -43,7 +43,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
         )
         Actions.Success({
           message: {
-            type: 'provide collateral',
+            type: `${mode} collateral`,
             availableAsset,
             amount: Number(amount),
           },
@@ -52,7 +52,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
       } catch (err: any) {
         Actions.Success({
           message: {
-            type: 'provide collateral',
+            type: `${mode} collateral`,
             availableAsset,
             amount: Number(amount),
           },

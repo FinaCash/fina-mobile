@@ -1,5 +1,5 @@
 import React from 'react'
-import { Keyboard, View } from 'react-native'
+import { Keyboard, TouchableOpacity, View } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import {
@@ -48,7 +48,7 @@ type SwapProps =
       mode: 'sell'
     }
 
-const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
+const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { swap, assets, availableAssets } = useAssetsContext()
@@ -56,7 +56,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
   const { currency } = useSettingsContext()
 
   const [asset, setAsset] = React.useState(defaultAsset)
-
+  const [mode, setMode] = React.useState(defaultMode)
   const [fromAmount, setFromAmount] = React.useState('')
   const [toAmount, setToAmount] = React.useState('')
 
@@ -282,12 +282,16 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode }) => {
               }}
             />
           )}
-          <Icon
-            name="arrow-down"
-            size={theme.baseSpace * 8}
-            color={theme.fonts.H1.color}
+          <TouchableOpacity
             style={styles.arrow}
-          />
+            onPress={() => {
+              setMode((m) => (m === 'buy' ? 'sell' : 'buy'))
+              setFromAmount('')
+              setToAmount('')
+            }}
+          >
+            <Icon name="arrow-down" size={theme.baseSpace * 8} color={theme.fonts.H1.color} />
+          </TouchableOpacity>
           {mode === 'buy' ? (
             <AssetAmountInput
               availableAsset={asset as AvailableAsset}

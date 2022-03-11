@@ -159,6 +159,7 @@ const Settings: React.FC = () => {
                       Actions.Password({
                         onSubmit: async (password: string) => {
                           await login(phrase, password)
+                          Actions.pop()
                           Toast.show(t('password updated'))
                         },
                         confirmationRequired: true,
