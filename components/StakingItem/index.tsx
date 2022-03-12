@@ -8,7 +8,8 @@ import Typography from '../Typography'
 import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
-import { format } from 'date-fns'
+import { differenceInDays, format } from 'date-fns'
+import { unbondingPeriod } from '../../utils/terraConfig'
 
 export interface StakingItemProps extends TouchableOpacityProps {
   validator: Validator
@@ -35,6 +36,12 @@ const StakingItem: React.FC<StakingItemProps> = ({
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { currency, currencyRate } = useSettingsContext()
+  const daysLeft = completion ? differenceInDays(completion, Date.now()) : 0
+
+  const innerBarStyle = {
+    backgroundColor: theme.palette.green,
+    width: completion ? formatPercentage(daysLeft / unbondingPeriod, 2) : 0,
+  }
 
   return (
     <TouchableOpacity {...props}>
@@ -101,6 +108,16 @@ const StakingItem: React.FC<StakingItemProps> = ({
             </View>
           )}
         </View>
+        {completion ? (
+          <View style={styles.barContainer}>
+            <View style={styles.outerBar}>
+              <View style={[styles.innerBar, innerBarStyle]} />
+            </View>
+            <Typography type="Small" color={theme.palette.grey[7]}>
+              {t('days left', { daysLeft })}
+            </Typography>
+          </View>
+        ) : null}
       </View>
     </TouchableOpacity>
   )

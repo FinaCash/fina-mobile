@@ -2,7 +2,7 @@ import React from 'react'
 import CryptoJS from 'crypto-js'
 import usePersistedState from '../utils/usePersistedState'
 import { Actions } from 'react-native-router-flux'
-import { deafultHdPath } from '../utils/terraConfig'
+import { defaultHdPath } from '../utils/terraConfig'
 import { WalletTypes } from '../types/assets'
 import { MnemonicKey } from '@terra-money/terra.js'
 
@@ -25,7 +25,7 @@ interface AccountsState {
 
 const initialState: AccountsState = {
   address: '',
-  hdPath: deafultHdPath,
+  hdPath: defaultHdPath,
   type: 'seed',
   loaded: false,
   login: () => null,

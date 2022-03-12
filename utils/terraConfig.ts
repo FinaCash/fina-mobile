@@ -3,7 +3,7 @@ import { DEFAULT_BOMBAY_MIRROR_OPTIONS, DEFAULT_MIRROR_OPTIONS } from '@mirror-p
 import { LCDClient } from '@terra-money/terra.js'
 import get from 'lodash/get'
 
-export const deafultHdPath = [44, 330, 0, 0, 0]
+export const defaultHdPath = [44, 330, 0, 0, 0]
 export const defaultPrefix = 'terra'
 
 export const chainID = 'columbus-5'
@@ -18,6 +18,8 @@ export const terraLCDClient = new LCDClient({
   },
   gasAdjustment: 1.5,
 })
+
+export const unbondingPeriod = 21
 
 export const terraFCDUrl = 'https://fcd.terra.dev'
 export const terraHiveUrl = 'https://hive.terra.dev/graphql' // Astroport

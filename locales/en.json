@@ -182,5 +182,11 @@
   "reset": "Reset",
   "update qr code": "Update QR Code",
   "insufficient fund": "Insufficient Fund",
-  "invalid qr code": "Invalid QR Code"
+  "invalid qr code": "Invalid QR Code",
+  "days left": "{{daysLeft}} days left",
+  "wallet nickname": "Wallet Nickname",
+  "confirm seed phrase": "Confirm Seed Phrase",
+  "word #x": "Word #{{x}}",
+  "select hd path": "Customize HD Path (Optional)",
+  "address": "Address"
 }

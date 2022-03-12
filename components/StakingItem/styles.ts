@@ -59,4 +59,17 @@ export default (theme: Theme) => ({
   alignRight: {
     alignItems: 'flex-end',
   },
+  barContainer: {
+    marginLeft: 16 * theme.baseSpace,
+  },
+  outerBar: {
+    backgroundColor: theme.palette.grey[1],
+    height: theme.baseSpace,
+    borderRadius: theme.baseSpace,
+    marginVertical: theme.baseSpace * 2,
+  },
+  innerBar: {
+    height: theme.baseSpace,
+    borderRadius: theme.baseSpace,
+  },
 })

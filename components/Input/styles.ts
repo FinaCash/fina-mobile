@@ -12,6 +12,7 @@ export default (theme: Theme) => ({
   },
   input: {
     flex: 1,
+    textAlignVertical: 'top',
   },
   marginLeft: {
     marginLeft: theme.baseSpace * 2,

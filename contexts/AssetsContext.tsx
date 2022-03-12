@@ -81,7 +81,7 @@ interface AssetsState {
   airdrops: Airdrop[]
   swap(
     from: { denom: string; amount: number },
-    toDenom: string,
+    to: { denom: string; amount: number },
     password?: string,
     terraApp?: TerraApp,
     simulate?: boolean
@@ -317,21 +317,6 @@ const AssetsProvider: React.FC = ({ children }) => {
     ).then((r) => r.json())
 
     setRawAssets((a) => {
-      console.log(
-        a,
-        uniqBy(
-          [
-            ...nativeBalances,
-            ...anchorBalances,
-            ...mAssetsBalances,
-            Number(astroBalance.result.balance) > 0
-              ? { denom: 'ASTRO', amount: astroBalance.result.balance }
-              : undefined,
-            ...a.filter((aa) => aa.denom.match(/^B/)), // Do not replace collaterals
-          ].filter((a) => a),
-          'denom'
-        )
-      )
       return uniqBy(
         [
           ...nativeBalances,
@@ -383,7 +368,7 @@ const AssetsProvider: React.FC = ({ children }) => {
   const swap = React.useCallback(
     async (
       from: { denom: string; amount: number },
-      toDenom: string,
+      to: { denom: string; amount: number },
       password?: string,
       terraApp?: TerraApp,
       simulate?: boolean
@@ -393,20 +378,20 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       let msg
       // Buy Collateral
-      if (toDenom.match(/^B/)) {
-        msg = (toDenom === 'BLUNA' ? fabricateExchangeSwapLuna : fabricateTerraswapSwapUSTbETH)({
+      if (to.denom.match(/^B/)) {
+        msg = (to.denom === 'BLUNA' ? fabricateExchangeSwapLuna : fabricateTerraswapSwapUSTbETH)({
           address,
           amount: String(from.amount),
           denom: from.denom,
         })(anchorAddressProvider)[0]
         // Sell Collateral
       } else if (from.denom.match(/^B/)) {
-        msg = (toDenom === 'BLUNA' ? fabricateExchangeSwapbLuna : fabricateTerraswapSwapbEth)({
+        msg = (to.denom === 'BLUNA' ? fabricateExchangeSwapbLuna : fabricateTerraswapSwapbEth)({
           address,
           amount: String(from.amount),
         })(anchorAddressProvider)[0]
         // Buy ANC
-      } else if (toDenom === 'ANC') {
+      } else if (to.denom === 'ANC') {
         msg = (
           await anchorClient.anchorToken.buyANC(String(from.amount)).generateWithAddress(address)
         )[0]
@@ -416,13 +401,13 @@ const AssetsProvider: React.FC = ({ children }) => {
           await anchorClient.anchorToken.sellANC(String(from.amount)).generateWithAddress(address)
         )[0]
         // Buy mAsset
-      } else if (mAssets.find((a) => a.symbol === toDenom)) {
+      } else if (mAssets.find((a) => a.symbol === to.denom)) {
         const key = new MnemonicKey()
         const mirror = new Mirror({
           ...mirrorOptions,
           key,
         })
-        msg = mirror.assets[toDenom].pair.swap(
+        msg = mirror.assets[to.denom].pair.swap(
           {
             amount: (Number(from.amount) * 10 ** 6).toString(),
             info: UST,
@@ -450,25 +435,20 @@ const AssetsProvider: React.FC = ({ children }) => {
         )
         msg.sender = address
         // Native
-      } else if (from.denom.match(/^u/) && toDenom.match(/^u/)) {
+      } else if (from.denom.match(/^u/) && to.denom.match(/^u/)) {
         msg = new MsgSwap(
           address,
           new Coin(from.denom, (Number(from.amount) * 10 ** 6).toString()),
-          toDenom
+          to.denom
         )
         // Buy Other Token
-      } else if (from.denom === 'uusd' && Object.keys(supportedTokens).includes(toDenom)) {
+      } else if (from.denom === 'uusd' && Object.keys(supportedTokens).includes(to.denom)) {
         msg = new MsgExecuteContract(
           address,
-          get(supportedTokens, [toDenom, 'addresses', 'pair'], ''),
+          get(supportedTokens, [to.denom, 'addresses', 'pair'], ''),
           {
             swap: {
-              belief_price: String(
-                get(
-                  availableAssets.find((a) => a.symbol === toDenom),
-                  'price'
-                )
-              ),
+              belief_price: (from.amount / to.amount).toFixed(6),
               max_spread: '0.005',
               offer_asset: {
                 amount: (Number(from.amount) * 10 ** 6).toFixed(0),
@@ -483,7 +463,7 @@ const AssetsProvider: React.FC = ({ children }) => {
           [new Coin('uusd', new Int((from.amount * 10 ** 6).toFixed(0)))]
         )
         // Sell Other Token
-      } else if (toDenom === 'uusd' && Object.keys(supportedTokens).includes(from.denom)) {
+      } else if (to.denom === 'uusd' && Object.keys(supportedTokens).includes(from.denom)) {
         msg = new MsgExecuteContract(
           address,
           get(supportedTokens, [from.denom, 'addresses', 'token'], ''),
@@ -492,14 +472,9 @@ const AssetsProvider: React.FC = ({ children }) => {
               amount: (Number(from.amount) * 10 ** 6).toFixed(0),
               contract: get(supportedTokens, [from.denom, 'addresses', 'pair'], ''),
               msg: base64.encode(
-                `{"swap":{"max_spread":"0.005","belief_price":"${
-                  1 /
-                  get(
-                    availableAssets.find((a) => a.symbol === from.denom),
-                    'price',
-                    1
-                  )
-                }"}}`
+                `{"swap":{"max_spread":"0.005","belief_price":"${(to.amount / from.amount).toFixed(
+                  6
+                )}"}}`
               ),
             },
           }

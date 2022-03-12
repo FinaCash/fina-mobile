@@ -182,5 +182,11 @@
   "reset": "重設",
   "update qr code": "更新二維碼",
   "insufficient fund": "餘額不足",
-  "invalid qr code": "二維碼不正確"
+  "invalid qr code": "二維碼不正確",
+  "days left": "餘下{{daysLeft}}日",
+  "wallet nickname": "錢包名稱",
+  "confirm seed phrase": "確認助記詞",
+  "word #x": "第{{x}}個助記詞",
+  "select hd path": "自選HD Path（選填）",
+  "address": "地址"
 }

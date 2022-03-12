@@ -207,7 +207,9 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
               denom: mode === 'buy' ? currentAsset.coin.denom : asset.coin.denom,
               amount: Number(fromAmount),
             },
-            mode === 'buy' ? asset.coin.denom : currentAsset.coin.denom,
+            mode === 'buy'
+              ? { denom: asset.coin.denom, amount: Number(toAmount) }
+              : { denom: currentAsset.coin.denom, amount: Number(toAmount) },
             password,
             terraApp
           )
@@ -232,7 +234,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
         }
       }
     },
-    [asset, fromAmount, fromAsset, toAsset, swap, currentAsset, mode]
+    [asset, fromAmount, fromAsset, toAsset, toAmount, swap, currentAsset, mode]
   )
 
   React.useEffect(() => {

@@ -12,7 +12,7 @@ import TerraApp from '@terra-money/ledger-terra-js'
 import Button from '../../components/Button'
 import BottomModal from '../../components/BottomModal'
 import scanLedgerDevices from '../../utils/scanLedgerDevices'
-import { deafultHdPath, defaultPrefix } from '../../utils/terraConfig'
+import { defaultHdPath, defaultPrefix } from '../../utils/terraConfig'
 
 let unsubscribe = () => {}
 let terraApp: TerraApp
@@ -35,7 +35,7 @@ const ConnectLedger: React.FC<ConnectLedgerProps> = ({ onSubmit }) => {
     setError('')
     if (terraApp) {
       setLoading(true)
-      const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+      const result = await terraApp.getAddressAndPubKey(defaultHdPath, defaultPrefix)
       if (result.bech32_address) {
         await onSubmit(terraApp)
         setLoading(false)
@@ -43,7 +43,7 @@ const ConnectLedger: React.FC<ConnectLedgerProps> = ({ onSubmit }) => {
       } else if (deviceId) {
         const transport = await TransportBLE.open(deviceId)
         terraApp = new TerraApp(transport)
-        const result2 = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+        const result2 = await terraApp.getAddressAndPubKey(defaultHdPath, defaultPrefix)
         if (result2.bech32_address) {
           await onSubmit(terraApp)
           setLoading(false)
@@ -65,7 +65,7 @@ const ConnectLedger: React.FC<ConnectLedgerProps> = ({ onSubmit }) => {
         deviceId = device.id
         const transport = await TransportBLE.open(deviceId)
         terraApp = new TerraApp(transport)
-        const result = await terraApp.getAddressAndPubKey(deafultHdPath, defaultPrefix)
+        const result = await terraApp.getAddressAndPubKey(defaultHdPath, defaultPrefix)
         if (result.bech32_address) {
           await onSubmit(terraApp)
           setLoading(false)

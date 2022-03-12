@@ -51,7 +51,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     try {
       const tx = await swap(
         { denom: from.coin.denom, amount: Number(from.coin.amount) / 10 ** 6 },
-        to.coin.denom,
+        { denom: to.coin.denom, amount: Number(to.coin.amount) / 10 ** 6 },
         '',
         undefined,
         true

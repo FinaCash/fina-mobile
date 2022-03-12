@@ -2,11 +2,11 @@
 import TerraApp from '@terra-money/ledger-terra-js'
 import { Key, SignDoc, SignatureV2, PublicKey } from '@terra-money/terra.js'
 import { signatureImport } from 'secp256k1'
-import { deafultHdPath, defaultPrefix } from './terraConfig'
+import { defaultHdPath, defaultPrefix } from './terraConfig'
 
 class LedgerKey extends Key {
   public terraApp: TerraApp | undefined
-  public hdPath = deafultHdPath
+  public hdPath = defaultHdPath
   public prefix = defaultPrefix
 
   public constructor(publicKey: PublicKey, terraApp: TerraApp, hdPath: number[], prefix: string) {

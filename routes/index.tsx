@@ -39,6 +39,9 @@ import Undelegate from '../screens/Staking/Undelegate'
 import Redelegate from '../screens/Staking/Redelegate'
 import ProvideLiquidity from '../screens/ProvideLiquidity'
 import WithdrawLiquidity from '../screens/WithdrawLiquidity'
+import EnterSeedPhrase from '../screens/ImportWallet/EnterSeedPhrase'
+import ConfirmSeedPhrase from '../screens/ImportWallet/ConfirmSeedPhrase'
+import SelectHDPath from '../screens/ImportWallet/SelectHDPath'
 
 const Tab: React.FC<{
   sceneKey: string
@@ -87,14 +90,18 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
       <Router>
         <Scene key="root">
           <Modal hideNavBar>
-            <Scene key="Login" hideNavBar component={Login} />
-            <Stack hideNavBar key="Main" initial={!!address}>
+            <Stack hideNavBar key="Main">
+              <Scene key="Login" initial={!address} hideNavBar component={Login} />
+              <Scene key="EnterSeedPhrase" hideNavBar component={EnterSeedPhrase} />
+              <Scene key="ConfirmSeedPhrase" hideNavBar component={ConfirmSeedPhrase} />
+              <Scene key="SelectHDPath" hideNavBar component={SelectHDPath} />
               <Tabs
                 tabBarPosition="bottom"
                 showLabel={false}
                 tabBarComponent={TabBar}
                 hideNavBar
                 lazy
+                initial={!!address}
               >
                 <Scene
                   key="Home"

@@ -106,7 +106,12 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
     async (password?: string, terraApp?: TerraApp) => {
       if (from && to) {
         try {
-          await swap({ denom: from, amount: Number(fromAmount) }, to, password, terraApp)
+          await swap(
+            { denom: from, amount: Number(fromAmount) },
+            { denom: to, amount: Number(toAmount) },
+            password,
+            terraApp
+          )
           Actions.Success({
             message: {
               type: 'swap',
@@ -128,7 +133,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
         }
       }
     },
-    [from, to, fromAmount, fromAssetWithAmount, toAsset, swap]
+    [from, to, fromAmount, toAmount, fromAssetWithAmount, toAsset, swap]
   )
 
   React.useEffect(() => {
