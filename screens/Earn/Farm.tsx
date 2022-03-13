@@ -26,7 +26,7 @@ const FarmTab: React.FC = () => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { farmInfo, availableAssets, fetchFarmInfo, claimFarmRewards } = useAssetsContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
   const { type } = useAccountsContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const availableAssetsMap = React.useMemo(
@@ -136,20 +136,25 @@ const FarmTab: React.FC = () => {
             <View style={styles.buttonsRow}>
               <StatCard
                 title={t('total farm assets')}
-                value={formatCurrency(totalFarmValue * currencyRate, currency, true)}
+                value={formatCurrency(totalFarmValue * currencyRate, currency, true, hideAmount)}
                 mr={2}
                 disabled
               />
               <StatCard
                 title={t('pending rewards')}
-                value={formatCurrency(totalRewards * currencyRate, currency, true)}
+                value={formatCurrency(totalRewards * currencyRate, currency, true, hideAmount)}
                 ml={2}
                 onPress={() => setIsClaiming(true)}
                 disabled={totalRewards === 0}
               >
                 <Typography type="Small" color={theme.palette.grey[7]}>
                   {totalRewardTokens
-                    .map((token) => formatCurrency(token.amount, token.denom) + ' ' + token.denom)
+                    .map(
+                      (token) =>
+                        formatCurrency(token.amount, token.denom, undefined, hideAmount) +
+                        ' ' +
+                        token.denom
+                    )
                     .join('\n')}
                 </Typography>
               </StatCard>

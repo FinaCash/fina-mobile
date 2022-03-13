@@ -23,7 +23,7 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
   const deltaPercent = availableAsset
     ? (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
     : 0
@@ -79,7 +79,9 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
               <Typography bold>
                 {formatCurrency(
                   get(asset, 'notProvided', 0).toString(),
-                  get(asset, 'coin.denom', '')
+                  get(asset, 'coin.denom', ''),
+                  undefined,
+                  hideAmount
                 )}
               </Typography>
             </View>
@@ -88,7 +90,12 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
                 {t('provided')}
               </Typography>
               <Typography bold>
-                {formatCurrency(get(asset, 'provided', 0).toString(), get(asset, 'coin.denom', ''))}
+                {formatCurrency(
+                  get(asset, 'provided', 0).toString(),
+                  get(asset, 'coin.denom', ''),
+                  undefined,
+                  hideAmount
+                )}
               </Typography>
             </View>
             <View style={styles.alignRight}>

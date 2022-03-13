@@ -32,11 +32,11 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     width: '100%',
-    paddingHorizontal: theme.baseSpace * 6,
-    marginBottom: theme.baseSpace * 5,
+    paddingHorizontal: theme.baseSpace * 2,
+    marginBottom: theme.baseSpace * 2,
   },
   iconButton: {
-    marginLeft: theme.baseSpace * 8,
+    padding: theme.baseSpace * 4,
   },
   button: {
     backgroundColor: theme.palette.primary + '88',
@@ -49,7 +49,7 @@ export default (theme: Theme) => ({
   },
   header: {
     alignItems: 'center',
-    marginTop: theme.statusBarHeight + 6 * theme.baseSpace,
+    marginTop: theme.statusBarHeight + 2 * theme.baseSpace,
     marginBottom: 12 * theme.baseSpace,
   },
   modal:

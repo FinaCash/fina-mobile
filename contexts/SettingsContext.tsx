@@ -12,10 +12,12 @@ interface SettingsState {
   theme: ThemeType
   systemDefaultTheme: boolean
   hideSmallBalance: boolean
+  hideAmount: boolean
   setCurrency: React.Dispatch<React.SetStateAction<string>>
   setTheme: React.Dispatch<React.SetStateAction<ThemeType>>
   setSystemDefaultTheme: React.Dispatch<React.SetStateAction<boolean>>
   setHideSmallBalance: React.Dispatch<React.SetStateAction<boolean>>
+  setHideAmount: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const initialState: SettingsState = {
@@ -24,10 +26,12 @@ const initialState: SettingsState = {
   theme: ThemeType.Light,
   systemDefaultTheme: true,
   hideSmallBalance: true,
+  hideAmount: false,
   setCurrency: () => null,
   setTheme: () => null,
   setSystemDefaultTheme: () => null,
   setHideSmallBalance: () => null,
+  setHideAmount: () => null,
 }
 
 const SettingsContext = React.createContext<SettingsState>(initialState)
@@ -50,6 +54,8 @@ const SettingsProvider: React.FC = ({ children }) => {
     'hideSmallBalance',
     initialState.hideSmallBalance
   )
+
+  const [hideAmount, setHideAmount] = usePersistedState('hideAmount', initialState.hideAmount)
 
   React.useEffect(() => {
     if (currency !== 'uusd') {
@@ -94,6 +100,8 @@ const SettingsProvider: React.FC = ({ children }) => {
         setSystemDefaultTheme,
         hideSmallBalance,
         setHideSmallBalance,
+        hideAmount,
+        setHideAmount,
       }}
     >
       {children}

@@ -55,7 +55,9 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
   const { address, type } = useAccountsContext()
   const { currency } = useSettingsContext()
 
-  const [asset, setAsset] = React.useState(defaultAsset)
+  const [asset, setAsset] = React.useState(
+    assets.find((a) => a.symbol === defaultAsset.symbol) || defaultAsset
+  )
   const [mode, setMode] = React.useState(defaultMode)
   const [fromAmount, setFromAmount] = React.useState('')
   const [toAmount, setToAmount] = React.useState('')
@@ -305,7 +307,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
                   Actions.SelectAsset({
                     availableAssets,
                     onSelect: (a: AvailableAsset) => {
-                      setAsset(a)
+                      setAsset(assets.find((aa) => aa.symbol === a.symbol) || a)
                       changeAmount(fromAmount, 'from', a.symbol)
                       Actions.pop()
                     },

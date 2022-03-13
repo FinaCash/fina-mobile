@@ -42,7 +42,7 @@ const LoanCard: React.FC<LoanCardProps> = ({
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { borrowInfo } = useAssetsContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
 
   const [reload, setReload] = React.useState(false)
 
@@ -96,7 +96,12 @@ const LoanCard: React.FC<LoanCardProps> = ({
       >
         <View>
           <Typography color={theme.palette.white} type="H4">
-            {formatCurrency(borrowInfo.collateralValue * 10 ** 6 * currencyRate, currency, true)}
+            {formatCurrency(
+              borrowInfo.collateralValue * 10 ** 6 * currencyRate,
+              currency,
+              true,
+              hideAmount
+            )}
           </Typography>
           <Typography color={theme.palette.white} type="Small">
             {t('collateral value')}
@@ -104,7 +109,12 @@ const LoanCard: React.FC<LoanCardProps> = ({
         </View>
         <View>
           <Typography color={theme.palette.white} type="H4">
-            {formatCurrency(borrowInfo.borrowedValue * 10 ** 6 * currencyRate, currency, true)}
+            {formatCurrency(
+              borrowInfo.borrowedValue * 10 ** 6 * currencyRate,
+              currency,
+              true,
+              hideAmount
+            )}
           </Typography>
           <Typography color={theme.palette.white} type="Small">
             {t('borrowed value')}
@@ -134,7 +144,12 @@ const LoanCard: React.FC<LoanCardProps> = ({
           </TouchableOpacity>
           <View>
             <Typography type="Large">
-              {formatCurrency(borrowInfo.borrowLimit * 10 ** 6 * currencyRate, currency, true)}
+              {formatCurrency(
+                borrowInfo.borrowLimit * 10 ** 6 * currencyRate,
+                currency,
+                true,
+                hideAmount
+              )}
             </Typography>
             <Typography type="Small" color={theme.palette.grey[7]}>
               {t('borrow limit')}

@@ -27,21 +27,20 @@ const Login: React.FC<LoginProps> = () => {
 
   const onSubmit = React.useCallback(
     async (password: string, name: string, seed: string, hdPath: number[]) => {
-      await login(seed, password, undefined, undefined, hdPath[2], hdPath[4])
+      await login(name, seed, password, undefined, hdPath)
       Actions.replace('Main')
     },
     [login]
   )
 
   const onConnectLedger = React.useCallback(
-    async (terraApp: TerraApp) => {
-      Actions.pop()
+    async (terraApp: TerraApp, name: string) => {
       Actions.SelectHDPath({
         terraApp,
         onSubmit: async (hdPath: number[]) => {
           await terraApp.showAddressAndPubKey(hdPath, defaultPrefix)
           const result = await terraApp.getAddressAndPubKey(hdPath, defaultPrefix)
-          await login('', '', result.bech32_address, undefined, hdPath[2], hdPath[4])
+          await login(name, '', '', result.bech32_address, hdPath)
           Actions.replace('Main')
         },
       })
@@ -129,8 +128,13 @@ const Login: React.FC<LoginProps> = () => {
             </Button>
             <Button
               onPress={() => {
-                Actions.ConnectLedger({
-                  onSubmit: onConnectLedger,
+                Actions.EnterSeedPhrase({
+                  disabledSeed: true,
+                  onSubmit: (name: string) => {
+                    Actions.ConnectLedger({
+                      onSubmit: (terraApp: TerraApp) => onConnectLedger(terraApp, name),
+                    })
+                  },
                 })
               }}
               size="Large"

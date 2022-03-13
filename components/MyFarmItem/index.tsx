@@ -18,7 +18,7 @@ interface MyFarmItemProps extends TouchableOpacityProps {
 const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...props }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
 
   let poolName = ''
   if (farm.type === FarmType.Long) {
@@ -54,7 +54,7 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...pr
         </Typography>
         {assets.map((a) => (
           <Typography key={a.denom} bold type="Small">
-            {formatCurrency(a.amount, a.denom)} {a.denom}
+            {formatCurrency(a.amount, a.denom, undefined, hideAmount)} {a.denom}
           </Typography>
         ))}
         <Typography style={{ marginTop: theme.baseSpace }} type="Small">
@@ -64,7 +64,8 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...pr
               .map((a) => a.amount * get(availableAssetsMap, [a.denom, 'price'], 0))
               .reduce((a, b) => a + b, 0) * currencyRate,
             currency,
-            true
+            true,
+            hideAmount
           )}
         </Typography>
       </View>
@@ -74,7 +75,7 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...pr
         </Typography>
         {farm.rewards.map((a) => (
           <Typography key={a.denom} bold type="Small">
-            {formatCurrency(a.amount, a.denom)} {a.denom}
+            {formatCurrency(a.amount, a.denom, undefined, hideAmount)} {a.denom}
           </Typography>
         ))}
         <Typography style={{ marginTop: theme.baseSpace }} type="Small">
@@ -84,7 +85,8 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...pr
               .map((a) => a.amount * get(availableAssetsMap, [a.denom, 'price'], 0))
               .reduce((a, b) => a + b, 0) * currencyRate,
             currency,
-            true
+            true,
+            hideAmount
           )}
         </Typography>
       </View>

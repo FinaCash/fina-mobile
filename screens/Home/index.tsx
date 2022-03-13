@@ -45,7 +45,8 @@ const Home: React.FC = () => {
   } = useAssetsContext()
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
-  const { currency, currencyRate, hideSmallBalance } = useSettingsContext()
+  const { currency, currencyRate, hideSmallBalance, hideAmount, setHideAmount } =
+    useSettingsContext()
   const { t } = useLocalesContext()
   const { showActionSheetWithOptions } = useActionSheet()
   const assetsDistribution = React.useMemo(
@@ -189,18 +190,21 @@ const Home: React.FC = () => {
     >
       <View style={styles.header}>
         <View style={styles.iconButtonsRow}>
-          <TouchableOpacity onPress={() => Actions.History()}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.History()}>
+            <Icon name="activity" size={theme.baseSpace * 5} color={theme.palette.white} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={() => setHideAmount((a) => !a)}>
             <Icon
-              name="activity"
-              style={styles.iconButton}
+              name={hideAmount ? 'eye' : 'eye-off'}
               size={theme.baseSpace * 5}
               color={theme.palette.white}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => Actions.Recipients()}>
-            <ContactIcon style={styles.iconButton} fill={theme.palette.white} />
+          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.Recipients()}>
+            <ContactIcon fill={theme.palette.white} />
           </TouchableOpacity>
           <TouchableOpacity
+            style={styles.iconButton}
             onPress={() =>
               Actions.ScanQRCode({
                 onScan: (to: string) =>
@@ -208,7 +212,7 @@ const Home: React.FC = () => {
               })
             }
           >
-            <QRCodeIcon style={styles.iconButton} fill={theme.palette.white} />
+            <QRCodeIcon fill={theme.palette.white} />
           </TouchableOpacity>
         </View>
         <AssetFilter withOverview currentFilter={filterAsset} onChange={setFilterAsset} />
@@ -219,7 +223,12 @@ const Home: React.FC = () => {
         </Typography>
         <View style={styles.row}>
           <Typography color={theme.palette.white} type="H2">
-            {formatCurrency(assetsDistribution[filterAsset] * currencyRate, currency, true)}
+            {formatCurrency(
+              assetsDistribution[filterAsset] * currencyRate,
+              currency,
+              true,
+              hideAmount
+            )}
           </Typography>
           {filterAsset === AssetTypes.Savings ? (
             <Button

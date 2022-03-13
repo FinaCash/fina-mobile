@@ -28,7 +28,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { currencyRate, currency } = useSettingsContext()
+  const { currencyRate, currency, hideAmount: settingsHideAmount } = useSettingsContext()
 
   const totalDelegated = stakingInfo
     ? stakingInfo.delegated.map((d) => d.amount).reduce((a, b) => a + b, 0)
@@ -68,11 +68,16 @@ const AssetItem: React.FC<AssetItemProps> = ({
           {asset && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
-                {formatCurrency(totalAmount, asset.coin.denom)}
+                {formatCurrency(totalAmount, asset.coin.denom, undefined, settingsHideAmount)}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
                 {asset.price
-                  ? formatCurrency(String(asset.price * totalAmount * currencyRate), currency, true)
+                  ? formatCurrency(
+                      String(asset.price * totalAmount * currencyRate),
+                      currency,
+                      true,
+                      settingsHideAmount
+                    )
                   : ''}
               </Typography>
             </View>
@@ -100,7 +105,9 @@ const AssetItem: React.FC<AssetItemProps> = ({
                   ? t('auto compounded')
                   : formatCurrency(
                       get(asset, 'rewards.amount', 0).toString(),
-                      get(asset, 'rewards.denom', '')
+                      get(asset, 'rewards.denom', ''),
+                      undefined,
+                      settingsHideAmount
                     )}
               </Typography>
             </View>
@@ -112,19 +119,25 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t('available')}
               </Typography>
-              <Typography bold>{formatCurrency(asset.coin.amount, asset.coin.denom)}</Typography>
+              <Typography bold>
+                {formatCurrency(asset.coin.amount, asset.coin.denom, undefined, settingsHideAmount)}
+              </Typography>
             </View>
             <View>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t('delegated')}
               </Typography>
-              <Typography bold>{formatCurrency(totalDelegated, asset.coin.denom)}</Typography>
+              <Typography bold>
+                {formatCurrency(totalDelegated, asset.coin.denom, undefined, settingsHideAmount)}
+              </Typography>
             </View>
             <View style={styles.alignRight}>
               <Typography color={theme.palette.grey[7]} style={styles.gutterBottom}>
                 {t('unbonding')}
               </Typography>
-              <Typography bold>{formatCurrency(totalUnbonding, asset.coin.denom)}</Typography>
+              <Typography bold>
+                {formatCurrency(totalUnbonding, asset.coin.denom, undefined, settingsHideAmount)}
+              </Typography>
             </View>
           </View>
         ) : null}

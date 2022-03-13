@@ -47,7 +47,7 @@ const Stake: React.FC = () => {
       ),
     [availableCurrencies]
   )
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
   const lunaAvailableAsset = availableAssets.find((a) => a.coin.denom === 'uluna')
   let luna = assets.filter((a) => a.coin.denom === 'uluna')
   if (luna.length === 0 && lunaAvailableAsset) {
@@ -200,17 +200,27 @@ const Stake: React.FC = () => {
             <View style={styles.buttonsRow}>
               <StatCard
                 title={t('total delegated')}
-                value={formatCurrency(totalDelegated, luna[0].symbol)}
+                value={formatCurrency(totalDelegated, luna[0].symbol, undefined, hideAmount)}
                 mr={2}
                 disabled
               >
                 <Typography type="Small" color={theme.palette.grey[7]}>
-                  {formatCurrency(totalDelegated * luna[0].price * currencyRate, currency, true)}
+                  {formatCurrency(
+                    totalDelegated * luna[0].price * currencyRate,
+                    currency,
+                    true,
+                    hideAmount
+                  )}
                 </Typography>
               </StatCard>
               <StatCard
                 title={t('pending rewards')}
-                value={formatCurrency(stakingInfo.totalRewards * currencyRate, currency, true)}
+                value={formatCurrency(
+                  stakingInfo.totalRewards * currencyRate,
+                  currency,
+                  true,
+                  hideAmount
+                )}
                 ml={2}
                 disabled
               >

@@ -14,12 +14,14 @@ export default (theme: Theme) => ({
   },
   leftButton: {
     position: 'absolute',
-    left: 6 * theme.baseSpace,
-    bottom: 4 * theme.baseSpace,
+    padding: 4 * theme.baseSpace,
+    left: 2 * theme.baseSpace,
+    bottom: 0,
   },
   rightButton: {
     position: 'absolute',
-    right: 6 * theme.baseSpace,
-    bottom: 4 * theme.baseSpace,
+    padding: 4 * theme.baseSpace,
+    right: 2 * theme.baseSpace,
+    bottom: 0,
   },
 })

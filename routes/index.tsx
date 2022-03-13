@@ -42,6 +42,7 @@ import WithdrawLiquidity from '../screens/WithdrawLiquidity'
 import EnterSeedPhrase from '../screens/ImportWallet/EnterSeedPhrase'
 import ConfirmSeedPhrase from '../screens/ImportWallet/ConfirmSeedPhrase'
 import SelectHDPath from '../screens/ImportWallet/SelectHDPath'
+import LockScreen from '../screens/LockScreen'
 
 const Tab: React.FC<{
   sceneKey: string
@@ -163,6 +164,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />
             <Scene key="Success" hideNavBar component={Success} />
+            <Scene key="LockScreen" hideNavBar component={LockScreen} />
           </Modal>
         </Scene>
       </Router>

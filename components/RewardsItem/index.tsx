@@ -30,7 +30,7 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
   const deltaPercent = availableAsset
     ? (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
     : 0
@@ -85,7 +85,7 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
               {t('pending rewards')}
             </Typography>
             <Typography bold>
-              {formatCurrency(rewards, '')}
+              {formatCurrency(rewards, '', undefined, hideAmount)}
               {more ? (
                 <Typography color={theme.palette.green} bold>
                   {' '}
@@ -103,7 +103,8 @@ const RewardsItem: React.FC<RewardsItemProps> = ({
                 {formatCurrency(
                   (rewardsValue || rewards * availableAsset.price) * currencyRate,
                   currency,
-                  true
+                  true,
+                  hideAmount
                 )}
               </Typography>
             </View>

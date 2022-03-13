@@ -7,23 +7,24 @@ import { WalletTypes } from '../types/assets'
 import { MnemonicKey } from '@terra-money/terra.js'
 
 interface AccountsState {
+  name: string
   address: string
   hdPath: number[]
   type: WalletTypes
   decryptSeedPhrase(password?: string): string
   loaded: boolean
   login(
+    name: string,
     seedPhrase?: string,
     password?: string,
     ledgerAddress?: string,
-    coinType?: number,
-    account?: number,
-    index?: number
+    hdPath?: number[]
   ): void
   logout(): void
 }
 
 const initialState: AccountsState = {
+  name: '',
   address: '',
   hdPath: defaultHdPath,
   type: 'seed',
@@ -37,6 +38,7 @@ const AccountsContext = React.createContext<AccountsState>(initialState)
 
 const AccountsProvider: React.FC = ({ children }) => {
   const [address, setAddress, loaded] = usePersistedState('address', initialState.address)
+  const [name, setName] = usePersistedState('name', initialState.name)
   const [type, setType] = usePersistedState('type', initialState.type)
   const [hdPath, setHdPath] = usePersistedState('hdPath', initialState.hdPath)
   const [encryptedSeedPhrase, setEncryptedSeedPhrase] = usePersistedState(
@@ -49,12 +51,11 @@ const AccountsProvider: React.FC = ({ children }) => {
 
   const login = React.useCallback(
     async (
+      n: string,
       seedPhrase: string,
       password: string,
       ledgerAddress: string,
-      coinType = initialState.hdPath[1],
-      account = initialState.hdPath[2],
-      index = initialState.hdPath[4]
+      hd: number[]
     ) => {
       if (ledgerAddress) {
         setType('ledger')
@@ -63,17 +64,20 @@ const AccountsProvider: React.FC = ({ children }) => {
       } else {
         const key = new MnemonicKey({
           mnemonic: seedPhrase,
-          coinType,
-          account,
-          index,
+          coinType: (hd || hdPath)[1],
+          account: (hd || hdPath)[2],
+          index: (hd || hdPath)[4],
         })
         setType('seed')
         setAddress(key.accAddress)
         setEncryptedSeedPhrase(CryptoJS.AES.encrypt(seedPhrase, password).toString())
       }
-      setHdPath([44, coinType, account, 0, index])
+      if (hd) {
+        setHdPath(hd)
+      }
+      setName(n)
     },
-    [setAddress, setEncryptedSeedPhrase, setHdPath, setType]
+    [setAddress, setEncryptedSeedPhrase, setHdPath, setType, hdPath, setName]
   )
 
   const logout = React.useCallback(() => {
@@ -107,6 +111,7 @@ const AccountsProvider: React.FC = ({ children }) => {
   return (
     <AccountsContext.Provider
       value={{
+        name,
         address,
         hdPath,
         type,

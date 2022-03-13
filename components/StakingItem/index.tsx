@@ -35,7 +35,7 @@ const StakingItem: React.FC<StakingItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { currency, currencyRate } = useSettingsContext()
+  const { currency, currencyRate, hideAmount } = useSettingsContext()
   const daysLeft = completion ? differenceInDays(completion, Date.now()) : 0
 
   const innerBarStyle = {
@@ -100,10 +100,12 @@ const StakingItem: React.FC<StakingItemProps> = ({
           {hideValue ? null : (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
-                {formatCurrency(amount, symbol)}
+                {formatCurrency(amount, symbol, undefined, hideAmount)}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
-                {price ? formatCurrency(price * amount * currencyRate, currency, true) : ''}
+                {price
+                  ? formatCurrency(price * amount * currencyRate, currency, true, hideAmount)
+                  : ''}
               </Typography>
             </View>
           )}
