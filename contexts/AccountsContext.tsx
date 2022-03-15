@@ -22,6 +22,7 @@ interface AccountsState {
     hdPath?: number[]
   ): void
   deleteAccount(): void
+  changePassword(oldPassword: string, newPassword: string): void
   accounts: {
     id: string
     name: string
@@ -41,6 +42,7 @@ const initialState: AccountsState = {
   loaded: false,
   createAccount: () => null,
   deleteAccount: () => null,
+  changePassword: () => null,
   decryptSeedPhrase: () => '',
   accounts: [],
 }
@@ -126,6 +128,19 @@ const AccountsProvider: React.FC = ({ children }) => {
     [encryptedSeedPhrase]
   )
 
+  const changePassword = React.useCallback(
+    async (oldPassword: string, newPassword: string) => {
+      const seedPhrase = decryptSeedPhrase(oldPassword)
+      const encryptedSeed = CryptoJS.AES.encrypt(seedPhrase, newPassword).toString()
+      setAccounts((ac) =>
+        ac.map((a) =>
+          a.id === currenctAccountId ? { ...a, encryptedSeedPhrase: encryptedSeed } : a
+        )
+      )
+    },
+    [setAccounts, currenctAccountId, decryptSeedPhrase]
+  )
+
   return (
     <AccountsContext.Provider
       value={{
@@ -138,6 +153,7 @@ const AccountsProvider: React.FC = ({ children }) => {
         loaded,
         createAccount,
         deleteAccount,
+        changePassword,
         accounts,
       }}
     >

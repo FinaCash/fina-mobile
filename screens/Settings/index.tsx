@@ -25,7 +25,7 @@ import { Asset } from '../../types/assets'
 const supportedThemes = Object.values(ThemeType)
 
 const Settings: React.FC = () => {
-  const { deleteAccount, decryptSeedPhrase, type } = useAccountsContext()
+  const { name, deleteAccount, decryptSeedPhrase, changePassword, type } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
   const {
@@ -41,7 +41,87 @@ const Settings: React.FC = () => {
   const { availableCurrencies } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
-  const sections = [
+  const sections: any = [
+    {
+      title: t('account'),
+      data: [
+        {
+          icon: 'user',
+          title: t('account'),
+          value: name,
+          onPress: () => null,
+        },
+        type !== 'ledger'
+          ? {
+              icon: 'eye',
+              title: t('view seed phrase'),
+              value: '',
+              onPress: () => {
+                Actions.Password({
+                  onSubmit: (password: string) => {
+                    const phrase = decryptSeedPhrase(password)
+                    if (phrase) {
+                      Alert.alert(t('seed phrase'), phrase, [
+                        {
+                          text: t('close'),
+                          onPress: () => Actions.pop(),
+                          style: 'cancel',
+                        },
+                      ])
+                    }
+                  },
+                })
+              },
+            }
+          : null,
+        type !== 'ledger'
+          ? {
+              icon: 'lock',
+              title: t('change password'),
+              value: '',
+              onPress: () => {
+                Actions.Password({
+                  onSubmit: (oldPassword: string) => {
+                    const phrase = decryptSeedPhrase(oldPassword)
+                    if (phrase) {
+                      Actions.pop()
+                      Actions.Password({
+                        onSubmit: async (password: string) => {
+                          await changePassword(oldPassword, password)
+                          Actions.pop()
+                          Toast.show(t('password updated'))
+                        },
+                        confirmationRequired: true,
+                        newPassword: true,
+                        isSetting: true,
+                      })
+                    }
+                  },
+                })
+              },
+            }
+          : null,
+        {
+          icon: 'log-out',
+          title: t('delete account'),
+          value: '',
+          onPress: () => {
+            Alert.alert(t('delete account'), t('confirm delete account'), [
+              {
+                text: t('cancel'),
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {
+                text: t('confirm'),
+                onPress: deleteAccount,
+                style: 'destructive',
+              },
+            ])
+          },
+        },
+      ].filter((a) => a),
+    },
     {
       title: t('preference'),
       data: [
@@ -118,80 +198,6 @@ const Settings: React.FC = () => {
           },
         },
       ],
-    },
-    {
-      title: t('account'),
-      data: [
-        type !== 'ledger'
-          ? {
-              icon: 'eye',
-              title: t('view seed phrase'),
-              value: '',
-              onPress: () => {
-                Actions.Password({
-                  onSubmit: (password: string) => {
-                    const phrase = decryptSeedPhrase(password)
-                    if (phrase) {
-                      Alert.alert(t('seed phrase'), phrase, [
-                        {
-                          text: t('close'),
-                          onPress: () => Actions.pop(),
-                          style: 'cancel',
-                        },
-                      ])
-                    }
-                  },
-                })
-              },
-            }
-          : null,
-        type !== 'ledger'
-          ? {
-              icon: 'lock',
-              title: t('change password'),
-              value: '',
-              onPress: () => {
-                Actions.Password({
-                  onSubmit: (oldPassword: string) => {
-                    const phrase = decryptSeedPhrase(oldPassword)
-                    if (phrase) {
-                      Actions.pop()
-                      Actions.Password({
-                        onSubmit: async (password: string) => {
-                          // await login(phrase, password)
-                          Actions.pop()
-                          Toast.show(t('password updated'))
-                        },
-                        confirmationRequired: true,
-                        newPassword: true,
-                        isSetting: true,
-                      })
-                    }
-                  },
-                })
-              },
-            }
-          : null,
-        {
-          icon: 'log-out',
-          title: t('delete account'),
-          value: '',
-          onPress: () => {
-            Alert.alert(t('delete account'), t('confirm delete account'), [
-              {
-                text: t('cancel'),
-                onPress: () => null,
-                style: 'cancel',
-              },
-              {
-                text: t('confirm'),
-                onPress: deleteAccount,
-                style: 'destructive',
-              },
-            ])
-          },
-        },
-      ].filter((a) => a),
     },
   ]
 
