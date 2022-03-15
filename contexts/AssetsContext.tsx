@@ -362,6 +362,13 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchStakingInfo()
       fetchAirdrops()
       fetchFarmInfo()
+    } else {
+      setRawAssets([])
+      setAvailableAssets(initialState.availableAssets)
+      setAvailableCurrencies(initialState.availableCurrencies)
+      setBorrowInfo(initialState.borrowInfo)
+      setStakingInfo(initialState.stakingInfo)
+      setValidators(initialState.validators)
     }
   }, [address])
 
@@ -1054,26 +1061,6 @@ const AssetsProvider: React.FC = ({ children }) => {
     },
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo, fetchBorrowInfo]
   )
-
-  // On logout
-  React.useEffect(() => {
-    if (!address) {
-      setRawAssets([])
-      setAvailableAssets(initialState.availableAssets)
-      setAvailableCurrencies(initialState.availableCurrencies)
-      setBorrowInfo(initialState.borrowInfo)
-      setStakingInfo(initialState.stakingInfo)
-      setValidators(initialState.validators)
-    }
-  }, [
-    address,
-    setRawAssets,
-    setAvailableAssets,
-    setAvailableCurrencies,
-    setBorrowInfo,
-    setValidators,
-    setStakingInfo,
-  ])
 
   return (
     <AssetsContext.Provider

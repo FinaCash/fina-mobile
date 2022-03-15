@@ -7,49 +7,66 @@ import { WalletTypes } from '../types/assets'
 import { MnemonicKey } from '@terra-money/terra.js'
 
 interface AccountsState {
+  id: string
   name: string
   address: string
   hdPath: number[]
   type: WalletTypes
   decryptSeedPhrase(password?: string): string
   loaded: boolean
-  login(
+  createAccount(
     name: string,
     seedPhrase?: string,
     password?: string,
     ledgerAddress?: string,
     hdPath?: number[]
   ): void
-  logout(): void
+  deleteAccount(): void
+  accounts: {
+    id: string
+    name: string
+    address: string
+    hdPath: number[]
+    type: WalletTypes
+    encryptedSeedPhrase: string
+  }[]
 }
 
 const initialState: AccountsState = {
+  id: '',
   name: '',
   address: '',
   hdPath: defaultHdPath,
   type: 'seed',
   loaded: false,
-  login: () => null,
-  logout: () => null,
+  createAccount: () => null,
+  deleteAccount: () => null,
   decryptSeedPhrase: () => '',
+  accounts: [],
 }
 
 const AccountsContext = React.createContext<AccountsState>(initialState)
 
 const AccountsProvider: React.FC = ({ children }) => {
-  const [address, setAddress, loaded] = usePersistedState('address', initialState.address)
-  const [name, setName] = usePersistedState('name', initialState.name)
-  const [type, setType] = usePersistedState('type', initialState.type)
-  const [hdPath, setHdPath] = usePersistedState('hdPath', initialState.hdPath)
-  const [encryptedSeedPhrase, setEncryptedSeedPhrase] = usePersistedState(
-    'encryptedSeedPhrase',
-    '',
-    {
-      secure: true,
-    }
-  )
+  const [accounts, setAccounts, loaded] = usePersistedState('accounts', initialState.accounts, {
+    secure: true,
+  })
+  const [currenctAccountId, setCurrenctAccountId] = usePersistedState('currenctAccountId', '')
 
-  const login = React.useCallback(
+  const { id, address, name, type, hdPath, encryptedSeedPhrase } = React.useMemo(() => {
+    return (
+      accounts.find((a) => a.id === currenctAccountId) || {
+        id: initialState.id,
+        name: initialState.name,
+        address: initialState.address,
+        type: initialState.type,
+        hdPath: initialState.hdPath,
+        encryptedSeedPhrase: '',
+      }
+    )
+  }, [accounts, currenctAccountId])
+
+  const createAccount = React.useCallback(
     async (
       n: string,
       seedPhrase: string,
@@ -57,36 +74,37 @@ const AccountsProvider: React.FC = ({ children }) => {
       ledgerAddress: string,
       hd: number[]
     ) => {
-      if (ledgerAddress) {
-        setType('ledger')
-        setAddress(ledgerAddress)
-        setEncryptedSeedPhrase('')
-      } else {
-        const key = new MnemonicKey({
-          mnemonic: seedPhrase,
-          coinType: (hd || hdPath)[1],
-          account: (hd || hdPath)[2],
-          index: (hd || hdPath)[4],
-        })
-        setType('seed')
-        setAddress(key.accAddress)
-        setEncryptedSeedPhrase(CryptoJS.AES.encrypt(seedPhrase, password).toString())
+      const newAccount = {
+        id: String(Date.now()),
+        name: n,
+        address:
+          ledgerAddress ||
+          new MnemonicKey({
+            mnemonic: seedPhrase,
+            coinType: hd[1],
+            account: hd[2],
+            index: hd[4],
+          }).accAddress,
+        type: (ledgerAddress ? 'ledger' : 'seed') as WalletTypes,
+        hdPath: hd,
+        encryptedSeedPhrase: ledgerAddress
+          ? ''
+          : CryptoJS.AES.encrypt(seedPhrase, password).toString(),
       }
-      if (hd) {
-        setHdPath(hd)
-      }
-      setName(n)
+      setAccounts((a) => [...a, newAccount])
+      setCurrenctAccountId(newAccount.id)
     },
-    [setAddress, setEncryptedSeedPhrase, setHdPath, setType, hdPath, setName]
+    [setAccounts, setCurrenctAccountId]
   )
 
-  const logout = React.useCallback(() => {
-    setAddress(initialState.address)
-    setType(initialState.type)
-    setHdPath(initialState.hdPath)
-    setEncryptedSeedPhrase('')
-    Actions.reset('Login')
-  }, [setAddress, setEncryptedSeedPhrase, setType, setHdPath])
+  const deleteAccount = React.useCallback(() => {
+    const updatedAccounts = accounts.filter((a) => a.id !== currenctAccountId)
+    setAccounts(updatedAccounts)
+    setCurrenctAccountId(updatedAccounts.length ? updatedAccounts[0].id : initialState.id)
+    if (!updatedAccounts.length) {
+      Actions.reset('Login')
+    }
+  }, [setAccounts, setCurrenctAccountId, accounts, currenctAccountId])
 
   const decryptSeedPhrase = React.useCallback(
     (password?: string) => {
@@ -111,14 +129,16 @@ const AccountsProvider: React.FC = ({ children }) => {
   return (
     <AccountsContext.Provider
       value={{
+        id,
         name,
         address,
         hdPath,
         type,
         decryptSeedPhrase,
         loaded,
-        login,
-        logout,
+        createAccount,
+        deleteAccount,
+        accounts,
       }}
     >
       {children}

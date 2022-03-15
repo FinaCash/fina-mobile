@@ -22,15 +22,15 @@ interface LoginProps {}
 const Login: React.FC<LoginProps> = () => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { login } = useAccountsContext()
+  const { createAccount } = useAccountsContext()
   const { theme: uiTheme } = useSettingsContext()
 
   const onSubmit = React.useCallback(
     async (password: string, name: string, seed: string, hdPath: number[]) => {
-      await login(name, seed, password, undefined, hdPath)
+      await createAccount(name, seed, password, undefined, hdPath)
       Actions.replace('Main')
     },
-    [login]
+    [createAccount]
   )
 
   const onConnectLedger = React.useCallback(
@@ -40,12 +40,12 @@ const Login: React.FC<LoginProps> = () => {
         onSubmit: async (hdPath: number[]) => {
           await terraApp.showAddressAndPubKey(hdPath, defaultPrefix)
           const result = await terraApp.getAddressAndPubKey(hdPath, defaultPrefix)
-          await login(name, '', '', result.bech32_address, hdPath)
+          await createAccount(name, '', '', result.bech32_address, hdPath)
           Actions.replace('Main')
         },
       })
     },
-    [login]
+    [createAccount]
   )
 
   return (

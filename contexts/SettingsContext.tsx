@@ -4,7 +4,6 @@ import { Appearance, useColorScheme } from 'react-native'
 import { ThemeType } from '../types/misc'
 import { terraLCDClient } from '../utils/terraConfig'
 import usePersistedState from '../utils/usePersistedState'
-import { useAccountsContext } from './AccountsContext'
 
 interface SettingsState {
   currency: string
@@ -37,7 +36,6 @@ const initialState: SettingsState = {
 const SettingsContext = React.createContext<SettingsState>(initialState)
 
 const SettingsProvider: React.FC = ({ children }) => {
-  const { address } = useAccountsContext()
   const colorScheme = useColorScheme()
   const [currency, setCurrency] = usePersistedState('currency', initialState.currency)
   const [currencyRate, setCurrencyRate] = usePersistedState(
@@ -66,14 +64,6 @@ const SettingsProvider: React.FC = ({ children }) => {
       setCurrencyRate(1)
     }
   }, [currency, setCurrencyRate])
-
-  // On logout
-  React.useEffect(() => {
-    if (!address) {
-      setCurrency(initialState.currency)
-      setHideSmallBalance(initialState.hideSmallBalance)
-    }
-  }, [address, setCurrency, setHideSmallBalance])
 
   React.useEffect(() => {
     if (systemDefaultTheme) {

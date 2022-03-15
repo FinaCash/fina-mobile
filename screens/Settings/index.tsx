@@ -25,7 +25,7 @@ import { Asset } from '../../types/assets'
 const supportedThemes = Object.values(ThemeType)
 
 const Settings: React.FC = () => {
-  const { login, logout, decryptSeedPhrase, type } = useAccountsContext()
+  const { deleteAccount, decryptSeedPhrase, type } = useAccountsContext()
   const { t, locale, setLocale, supportedLocales } = useLocalesContext()
   const { styles, theme: themeStyle } = useStyles(getStyles)
   const {
@@ -158,7 +158,7 @@ const Settings: React.FC = () => {
                       Actions.pop()
                       Actions.Password({
                         onSubmit: async (password: string) => {
-                          await login(phrase, password)
+                          // await login(phrase, password)
                           Actions.pop()
                           Toast.show(t('password updated'))
                         },
@@ -174,10 +174,10 @@ const Settings: React.FC = () => {
           : null,
         {
           icon: 'log-out',
-          title: t('logout'),
+          title: t('delete account'),
           value: '',
           onPress: () => {
-            Alert.alert(t('logout'), t('confirm logout'), [
+            Alert.alert(t('delete account'), t('confirm delete account'), [
               {
                 text: t('cancel'),
                 onPress: () => null,
@@ -185,7 +185,7 @@ const Settings: React.FC = () => {
               },
               {
                 text: t('confirm'),
-                onPress: logout,
+                onPress: deleteAccount,
                 style: 'destructive',
               },
             ])
