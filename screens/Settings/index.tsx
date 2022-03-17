@@ -49,7 +49,7 @@ const Settings: React.FC = () => {
           icon: 'user',
           title: t('account'),
           value: name,
-          onPress: () => null,
+          onPress: () => Actions.SelectAccounts(),
         },
         type !== 'ledger'
           ? {

@@ -1,6 +1,7 @@
 import React from 'react'
-import { Image, View } from 'react-native'
+import { Image, TouchableOpacity, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
+import { Feather as Icon } from '@expo/vector-icons'
 import Typography from '../../components/Typography'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -17,9 +18,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const Logo = require('../../assets/images/logo.png')
 const LogoWhite = require('../../assets/images/logo_white.png')
 
-interface LoginProps {}
+interface LoginProps {
+  back?: boolean
+}
 
-const Login: React.FC<LoginProps> = () => {
+const Login: React.FC<LoginProps> = ({ back }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { createAccount } = useAccountsContext()
@@ -145,6 +148,11 @@ const Login: React.FC<LoginProps> = () => {
             </Button>
           </View>
         </View>
+        {back ? (
+          <TouchableOpacity style={styles.backButton} onPress={() => Actions.pop()}>
+            <Icon size={theme.baseSpace * 6} name="arrow-left" color={theme.fonts.H1.color} />
+          </TouchableOpacity>
+        ) : null}
       </KeyboardAwareScrollView>
     </>
   )

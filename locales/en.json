@@ -133,6 +133,7 @@
   "please provide more collateral": "Please provide more collateral",
   "no borrow value": "No Borrow Value",
   "you have not borrowed anything yet": "You have not borrowed anything yet",
+  "ledger": "Ledger Nano X",
   "connect ledger": "Connect with Ledger Nano X",
   "connect ledger instruction 1": "1. Enable Bluetooth permission for Fina",
   "connect ledger instruction 2": "2. Turn on Bluetooth on your phone",

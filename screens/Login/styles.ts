@@ -63,4 +63,10 @@ export default (theme: Theme) => ({
     marginBottom: 4 * theme.baseSpace,
     color: theme.palette.grey[6],
   },
+  backButton: {
+    position: 'absolute',
+    top: theme.statusBarHeight,
+    left: 2 * theme.baseSpace,
+    padding: 4 * theme.baseSpace,
+  },
 })

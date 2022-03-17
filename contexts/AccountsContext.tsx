@@ -5,6 +5,7 @@ import { Actions } from 'react-native-router-flux'
 import { defaultHdPath } from '../utils/terraConfig'
 import { WalletTypes } from '../types/assets'
 import { MnemonicKey } from '@terra-money/terra.js'
+import { Account } from '../types/accounts'
 
 interface AccountsState {
   id: string
@@ -23,14 +24,8 @@ interface AccountsState {
   ): void
   deleteAccount(): void
   changePassword(oldPassword: string, newPassword: string): void
-  accounts: {
-    id: string
-    name: string
-    address: string
-    hdPath: number[]
-    type: WalletTypes
-    encryptedSeedPhrase: string
-  }[]
+  accounts: Account[]
+  setCurrenctAccountId: (id: string) => void
 }
 
 const initialState: AccountsState = {
@@ -45,6 +40,7 @@ const initialState: AccountsState = {
   changePassword: () => null,
   decryptSeedPhrase: () => '',
   accounts: [],
+  setCurrenctAccountId: () => null,
 }
 
 const AccountsContext = React.createContext<AccountsState>(initialState)
@@ -155,6 +151,7 @@ const AccountsProvider: React.FC = ({ children }) => {
         deleteAccount,
         changePassword,
         accounts,
+        setCurrenctAccountId,
       }}
     >
       {children}

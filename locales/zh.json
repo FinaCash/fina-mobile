@@ -133,6 +133,7 @@
   "please provide more collateral": "請提供更多抵押品",
   "no borrow value": "沒有借貸",
   "you have not borrowed anything yet": "您還未有任何貸款",
+  "ledger": "Ledger Nano X",
   "connect ledger": "連接 Ledger Nano X",
   "connect ledger instruction 1": "1. 為 Fina 提供藍牙權限",
   "connect ledger instruction 2": "2. 在電話產開啟藍芽",
