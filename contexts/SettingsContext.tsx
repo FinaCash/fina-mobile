@@ -12,11 +12,13 @@ interface SettingsState {
   systemDefaultTheme: boolean
   hideSmallBalance: boolean
   hideAmount: boolean
+  lockScreenMode: 'on app open' | 'on background' | 'off'
   setCurrency: React.Dispatch<React.SetStateAction<string>>
   setTheme: React.Dispatch<React.SetStateAction<ThemeType>>
   setSystemDefaultTheme: React.Dispatch<React.SetStateAction<boolean>>
   setHideSmallBalance: React.Dispatch<React.SetStateAction<boolean>>
   setHideAmount: React.Dispatch<React.SetStateAction<boolean>>
+  setLockScreenMode: React.Dispatch<React.SetStateAction<'on app open' | 'on background' | 'off'>>
 }
 
 const initialState: SettingsState = {
@@ -26,11 +28,13 @@ const initialState: SettingsState = {
   systemDefaultTheme: true,
   hideSmallBalance: true,
   hideAmount: false,
+  lockScreenMode: 'on app open',
   setCurrency: () => null,
   setTheme: () => null,
   setSystemDefaultTheme: () => null,
   setHideSmallBalance: () => null,
   setHideAmount: () => null,
+  setLockScreenMode: () => null,
 }
 
 const SettingsContext = React.createContext<SettingsState>(initialState)
@@ -54,6 +58,11 @@ const SettingsProvider: React.FC = ({ children }) => {
   )
 
   const [hideAmount, setHideAmount] = usePersistedState('hideAmount', initialState.hideAmount)
+
+  const [lockScreenMode, setLockScreenMode] = usePersistedState(
+    'lockScreenMode',
+    initialState.lockScreenMode
+  )
 
   React.useEffect(() => {
     if (currency !== 'uusd') {
@@ -92,6 +101,8 @@ const SettingsProvider: React.FC = ({ children }) => {
         setHideSmallBalance,
         hideAmount,
         setHideAmount,
+        lockScreenMode,
+        setLockScreenMode,
       }}
     >
       {children}

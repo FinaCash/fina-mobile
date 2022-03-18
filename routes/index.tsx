@@ -166,7 +166,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />
             <Scene key="Success" hideNavBar component={Success} />
-            <Scene key="LockScreen" hideNavBar component={LockScreen} />
+            <Scene key="LockScreen" hideNavBar component={LockScreen} gestureEnabled={false} />
           </Modal>
         </Scene>
       </Router>

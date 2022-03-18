@@ -189,5 +189,10 @@
   "confirm seed phrase": "確認助記詞",
   "word #x": "第{{x}}個助記詞",
   "select hd path": "自選HD Path（選填）",
-  "address": "地址"
+  "address": "地址",
+  "lock screen": "鎖屏",
+  "on app open": "當App開始時",
+  "on background": "當在背景運行時",
+  "enable biometric": "使用 Face ID / Touch ID",
+  "off": "永不鎖屏"
 }

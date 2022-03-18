@@ -37,11 +37,112 @@ const Settings: React.FC = () => {
     setSystemDefaultTheme,
     hideSmallBalance,
     setHideSmallBalance,
+    lockScreenMode,
+    setLockScreenMode,
   } = useSettingsContext()
   const { availableCurrencies } = useAssetsContext()
   const { showActionSheetWithOptions } = useActionSheet()
 
   const sections: any = [
+    {
+      title: t('preference'),
+      data: [
+        {
+          icon: theme === 'dark' ? 'moon' : 'sun',
+          title: t('theme'),
+          value: systemDefaultTheme ? t('system default') : t(theme),
+          onPress: () => {
+            showActionSheetWithOptions(
+              {
+                options: [t('system default'), ...supportedThemes.map((l) => t(l)), t('cancel')],
+                cancelButtonIndex: supportedThemes.length + 1,
+              },
+              (index) => {
+                if (index === undefined) {
+                  return
+                }
+                if (index === 0) {
+                  setSystemDefaultTheme(true)
+                } else if (index < supportedThemes.length + 1) {
+                  setSystemDefaultTheme(false)
+                  setTheme(supportedThemes[index - 1])
+                }
+              }
+            )
+          },
+        },
+        {
+          icon: 'globe',
+          title: t('language'),
+          value: t(locale),
+          onPress: () => {
+            showActionSheetWithOptions(
+              {
+                options: [...supportedLocales.map((l) => t(l)), t('cancel')],
+                cancelButtonIndex: supportedLocales.length,
+              },
+              (index) => {
+                if (index === undefined) {
+                  return
+                }
+                if (index < supportedLocales.length) {
+                  setLocale(supportedLocales[index])
+                }
+              }
+            )
+          },
+        },
+        {
+          icon: 'dollar-sign',
+          title: t('currency'),
+          value: `${getSymbolFromDenom(currency)} (${getCurrencyFromDenom(currency)})`,
+          onPress: () =>
+            Actions.SelectAsset({
+              assets: availableCurrencies
+                .filter((c) => !c.hidden)
+                .map((c) => getCurrentAssetDetail({ denom: c.denom, amount: '0' })),
+              assetItemProps: { hideAmount: true },
+              onSelect: (a: Asset) => {
+                Actions.pop()
+                setTimeout(() => {
+                  setCurrency(a.coin.denom)
+                }, 500)
+              },
+            }),
+        },
+        {
+          icon: 'eye-off',
+          title: t('hide small balance'),
+          value: hideSmallBalance,
+          toggle: true,
+          onChange: (v: boolean) => {
+            setHideSmallBalance(v)
+          },
+        },
+        {
+          icon: 'lock',
+          title: t('lock screen'),
+          value: t(lockScreenMode),
+          onPress: () => {
+            const options: any = ['on app open', 'on background', 'off']
+            showActionSheetWithOptions(
+              {
+                options: [...options.map(t), t('cancel')],
+                cancelButtonIndex: 3,
+              },
+              (index) => {
+                if (index === undefined) {
+                  return
+                }
+                if (index < 3) {
+                  setLockScreenMode(options[index])
+                }
+              }
+            )
+          },
+        },
+      ],
+    },
     {
       title: t('account'),
       data: [
@@ -121,83 +222,6 @@ const Settings: React.FC = () => {
           },
         },
       ].filter((a) => a),
-    },
-    {
-      title: t('preference'),
-      data: [
-        {
-          icon: theme === 'dark' ? 'moon' : 'sun',
-          title: t('theme'),
-          value: systemDefaultTheme ? t('system default') : t(theme),
-          onPress: () => {
-            showActionSheetWithOptions(
-              {
-                options: [t('system default'), ...supportedThemes.map((l) => t(l)), t('cancel')],
-                cancelButtonIndex: supportedThemes.length + 1,
-              },
-              (index) => {
-                if (index === undefined) {
-                  return
-                }
-                if (index === 0) {
-                  setSystemDefaultTheme(true)
-                } else if (index < supportedThemes.length + 1) {
-                  setSystemDefaultTheme(false)
-                  setTheme(supportedThemes[index - 1])
-                }
-              }
-            )
-          },
-        },
-        {
-          icon: 'globe',
-          title: t('language'),
-          value: t(locale),
-          onPress: () => {
-            showActionSheetWithOptions(
-              {
-                options: [...supportedLocales.map((l) => t(l)), t('cancel')],
-                cancelButtonIndex: supportedLocales.length,
-              },
-              (index) => {
-                if (index === undefined) {
-                  return
-                }
-                if (index < supportedLocales.length) {
-                  setLocale(supportedLocales[index])
-                }
-              }
-            )
-          },
-        },
-        {
-          icon: 'dollar-sign',
-          title: t('currency'),
-          value: `${getSymbolFromDenom(currency)} (${getCurrencyFromDenom(currency)})`,
-          onPress: () =>
-            Actions.SelectAsset({
-              assets: availableCurrencies
-                .filter((c) => !c.hidden)
-                .map((c) => getCurrentAssetDetail({ denom: c.denom, amount: '0' })),
-              assetItemProps: { hideAmount: true },
-              onSelect: (a: Asset) => {
-                Actions.pop()
-                setTimeout(() => {
-                  setCurrency(a.coin.denom)
-                }, 500)
-              },
-            }),
-        },
-        {
-          icon: 'eye-off',
-          title: t('hide small balance'),
-          value: hideSmallBalance,
-          toggle: true,
-          onChange: (v: boolean) => {
-            setHideSmallBalance(v)
-          },
-        },
-      ],
     },
   ]
 

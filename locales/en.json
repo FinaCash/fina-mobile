@@ -189,5 +189,9 @@
   "confirm seed phrase": "Confirm Seed Phrase",
   "word #x": "Word #{{x}}",
   "select hd path": "Customize HD Path (Optional)",
-  "address": "Address"
+  "address": "Address",
+  "lock screen": "Lock Screen",
+  "on app open": "On App Start",
+  "on background": "On Background",
+  "off": "Off"
 }

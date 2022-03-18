@@ -1,5 +1,12 @@
 import React from 'react'
-import { ActivityIndicator, Animated, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Animated,
+  AppState,
+  AppStateStatus,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
 import { Feather as Icon } from '@expo/vector-icons'
@@ -31,6 +38,12 @@ import useSendToken from '../../utils/useSendToken'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import CollateralItem from '../../components/CollateralItem'
 
+const onStateChange = (nextState: AppStateStatus) => {
+  if (nextState !== 'active' && Actions.currentScene !== 'LockScreen') {
+    Actions.LockScreen()
+  }
+}
+
 const Home: React.FC = () => {
   const scrollY = React.useRef(new Animated.Value(0)).current
   const { styles, theme } = useStyles(getStyles)
@@ -45,7 +58,7 @@ const Home: React.FC = () => {
   } = useAssetsContext()
   const sendToken = useSendToken()
   const { address: walletAddress } = useAccountsContext()
-  const { currency, currencyRate, hideSmallBalance, hideAmount, setHideAmount } =
+  const { currency, currencyRate, hideSmallBalance, hideAmount, setHideAmount, lockScreenMode } =
     useSettingsContext()
   const { t } = useLocalesContext()
   const { showActionSheetWithOptions } = useActionSheet()
@@ -180,6 +193,20 @@ const Home: React.FC = () => {
   //     ),
   //   [assets]
   // )
+
+  React.useEffect(() => {
+    if (lockScreenMode !== 'off' && Actions.currentScene === '_Home') {
+      Actions.LockScreen()
+    }
+    if (lockScreenMode === 'on background') {
+      AppState.addEventListener('change', onStateChange)
+    } else {
+      AppState.removeEventListener('change', onStateChange)
+    }
+    return () => {
+      AppState.removeEventListener('change', onStateChange)
+    }
+  }, [lockScreenMode])
 
   return (
     <LinearGradient
