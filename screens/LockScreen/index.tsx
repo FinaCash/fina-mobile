@@ -11,7 +11,8 @@ const LogoWhite = require('../../assets/images/logo_white.png')
 
 const unlockWallet = async () => {
   try {
-    await LocalAuthentication.authenticateAsync()
+    const result = await LocalAuthentication.authenticateAsync()
+    console.log(result)
     AppState.removeEventListener('change', onStateChange)
     Actions.pop()
   } catch (err) {
