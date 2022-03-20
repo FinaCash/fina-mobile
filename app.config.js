@@ -4,7 +4,7 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.1.0',
+  version: '1.1.4',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -39,6 +39,7 @@ export default {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',
     },
+    versionCode: 3,
   },
   web: {
     favicon: './assets/favicon.png',

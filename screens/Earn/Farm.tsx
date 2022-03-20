@@ -1,6 +1,7 @@
 import React from 'react'
 import { FlatList, RefreshControl, ScrollView, View } from 'react-native'
 import get from 'lodash/get'
+import { Feather as Icon } from '@expo/vector-icons'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -21,6 +22,7 @@ import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const FarmTab: React.FC = () => {
   const { t } = useLocalesContext()
@@ -37,6 +39,9 @@ const FarmTab: React.FC = () => {
   const [farmType, setFarmType] = React.useState(FarmType.Long)
   const [search, setSearch] = React.useState('')
   const [isClaiming, setIsClaiming] = React.useState(false)
+
+  const [sortBy, setSortBy] = React.useState('symbol')
+  const [sortOrder, setSortOrder] = React.useState(-1)
 
   const totalFarmValue = React.useMemo(
     () =>
@@ -128,9 +133,11 @@ const FarmTab: React.FC = () => {
           />
         }
         keyExtractor={(item) => item.symbol}
-        data={farmInfo.filter(
-          (f) => f.type === farmType && f.symbol.toLowerCase().includes(search.toLowerCase())
-        )}
+        data={farmInfo
+          .filter(
+            (f) => f.type === farmType && f.symbol.toLowerCase().includes(search.toLowerCase())
+          )
+          .sort((a: any, b: any) => (a[sortBy] > b[sortBy] ? -1 : 1) * sortOrder)}
         ListHeaderComponent={
           <>
             <View style={styles.buttonsRow}>
@@ -216,8 +223,38 @@ const FarmTab: React.FC = () => {
               {t(farmType)}
             </Typography>
             <View style={styles.sectionHeader}>
-              <Typography color={theme.palette.grey[7]}>{t('tokens')}</Typography>
-              <Typography color={theme.palette.grey[7]}>{t('apr')}</Typography>
+              <TouchableOpacity
+                style={[styles.buttonsRow, styles.centered]}
+                onPress={() => {
+                  setSortBy('symbol')
+                  setSortOrder((i) => (sortBy === 'symbol' ? -i : -1))
+                }}
+              >
+                <Typography color={theme.palette.grey[7]}>{t('tokens')}</Typography>
+                {sortBy === 'symbol' ? (
+                  <Icon
+                    name={sortOrder === 1 ? 'chevron-down' : 'chevron-up'}
+                    size={theme.baseSpace * 4}
+                    color={theme.palette.grey[7]}
+                  />
+                ) : null}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.buttonsRow, styles.centered]}
+                onPress={() => {
+                  setSortBy('apr')
+                  setSortOrder((i) => (sortBy === 'apr' ? -i : 1))
+                }}
+              >
+                <Typography color={theme.palette.grey[7]}>{t('apr')}</Typography>
+                {sortBy === 'apr' ? (
+                  <Icon
+                    name={sortOrder === 1 ? 'chevron-down' : 'chevron-up'}
+                    size={theme.baseSpace * 4}
+                    color={theme.palette.grey[7]}
+                  />
+                ) : null}
+              </TouchableOpacity>
             </View>
           </>
         }

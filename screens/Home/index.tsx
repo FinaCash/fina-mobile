@@ -404,7 +404,7 @@ const Home: React.FC = () => {
                 </Button>
               ) : null}
               {AssetTypes.Investments === filterAsset ? (
-                <Button onPress={() => Actions.jump('Invest')} size="Large">
+                <Button onPress={() => Actions.jump('Trade')} size="Large">
                   {t('invest')}
                 </Button>
               ) : null}
