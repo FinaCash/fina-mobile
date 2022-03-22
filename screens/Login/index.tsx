@@ -38,6 +38,7 @@ const Login: React.FC<LoginProps> = ({ back }) => {
 
   const onConnectLedger = React.useCallback(
     async (terraApp: TerraApp, name: string) => {
+      Actions.pop()
       Actions.SelectHDPath({
         terraApp,
         onSubmit: async (hdPath: number[]) => {
