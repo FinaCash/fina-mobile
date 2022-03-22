@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, RefreshControl, ScrollView, View } from 'react-native'
+import { FlatList, RefreshControl, View } from 'react-native'
 import get from 'lodash/get'
 import { Feather as Icon } from '@expo/vector-icons'
 import { useAssetsContext } from '../../contexts/AssetsContext'

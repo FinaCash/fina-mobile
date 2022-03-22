@@ -16,6 +16,14 @@ import { RecipientsProvider } from './contexts/RecipientsContext'
 import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext'
 import { LocalesProvider } from './contexts/LocalesContext'
 import { PortalProvider } from '@gorhom/portal'
+import { connectToDevTools } from 'react-devtools-core'
+
+if (__DEV__) {
+  connectToDevTools({
+    host: 'localhost',
+    port: 8097,
+  })
+}
 
 const InnerApp: React.FC = () => {
   const [fontLoaded, setFontLoaded] = React.useState(false)

@@ -115,7 +115,7 @@ const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
                   setRecipient((r) => ({ ...r, address }))
                 }}
               >
-                <Typography bold color={theme.palette.secondary}>
+                <Typography bold color={theme.palette.lightPrimary}>
                   {t('paste')}
                 </Typography>
               </TouchableOpacity>
@@ -152,7 +152,7 @@ const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
                   setRecipient((r) => ({ ...r, memo }))
                 }}
               >
-                <Typography bold color={theme.palette.secondary}>
+                <Typography bold color={theme.palette.lightPrimary}>
                   {t('paste')}
                 </Typography>
               </TouchableOpacity>

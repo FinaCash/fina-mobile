@@ -8,7 +8,7 @@ const scanLedgerDevices = async (onAdd: (device: any) => void) => {
     const granted = await PermissionsAndroid.requestMultiple([
       'android.permission.BLUETOOTH_SCAN',
       'android.permission.BLUETOOTH_CONNECT',
-      'android.permission.ACCESS_COARSE_LOCATION',
+      'android.permission.ACCESS_FINE_LOCATION',
     ] as any)
 
     if (

@@ -4,6 +4,7 @@ import {
   Animated,
   AppState,
   AppStateStatus,
+  Platform,
   TouchableOpacity,
   View,
 } from 'react-native'
@@ -308,6 +309,7 @@ const Home: React.FC = () => {
           theme.bottomSpace -
           theme.tabBarHeight -
           theme.statusBarHeight -
+          (Platform.OS === 'android' ? 12 * theme.baseSpace : 0) -
           (loading ? 20 * theme.baseSpace : 0)
         }
         modalStyle={styles.modal}

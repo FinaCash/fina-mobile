@@ -115,7 +115,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
                     setAddress(text)
                   }}
                 >
-                  <Typography bold color={theme.palette.secondary}>
+                  <Typography bold color={theme.palette.lightPrimary}>
                     {t('paste')}
                   </Typography>
                 </TouchableOpacity>
@@ -144,7 +144,7 @@ const SelectRecipient: React.FC<SelectRecipientProps> = ({
                     setMemo(text)
                   }}
                 >
-                  <Typography bold color={theme.palette.secondary}>
+                  <Typography bold color={theme.palette.lightPrimary}>
                     {t('paste')}
                   </Typography>
                 </TouchableOpacity>

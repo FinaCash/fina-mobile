@@ -10,6 +10,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 
 const useStyles = (getStyles?: (t: Theme) => any) => {
   const { theme: themeType } = useSettingsContext()
+
   const theme = {
     ...(themeType === 'dark' ? darkTheme : lightTheme),
     bottomSpace: Math.max(getBottomSpace() - 12, 0),
@@ -18,7 +19,9 @@ const useStyles = (getStyles?: (t: Theme) => any) => {
     screenHeight,
     isSmallScreen: screenWidth < 380,
   }
+
   const styles = getStyles ? StyleSheet.create(getStyles(theme)) : {}
+
   return { styles, theme }
 }
 

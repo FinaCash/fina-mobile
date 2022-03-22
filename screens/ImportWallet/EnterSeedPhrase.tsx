@@ -38,7 +38,11 @@ const EnterSeedPhrase: React.FC<EnterSeedPhraseProps> = ({
   return (
     <>
       <HeaderBar back title={t('import wallet')} />
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="always"
+      >
         <Typography bold style={styles.label}>
           {t('wallet nickname')}
         </Typography>

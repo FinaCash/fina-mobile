@@ -2,4 +2,5 @@ declare module '*.svg' {
   const content: any
   export default content
 }
-declare module 'react-native-mnemonic-key'
+declare module 'react-devtools-core'
+declare module 'react-native-android-navbar-height'

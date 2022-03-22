@@ -4,12 +4,12 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.1.5',
+  version: '1.1.6',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
-  plugins: ['@config-plugins/react-native-ble-plx'],
+  plugins: ['@config-plugins/react-native-ble-plx', 'expo-community-flipper'],
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
@@ -39,7 +39,7 @@ export default {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',
     },
-    versionCode: 4,
+    versionCode: 5,
   },
   web: {
     favicon: './assets/favicon.png',

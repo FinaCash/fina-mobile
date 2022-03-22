@@ -45,7 +45,11 @@ const ConfirmSeedPhrase: React.FC<ConfirmSeedPhraseProps> = ({ onSubmit, seed })
   return (
     <>
       <HeaderBar back title={t('confirm seed phrase')} />
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="always"
+      >
         <Typography bold style={styles.label}>
           {t('word #x', { x: num[0] + 1 })}
         </Typography>

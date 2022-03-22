@@ -59,7 +59,11 @@ const SelectHDPath: React.FC<SelectHDPathProps> = ({ onSubmit, seed, terraApp })
   return (
     <>
       <HeaderBar back title={t('hd path')} />
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.container}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="always"
+      >
         <View style={styles.hdContainer}>
           <Typography style={styles.label} bold>
             {t('select hd path')}

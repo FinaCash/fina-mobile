@@ -17,6 +17,13 @@ target 'Fina' do
     :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
   )
+# @generated begin expo-community-flipper - expo prebuild (DO NOT MODIFY) sync-6540a8da5d9478eb984b66327501673b0a05570c
+
+      # Flipper support successfully added via expo config plugin
+      # https://www.npmjs.com/package/expo-community-flipper
+      use_flipper!()
+    
+# @generated end expo-community-flipper
 
   # Uncomment to opt-in to using Flipper
   #
