@@ -1,10 +1,8 @@
-import 'dotenv/config'
-
 export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.1.6',
+  version: '1.1.8',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
@@ -39,14 +37,10 @@ export default {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',
     },
-    versionCode: 5,
+    versionCode: 6,
   },
   web: {
     favicon: './assets/favicon.png',
-  },
-  extra: {
-    torusProjectId: process.env.TORUS_PROJECT_ID,
-    defaultAvatarUrl: process.env.DEFAULT_AVATAR_URL,
   },
   packagerOpts: {
     config: 'metro.config.js',

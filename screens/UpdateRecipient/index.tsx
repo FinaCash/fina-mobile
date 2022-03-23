@@ -3,7 +3,6 @@ import HeaderBar from '../../components/HeaderBar'
 import { Recipient } from '../../types/recipients'
 import { TouchableOpacity, View, Image, ScrollView, KeyboardAvoidingView } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
-import Constants from 'expo-constants'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
 import QRCodeIcon from '../../assets/images/icons/qrcode.svg'
@@ -15,6 +14,7 @@ import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
 import isAddressValid from '../../utils/isAddressValid'
 import { useLocalesContext } from '../../contexts/LocalesContext'
+import { defaultAvatarUrl } from '../../utils/terraConfig'
 
 interface UpdateRecipientProps {
   recipient?: Recipient
@@ -66,10 +66,7 @@ const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
         <ScrollView>
           <View style={styles.imageContainer}>
             <TouchableOpacity onPress={setImage}>
-              <Image
-                source={{ uri: recipient.image || Constants.manifest?.extra?.defaultAvatarUrl }}
-                style={styles.avatar}
-              />
+              <Image source={{ uri: recipient.image || defaultAvatarUrl }} style={styles.avatar} />
             </TouchableOpacity>
           </View>
           <View style={styles.splitRow}>

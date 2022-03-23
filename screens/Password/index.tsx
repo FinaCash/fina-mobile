@@ -77,6 +77,7 @@ const Password: React.FC<PasswordProps> = ({
       <Input
         inputRef={inputRef}
         style={{ backgroundColor: theme.palette.white }}
+        textStyle={{ color: theme.palette.grey[10] }}
         size="XLarge"
         secureTextEntry
         value={isConfirming ? confirmCode : code}

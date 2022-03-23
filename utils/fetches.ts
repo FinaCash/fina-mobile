@@ -154,27 +154,29 @@ export const fetchAvailableCollaterals = async (): Promise<AvailableAsset[]> => 
     await queryOverseerWhitelist({ lcd: terraLCDClient, market: MARKET_DENOMS.UUSD })
   )(anchorAddressProvider)
   const [price, prevPrice] = await fetch(`${anchorApiUrl}/v1/collaterals/1d`).then((r) => r.json())
-  return elems.map((c) => ({
-    type: AssetTypes.Collaterals,
-    name: c.name,
-    symbol: c.symbol,
-    coin: { denom: c.symbol },
-    image: get(colleteralsInfo, `${c.symbol}.img`, ''),
-    price: Number(
-      get(
-        price.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
-        'price',
-        0
-      )
-    ),
-    prevPrice: Number(
-      get(
-        prevPrice.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
-        'price',
-        0
-      )
-    ),
-  }))
+  return elems
+    .filter((c) => !!(colleteralsInfo as any)[c.symbol])
+    .map((c) => ({
+      type: AssetTypes.Collaterals,
+      name: c.name,
+      symbol: c.symbol,
+      coin: { denom: c.symbol },
+      image: get(colleteralsInfo, `${c.symbol}.img`, ''),
+      price: Number(
+        get(
+          price.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
+          'price',
+          0
+        )
+      ),
+      prevPrice: Number(
+        get(
+          prevPrice.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
+          'price',
+          0
+        )
+      ),
+    }))
 }
 
 export const fetchAnchorCollaterals = async (address: string) => {
@@ -222,11 +224,13 @@ export const fetchAnchorCollaterals = async (address: string) => {
   )(anchorAddressProvider)
 
   return {
-    collaterals: collaterals.map((c) => ({
-      denom: c.collateral.symbol,
-      amount: String(Number(c.balance.notProvided) + Number(c.balance.provided)),
-      extra: c,
-    })),
+    collaterals: collaterals
+      .map((c) => ({
+        denom: c.collateral.symbol,
+        amount: String(Number(c.balance.notProvided) + Number(c.balance.provided)),
+        extra: c,
+      }))
+      .filter((c) => !!(colleteralsInfo as any)[c.denom]),
     collateralValue,
     borrowLimit: Number(borrowLimit),
     borrowedValue: Number(borrowedValue),

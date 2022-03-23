@@ -101,3 +101,5 @@ export const defaultValidatorAddress = 'terravaloper1jkqr2vfg4krfd4zwmsf7elfj07c
 
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
+
+export const defaultAvatarUrl = 'https://iupac.org/wp-content/uploads/2018/05/default-avatar.png'

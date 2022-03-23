@@ -1,7 +1,6 @@
 import React from 'react'
 import { SectionList, TouchableOpacity, View, Alert, Switch } from 'react-native'
 import { Feather as Icon } from '@expo/vector-icons'
-import Constants from 'expo-constants'
 import get from 'lodash/get'
 import Toast from 'react-native-root-toast'
 import HeaderBar from '../../components/HeaderBar'
@@ -21,6 +20,7 @@ import { Actions } from 'react-native-router-flux'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import { Asset } from '../../types/assets'
+import appConfig from '../../app.config'
 
 const supportedThemes = Object.values(ThemeType)
 
@@ -273,9 +273,7 @@ const Settings: React.FC = () => {
           ) : null
         }
         ListFooterComponent={
-          <Typography style={styles.version}>
-            v{get(Constants, 'manifest.version', '0.0.0')}
-          </Typography>
+          <Typography style={styles.version}>v{get(appConfig, 'version', '1.0.0')}</Typography>
         }
       />
     </>
