@@ -28,6 +28,8 @@ export default {
         'Allow $(PRODUCT_NAME) to connect to Ledger Nano X for transaction signing',
       NSCameraUsageDescription: 'Allow $(PRODUCT_NAME) to scan QR Code with your camera',
       NSFaceIDUsageDescription: 'Allow $(PRODUCT_NAME) to unlock your wallet with Face ID',
+      NSPhotoLibraryUsageDescription:
+        "Allow $(PRODUCT_NAME) to access photo library for your recipients' profile images",
     },
   },
   android: {
