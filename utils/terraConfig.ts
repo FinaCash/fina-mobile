@@ -16,7 +16,7 @@ export const terraLCDClient = new LCDClient({
   gasPrices: {
     uusd: 0.15,
   },
-  gasAdjustment: 1.5,
+  gasAdjustment: 2,
 })
 
 export const unbondingPeriod = 21
