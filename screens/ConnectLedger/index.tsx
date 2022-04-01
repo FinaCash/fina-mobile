@@ -4,6 +4,7 @@ import { Image, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble'
 import { Feather as Icon } from '@expo/vector-icons'
+import BluetoothIcon from '../../assets/images/bluetooth.svg'
 import Typography from '../../components/Typography'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
@@ -94,7 +95,11 @@ const ConnectLedger: React.FC<ConnectLedgerProps> = ({ onSubmit }) => {
         <TouchableOpacity style={styles.closeButton} onPress={() => Actions.pop()}>
           <Icon name="x" size={theme.fonts.H3.fontSize} color={theme.palette.white} />
         </TouchableOpacity>
-        <Image style={styles.image} source={require('../../assets/images/bluetooth.png')} />
+        <BluetoothIcon
+          style={styles.image}
+          width={0.6 * theme.screenWidth}
+          height={0.6 * theme.screenWidth}
+        />
         <Typography color={theme.palette.white} style={styles.title} type="H6">
           {t('connect ledger')}
         </Typography>
@@ -110,8 +115,7 @@ const ConnectLedger: React.FC<ConnectLedgerProps> = ({ onSubmit }) => {
         <Button
           style={styles.button}
           size="Large"
-          bgColor={theme.palette.white}
-          color={theme.palette.primary}
+          bgColor={theme.palette.lightPrimary}
           onPress={scan}
           loading={loading}
         >
