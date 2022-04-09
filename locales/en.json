@@ -191,5 +191,6 @@
   "lock screen": "Lock Screen",
   "on app open": "On App Start",
   "on background": "On Background",
-  "off": "Off"
+  "off": "Off",
+  "farms": "Farms"
 }

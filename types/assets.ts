@@ -6,6 +6,7 @@ export enum AssetTypes {
   Investments = 'investments',
   Tokens = 'tokens',
   Collaterals = 'collaterals',
+  Farms = 'farms',
 }
 
 export interface Validator {

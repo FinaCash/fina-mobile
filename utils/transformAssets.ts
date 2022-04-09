@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy'
 import { colleteralsInfo, supportedTokens } from './terraConfig'
 import get from 'lodash/get'
 import sortBy from 'lodash/sortBy'
-import { Asset, AssetTypes, AvailableAsset, StakingInfo } from '../types/assets'
+import { Asset, AssetTypes, AvailableAsset, Farm, StakingInfo } from '../types/assets'
 import { UserCollateral } from '@anchor-protocol/anchor.js'
 
 export const getCurrencyFromDenom = (denom: string) => denom.slice(1).toUpperCase()
@@ -164,6 +164,22 @@ export const transformCoinsToAssets = (
     },
     'symbol',
   ])
+}
+
+export const transformFarmsToAssets = (farms: Farm[], availableAssets: AvailableAsset[]) => {
+  return farms
+    .filter((f) => !!f.balance)
+    .map((f) => ({
+      type: AssetTypes.Farms,
+      name: f.dex,
+      symbol: f.symbol + ' + UST',
+      image: availableAssets.find((a) => a.symbol === f.symbol)?.image,
+      coin: {
+        denom: f.symbol + ' + UST',
+        amount: f.balance,
+      },
+      price: f.rate.ust * 2,
+    }))
 }
 
 export const transformAssetsToDistributions = (assets: Asset[], stakingInfo: StakingInfo) => {

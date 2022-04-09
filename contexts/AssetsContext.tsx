@@ -23,7 +23,7 @@ import {
   extraterrestrialPriceApiUrl,
   terraLCDUrl,
 } from '../utils/terraConfig'
-import { transformCoinsToAssets } from '../utils/transformAssets'
+import { transformCoinsToAssets, transformFarmsToAssets } from '../utils/transformAssets'
 import {
   Asset,
   AssetTypes,
@@ -242,8 +242,11 @@ const AssetsProvider: React.FC = ({ children }) => {
   const [farmInfo, setFarmInfo] = usePersistedState<Farm[]>('farmInfo', initialState.farmInfo)
 
   const assets = React.useMemo(
-    () => transformCoinsToAssets(rawAssets, availableAssets, availableCurrencies),
-    [rawAssets, availableAssets, availableCurrencies]
+    () => [
+      ...transformCoinsToAssets(rawAssets, availableAssets, availableCurrencies),
+      ...transformFarmsToAssets(farmInfo, availableAssets),
+    ],
+    [rawAssets, availableAssets, availableCurrencies, farmInfo]
   )
 
   const [borrowInfo, setBorrowInfo] = usePersistedState<BorrowInfo>(
