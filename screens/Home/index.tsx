@@ -52,6 +52,7 @@ const Home: React.FC = () => {
     assets,
     availableAssets,
     stakingInfo,
+    farmInfo,
     fetchAssets,
     fetchAvailableAssets,
     fetchBorrowInfo,
@@ -109,6 +110,9 @@ const Home: React.FC = () => {
         case AssetTypes.Collaterals:
           options = [t('buy'), t('sell'), t('provide'), t('withdraw'), t('cancel')]
           break
+        case AssetTypes.Farms:
+          options = [t('provide liquidity'), t('withdraw liquidity'), t('cancel')]
+          break
       }
       showActionSheetWithOptions(
         {
@@ -165,10 +169,21 @@ const Home: React.FC = () => {
               mode: index === 2 ? 'provide' : 'withdraw',
             })
           }
+          if (asset.type === AssetTypes.Farms && index === 0) {
+            console.log(farmInfo, asset)
+            Actions.ProvideLiquidity({
+              farm: farmInfo.find((f) => f.symbol + ' + UST' === asset.symbol),
+            })
+          }
+          if (asset.type === AssetTypes.Farms && index === 1) {
+            Actions.WithdrawLiquidity({
+              farm: farmInfo.find((f) => f.symbol + ' + UST' === asset.symbol),
+            })
+          }
         }
       )
     },
-    [t, showActionSheetWithOptions, sendToken, availableAssets]
+    [t, showActionSheetWithOptions, sendToken, availableAssets, farmInfo]
   )
 
   const refresh = React.useCallback(async () => {
@@ -408,6 +423,11 @@ const Home: React.FC = () => {
               {AssetTypes.Investments === filterAsset ? (
                 <Button onPress={() => Actions.jump('Trade')} size="Large">
                   {t('invest')}
+                </Button>
+              ) : null}
+              {AssetTypes.Farms === filterAsset ? (
+                <Button onPress={() => Actions.jump('_Earn', { toFarm: Date.now() })} size="Large">
+                  {t('more farms')}
                 </Button>
               ) : null}
             </View>

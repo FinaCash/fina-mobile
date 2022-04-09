@@ -192,5 +192,6 @@
   "on app open": "On App Start",
   "on background": "On Background",
   "off": "Off",
-  "farms": "Farms"
+  "farms": "Farms",
+  "more farms": "More Farms"
 }

@@ -135,7 +135,7 @@ export const transformCoinsToAssets = (
     } else if (coin.denom.match(/^a/)) {
       const rate = availableCurrencies.find((a) => a.denom === coin.denom)!
       asset = getSavingAssetDetail(coin, get(rate, 'price', 1))
-    } else if (coin.denom.match(/^B/)) {
+    } else if ((colleteralsInfo as any)[coin.denom]) {
       asset = getCollateralAssetDetail(coin as any)
     } else {
       asset = getMAssetDetail(coin, availableAssets)
@@ -173,7 +173,7 @@ export const transformFarmsToAssets = (farms: Farm[], availableAssets: Available
       type: AssetTypes.Farms,
       name: f.dex,
       symbol: f.symbol + ' + UST',
-      image: availableAssets.find((a) => a.symbol === f.symbol)?.image,
+      image: availableAssets.find((a) => a.symbol === f.symbol)?.image || '',
       coin: {
         denom: f.symbol + ' + UST',
         amount: f.balance,

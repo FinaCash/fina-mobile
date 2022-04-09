@@ -16,6 +16,7 @@ import Button from '../../components/Button'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import {
   anchorAddressProvider,
+  colleteralsInfo,
   mirrorOptions,
   supportedTokens,
   terraLCDClient,
@@ -98,7 +99,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
           // ANC / Collateral
         } else if (
           (defaultSymbol || asset.symbol) === 'ANC' ||
-          (defaultSymbol || asset.symbol).match(/^B/) ||
+          !!(colleteralsInfo as any)[defaultSymbol || asset.symbol] ||
           (defaultSymbol || asset.symbol) === 'ASTRO'
         ) {
           let pairContract = ''

@@ -22,6 +22,7 @@ import {
   astroportGeneratorContract,
   extraterrestrialPriceApiUrl,
   terraLCDUrl,
+  colleteralsInfo,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets, transformFarmsToAssets } from '../utils/transformAssets'
 import {
@@ -57,7 +58,6 @@ import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
 import signAndBroadcastTx from '../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
-import flatten from 'lodash/flatten'
 import uniqBy from 'lodash/uniqBy'
 import get from 'lodash/get'
 
@@ -313,7 +313,7 @@ const AssetsProvider: React.FC = ({ children }) => {
           Number(astroBalance.result.balance) > 0
             ? { denom: 'ASTRO', amount: astroBalance.result.balance }
             : undefined,
-          ...a.filter((aa) => aa.denom.match(/^B/)), // Do not replace collaterals
+          ...a.filter((aa) => !!(colleteralsInfo as any)[aa.denom]), // Do not replace collaterals
         ].filter((a) => a),
         'denom'
       )
@@ -367,14 +367,14 @@ const AssetsProvider: React.FC = ({ children }) => {
       )
       let msg
       // Buy Collateral
-      if (to.denom.match(/^B/)) {
+      if ((colleteralsInfo as any)[to.denom]) {
         msg = (to.denom === 'BLUNA' ? fabricateExchangeSwapLuna : fabricateTerraswapSwapUSTbETH)({
           address,
           amount: String(from.amount),
           denom: from.denom,
         })(anchorAddressProvider)[0]
         // Sell Collateral
-      } else if (from.denom.match(/^B/)) {
+      } else if ((colleteralsInfo as any)[from.denom]) {
         msg = (to.denom === 'BLUNA' ? fabricateExchangeSwapbLuna : fabricateTerraswapSwapbEth)({
           address,
           amount: String(from.amount),
