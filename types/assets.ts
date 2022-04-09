@@ -88,18 +88,6 @@ export interface StakingInfo {
   stakingApr: number
 }
 
-export interface Airdrop {
-  coin: {
-    denom: string
-    amount: string
-  }
-  details: {
-    stage: number
-    amount: string
-    proof: string
-  }[]
-}
-
 export enum FarmType {
   Long = 'long farm',
   Short = 'short farm',

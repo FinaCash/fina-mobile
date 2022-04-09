@@ -2,7 +2,7 @@ import React from 'react'
 import { Feather as Icon } from '@expo/vector-icons'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
-import { Airdrop, Asset, AvailableAsset, Farm, Validator } from '../../types/assets'
+import { Asset, AvailableAsset, Farm, Validator } from '../../types/assets'
 import useStyles from '../../theme/useStyles'
 import { View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -64,10 +64,6 @@ interface SuccessProps {
         toValidator: Validator
         symbol: string
         price: number
-      }
-    | {
-        type: 'claim airdrops'
-        airdrops: Airdrop[]
       }
     | {
         type: 'provide liquidity'
@@ -243,20 +239,6 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 price={message.price}
                 hideBorder
               />
-            </>
-          ) : null}
-          {message.type === 'claim airdrops' ? (
-            <>
-              <Typography type="H6" style={styles.title2}>
-                {t(message.type)}
-              </Typography>
-              {(
-                message.airdrops
-                  .map((a) => getTokenAssetDetail(a.coin, availableAssets))
-                  .filter((a) => a) as Asset[]
-              ).map((a) => (
-                <AssetItem asset={a} disabled />
-              ))}
             </>
           ) : null}
           {message.type === 'provide liquidity' ? (

@@ -11,7 +11,7 @@ import {
   MnemonicKey,
   Int,
 } from '@terra-money/terra.js'
-import { Mirror, MirrorAirdrop, UST } from '@mirror-protocol/mirror.js'
+import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import base64 from 'react-native-base64'
 import {
   terraLCDClient as terra,
@@ -31,12 +31,10 @@ import {
   BorrowInfo,
   Validator,
   StakingInfo,
-  Airdrop,
   Farm,
 } from '../types/assets'
 import {
   COLLATERAL_DENOMS,
-  fabricateAirdropClaim,
   fabricateExchangeSwapbLuna,
   fabricateExchangeSwapLuna,
   fabricateTerraswapSwapUSTbETH,
@@ -46,7 +44,6 @@ import {
 import usePersistedState from '../utils/usePersistedState'
 import {
   fetchAassetRate,
-  fetchClaimableAirdrops,
   fetchAnchorBalances,
   fetchAnchorCollaterals,
   fetchAvailableCollaterals,
@@ -72,13 +69,11 @@ interface AssetsState {
   fetchAssets(): void
   fetchBorrowInfo(): void
   fetchStakingInfo(): void
-  fetchAirdrops(): void
   availableCurrencies: { denom: string; price: number; hidden?: boolean }[]
   farmInfo: Farm[]
   borrowInfo: BorrowInfo
   stakingInfo: StakingInfo
   validators: Validator[]
-  airdrops: Airdrop[]
   swap(
     from: { denom: string; amount: number },
     to: { denom: string; amount: number },
@@ -167,12 +162,6 @@ interface AssetsState {
     simulate?: boolean
   ): void
   claimStakingRewards(password?: string, terraApp?: TerraApp, simulate?: boolean): void
-  claimAirdrops(
-    airdropsToClaim: Airdrop[],
-    password?: string,
-    terraApp?: TerraApp,
-    simulate?: boolean
-  ): void
   provideLiquidity(
     farm: Farm,
     amount: number,
@@ -199,7 +188,6 @@ const initialState: AssetsState = {
   fetchAssets: () => null,
   fetchBorrowInfo: () => null,
   fetchStakingInfo: () => null,
-  fetchAirdrops: () => null,
   availableCurrencies: [{ denom: 'uusd', price: 1 }],
   borrowInfo: {
     collateralValue: 0,
@@ -219,7 +207,6 @@ const initialState: AssetsState = {
   },
   farmInfo: [],
   validators: [],
-  airdrops: [],
   swap: () => null,
   send: () => null,
   depositSavings: () => null,
@@ -233,7 +220,6 @@ const initialState: AssetsState = {
   unstake: () => null,
   redelegate: () => null,
   claimStakingRewards: () => null,
-  claimAirdrops: () => null,
   provideLiquidity: () => null,
   withdrawLiquidity: () => null,
   claimFarmRewards: () => null,
@@ -272,7 +258,6 @@ const AssetsProvider: React.FC = ({ children }) => {
     'validators',
     initialState.validators
   )
-  const [airdrops, setAirdrops] = usePersistedState<Airdrop[]>('airdrops', initialState.airdrops)
 
   const fetchAvailableAssets = React.useCallback(async () => {
     const mAssets = await fetchAvailableMirrorAssets()
@@ -344,11 +329,6 @@ const AssetsProvider: React.FC = ({ children }) => {
     setStakingInfo(stakingResult.stakingInfo)
   }, [address, setValidators, setStakingInfo])
 
-  const fetchAirdrops = React.useCallback(async () => {
-    const airdropsResult = await fetchClaimableAirdrops(address)
-    setAirdrops(airdropsResult)
-  }, [address, setAirdrops])
-
   const fetchFarmInfo = React.useCallback(async () => {
     const result = await fetchFarmingInfo(address)
     setFarmInfo(result)
@@ -360,7 +340,6 @@ const AssetsProvider: React.FC = ({ children }) => {
       fetchAssets()
       fetchBorrowInfo()
       fetchStakingInfo()
-      fetchAirdrops()
       fetchFarmInfo()
     } else {
       setRawAssets([])
@@ -844,53 +823,6 @@ const AssetsProvider: React.FC = ({ children }) => {
     ]
   )
 
-  const claimAirdrops = React.useCallback(
-    async (
-      airdropsToClaim: Airdrop[],
-      password?: string,
-      terraApp?: TerraApp,
-      simulate?: boolean
-    ) => {
-      const key = new MnemonicKey()
-      const msgs = flatten(
-        airdropsToClaim.map((a) => {
-          if (a.coin.denom === 'ANC') {
-            return a.details.map(
-              ({ amount, proof, stage }) =>
-                fabricateAirdropClaim({ address, amount, proof: JSON.parse(proof), stage })(
-                  anchorAddressProvider
-                )[0]
-            )
-          } else {
-            const mirAirdrop = new MirrorAirdrop({
-              ...mirrorOptions,
-              contractAddress: mirrorOptions.airdrop,
-              key,
-            })
-            return a.details.map(({ amount, proof, stage }) =>
-              mirAirdrop.claim(stage, amount, JSON.parse(proof))
-            )
-          }
-        })
-      ).map((msg) => new MsgExecuteContract(address, msg.contract, msg.execute_msg, msg.coins))
-      const result = await signAndBroadcastTx(
-        decryptSeedPhrase(password),
-        terraApp,
-        hdPath,
-        { msgs },
-        address,
-        simulate,
-        () => {
-          fetchAssets()
-          fetchAirdrops()
-          fetchBorrowInfo()
-        }
-      )
-      return result
-    },
-    [fetchAssets, decryptSeedPhrase, address, hdPath, fetchAirdrops, fetchBorrowInfo]
-  )
-
   const provideLiquidity = React.useCallback(
     async (
       farm: Farm,
@@ -1072,13 +1004,11 @@ const AssetsProvider: React.FC = ({ children }) => {
         validators,
         borrowInfo,
         stakingInfo,
-        airdrops,
         fetchAvailableAssets,
         fetchFarmInfo,
         fetchAssets,
         fetchBorrowInfo,
         fetchStakingInfo,
-        fetchAirdrops,
         swap,
         send,
         depositSavings,
@@ -1092,7 +1022,6 @@ const AssetsProvider: React.FC = ({ children }) => {
         unstake,
         redelegate,
         claimStakingRewards,
-        claimAirdrops,
         provideLiquidity,
         withdrawLiquidity,
         claimFarmRewards,

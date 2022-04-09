@@ -33,7 +33,6 @@ export const anchorAddressProvider = new AddressProviderFromJson(columbus5)
 export const anchorClient = new Anchor(terraLCDClient as any, anchorAddressProvider)
 
 export const anchorApiUrl = 'https://api.anchorprotocol.com/api'
-export const anchorAirdropApiUrl = 'https://airdrop.anchorprotocol.com/api/get?chainId=columbus-4'
 export const terraMantleUrl = 'https://mantle.terra.dev'
 
 export const mirrorGraphqlUrl = 'https://graph.mirror.finance/graphql'

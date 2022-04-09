@@ -5,7 +5,6 @@ import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import Farm from './Farm'
 import Stake from './Stake'
-import Airdrop from './Airdrop'
 import HeaderBar from '../../components/HeaderBar'
 
 const Earn: React.FC = () => {
@@ -22,10 +21,9 @@ const Earn: React.FC = () => {
           routes: [
             { key: 'Stake', title: t('stake') },
             { key: 'Farm', title: t('farm') },
-            { key: 'Airdrop', title: t('airdrop') },
           ],
         }}
-        renderScene={SceneMap({ Stake, Farm, Airdrop })}
+        renderScene={SceneMap({ Stake, Farm })}
         onIndexChange={setIndex}
         initialLayout={{ width: theme.screenWidth }}
         renderTabBar={(props) => (
