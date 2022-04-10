@@ -155,6 +155,18 @@ const Loan: React.FC = () => {
           </Button>
         </View>
         <Typography style={styles.title} type="H5">
+          {t('rewards')}
+        </Typography>
+        {anc ? (
+          <RewardsItem
+            availableAsset={anc}
+            rewards={borrowInfo.pendingRewards}
+            apr={borrowInfo.rewardsRate}
+            onPress={() => setIsClaiming(true)}
+            disabled={borrowInfo.pendingRewards < 0.01}
+          />
+        ) : null}
+        <Typography style={styles.title} type="H5">
           {t('collaterals')}
         </Typography>
         {collaterals.map((c) => {
@@ -171,18 +183,6 @@ const Loan: React.FC = () => {
             />
           )
         })}
-        <Typography style={styles.title} type="H5">
-          {t('rewards')}
-        </Typography>
-        {anc ? (
-          <RewardsItem
-            availableAsset={anc}
-            rewards={borrowInfo.pendingRewards}
-            apr={borrowInfo.rewardsRate}
-            onPress={() => setIsClaiming(true)}
-            disabled={borrowInfo.pendingRewards < 0.01}
-          />
-        ) : null}
       </ScrollView>
       {anc ? (
         <ConfirmClaimBorrowRewardsModal
