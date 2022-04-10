@@ -97,6 +97,8 @@ export const getCollateralAssetDetail = (coin: {
   amount: string
   extra: UserCollateral
 }): Asset => {
+  const collateral = (colleteralsInfo as any)[coin.extra.collateral.symbol]
+
   return {
     type: AssetTypes.Collaterals,
     coin: {
@@ -105,8 +107,8 @@ export const getCollateralAssetDetail = (coin: {
     },
     name: coin.extra.collateral.name,
     symbol: coin.extra.collateral.symbol,
-    displaySymbol: (colleteralsInfo as any)[coin.extra.collateral.symbol].symbol,
-    image: (colleteralsInfo as any)[coin.extra.collateral.symbol].image,
+    displaySymbol: collateral.symbol,
+    image: collateral.image,
     price: Number(coin.extra.collateral.price),
     provided: Number(coin.extra.balance.provided),
     notProvided: Number(coin.extra.balance.notProvided),

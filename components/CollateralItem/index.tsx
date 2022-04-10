@@ -8,6 +8,7 @@ import getStyles from './styles'
 import get from 'lodash/get'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { colleteralsInfo } from '../../utils/terraConfig'
 
 export interface CollateralItemProps extends TouchableOpacityProps {
   asset: Asset
@@ -30,6 +31,8 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
       : (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
     : 0
 
+  const collateral = (colleteralsInfo as any)[asset.symbol]
+
   return (
     <TouchableOpacity {...props}>
       <View style={[styles.innerContainer, hideBorder ? { borderBottomWidth: 0 } : {}]}>
@@ -47,7 +50,11 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
           {availableAsset ? (
             <View style={styles.rightAligned}>
               <Typography type="H6">
-                {formatCurrency(availableAsset.price * 10 ** 6 * currencyRate, currency, true)}
+                {formatCurrency(
+                  availableAsset.price * 10 ** collateral.digits * currencyRate,
+                  currency,
+                  true
+                )}
               </Typography>
               {deltaPercent === undefined ? null : (
                 <Typography
@@ -62,7 +69,13 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
           ) : (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
-                {formatCurrency(asset.coin.amount, asset.coin.denom)}
+                {formatCurrency(
+                  asset.coin.amount,
+                  asset.coin.denom,
+                  undefined,
+                  undefined,
+                  collateral.digits
+                )}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
                 {formatCurrency(
@@ -85,7 +98,8 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
                   get(asset, 'notProvided', 0).toString(),
                   get(asset, 'coin.denom', ''),
                   undefined,
-                  hideAmount
+                  hideAmount,
+                  collateral.digits
                 )}
               </Typography>
             </View>
@@ -98,7 +112,8 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
                   get(asset, 'provided', 0).toString(),
                   get(asset, 'coin.denom', ''),
                   undefined,
-                  hideAmount
+                  hideAmount,
+                  collateral.digits
                 )}
               </Typography>
             </View>

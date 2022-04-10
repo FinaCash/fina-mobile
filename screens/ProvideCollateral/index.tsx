@@ -14,6 +14,8 @@ import ConfirmCollateralModal from '../../components/ConfirmModals/ConfirmCollat
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import TerraApp from '@terra-money/ledger-terra-js'
+import { colleteralsInfo } from '../../utils/terraConfig'
+import get from 'lodash/get'
 
 interface ProvideCollateralProps {
   availableAsset: AvailableAsset
@@ -30,6 +32,8 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
   const [amount, setAmount] = React.useState('')
 
   const [isConfirming, setIsConfirming] = React.useState(false)
+
+  const collateral = (colleteralsInfo as any)[asset.symbol]
 
   const onSubmit = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
@@ -85,8 +89,10 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
         <Button
           disabled={
             !Number(amount) ||
-            (mode === 'provide' && Number(amount) * 10 ** 6 > Number(asset.notProvided)) ||
-            (mode === 'withdraw' && Number(amount) * 10 ** 6 > Number(asset.provided))
+            (mode === 'provide' &&
+              Number(amount) * 10 ** get(collateral, 'digits', 6) > Number(asset.notProvided)) ||
+            (mode === 'withdraw' &&
+              Number(amount) * 10 ** get(collateral, 'digits', 6) > Number(asset.provided))
           }
           style={styles.button}
           size="Large"

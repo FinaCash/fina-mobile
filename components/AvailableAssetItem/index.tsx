@@ -1,9 +1,11 @@
+import { get } from 'lodash'
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import useStyles from '../../theme/useStyles'
 import { AvailableAsset } from '../../types/assets'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
+import { colleteralsInfo } from '../../utils/terraConfig'
 import Typography from '../Typography'
 import getStyles from './styles'
 
@@ -24,6 +26,8 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
     availableAsset.prevPrice === undefined
       ? undefined
       : (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
+
+  const collateral = availableAsset ? (colleteralsInfo as any)[availableAsset.symbol] : undefined
 
   return (
     <TouchableOpacity {...props}>
@@ -58,11 +62,17 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
         ) : (
           <View style={styles.rightAligned}>
             <Typography type="H6">
-              {formatCurrency(amount * 10 ** 6, availableAsset.coin.denom)}
+              {formatCurrency(
+                amount * 10 ** get(collateral, 'digits', 6),
+                availableAsset.coin.denom,
+                undefined,
+                undefined,
+                get(collateral, 'digits', 6)
+              )}
             </Typography>
             <Typography type="Small" color={theme.palette.grey[7]}>
               {formatCurrency(
-                amount * 10 ** 6 * availableAsset.price * currencyRate,
+                amount * 10 ** get(collateral, 'digits', 6) * availableAsset.price * currencyRate,
                 currency,
                 true
               )}

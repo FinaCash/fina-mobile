@@ -13,6 +13,8 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import CollateralItem from '../CollateralItem'
 import StakingItem from '../StakingItem'
 import FarmItem from '../FarmItem'
+import { colleteralsInfo } from '../../utils/terraConfig'
+import get from 'lodash/get'
 
 interface AssetAmountInputProps {
   farm?: Farm
@@ -46,6 +48,8 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
   const { currency, currencyRate } = useSettingsContext()
+
+  const collateral = asset ? (colleteralsInfo as any)[asset.symbol] : undefined
 
   return (
     <View style={styles.card}>
@@ -99,14 +103,15 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
                     setAmount(
                       String(
                         max !== undefined
-                          ? max / 10 ** 6
+                          ? max / 10 ** get(collateral, 'digits', 6)
                           : asset
                           ? Math.max(
-                              Number(asset.coin.amount) / 10 ** 6 -
+                              Number(asset.coin.amount) / 10 ** get(collateral, 'digits', 6) -
                                 (asset.coin.denom === 'uusd' ? 0.5 : 0),
                               0
                             )
-                          : stakedAmount || Number(farm?.balance) / 10 ** 6
+                          : stakedAmount ||
+                            Number(farm?.balance) / 10 ** get(collateral, 'digits', 6)
                       )
                     )
                   }
@@ -129,7 +134,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           {formatCurrency(
             Number(amount) *
               (asset ? asset.price : farm ? farm.rate.ust * 2 : 0) *
-              10 ** 6 *
+              10 ** get(collateral, 'digits', 6) *
               currencyRate,
             currency,
             true

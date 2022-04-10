@@ -658,14 +658,16 @@ const AssetsProvider: React.FC = ({ children }) => {
         new MsgExecuteContract(address, collateral.token, {
           send: {
             contract: collateral.custody,
-            amount: new Int(new Dec(amount).mul(1000000)).toString(),
+            amount: new Int(new Dec(amount).mul(10 ** collateral.digits)).toString(),
             msg: 'eyJkZXBvc2l0X2NvbGxhdGVyYWwiOnt9fQ==',
           },
         }),
         // lock_collateral call
         new MsgExecuteContract(address, anchorOverseerContract, {
           lock_collateral: {
-            collaterals: [[collateral.token, new Int(new Dec(amount).mul(1000000)).toString()]],
+            collaterals: [
+              [collateral.token, new Int(new Dec(amount).mul(10 ** collateral.digits)).toString()],
+            ],
           },
         }),
       ]
@@ -699,13 +701,15 @@ const AssetsProvider: React.FC = ({ children }) => {
         // unlock collateral
         new MsgExecuteContract(address, anchorOverseerContract, {
           unlock_collateral: {
-            collaterals: [[collateral.token, new Int(new Dec(amount).mul(1000000)).toString()]],
+            collaterals: [
+              [collateral.token, new Int(new Dec(amount).mul(10 ** collateral.digits)).toString()],
+            ],
           },
         }),
         // withdraw from custody
         new MsgExecuteContract(address, collateral.custody, {
           withdraw_collateral: {
-            amount: new Int(new Dec(amount).mul(1000000)).toString(),
+            amount: new Int(new Dec(amount).mul(10 ** collateral.digits)).toString(),
           },
         }),
       ]

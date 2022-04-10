@@ -95,6 +95,7 @@ export const colleteralsInfo = {
     token: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
     custody: 'terra10cxuzggyvvv44magvrh3thpdnk9cmlgk93gmx2',
     tradeable: true,
+    digits: 6,
   },
   BLUNA: {
     symbol: 'bLUNA',
@@ -102,12 +103,14 @@ export const colleteralsInfo = {
     token: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
     custody: 'terra1ptjp2vfjrwh0j0faj9r6katm640kgjxnwwq9kn',
     tradeable: true,
+    digits: 6,
   },
   SAVAX: {
     symbol: 'wasAVAX',
     image: 'https://app.astroport.fi/tokens/wasAVAX.png',
     token: 'terra1z3e2e4jpk4n0xzzwlkgcfvc95pc5ldq0xcny58',
     custody: 'terra1t4x4393l2kx8e5rpdkjkmt8c4ghkkpak6mdwxn',
+    digits: 8,
   },
   bATOM: {
     symbol: 'bATOM',
@@ -115,6 +118,7 @@ export const colleteralsInfo = {
       'https://firebasestorage.googleapis.com/v0/b/thinka-v2.appspot.com/o/bATOM.png?alt=media&token=c566fcd5-28e1-4315-a076-4aaed5e82de2',
     token: 'terra18zqcnl83z98tf6lly37gghm7238k7lh79u4z9a',
     custody: 'terra1zdxlrtyu74gf6pvjkg9t22hentflmfcs86llva',
+    digits: 6,
   },
 }
 

@@ -9,6 +9,7 @@ import getStyles from './styles'
 import get from 'lodash/get'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
+import { colleteralsInfo } from '../../utils/terraConfig'
 
 export interface AssetItemProps extends TouchableOpacityProps {
   asset?: Asset
@@ -37,6 +38,8 @@ const AssetItem: React.FC<AssetItemProps> = ({
     ? stakingInfo.unbonding.map((d) => d.amount).reduce((a, b) => a + b, 0)
     : 0
   const totalAmount = asset ? Number(asset.coin.amount) + totalDelegated + totalUnbonding : 0
+
+  const collateral = asset ? (colleteralsInfo as any)[asset.symbol] : undefined
 
   return (
     <TouchableOpacity {...props}>
@@ -68,7 +71,13 @@ const AssetItem: React.FC<AssetItemProps> = ({
           {asset && !hideAmount ? (
             <View style={styles.rightAligned}>
               <Typography style={styles.gutterBottom} type="H6">
-                {formatCurrency(totalAmount, asset.coin.denom, undefined, settingsHideAmount)}
+                {formatCurrency(
+                  totalAmount,
+                  asset.coin.denom,
+                  undefined,
+                  settingsHideAmount,
+                  get(collateral, 'digits', 6)
+                )}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
                 {asset.price
@@ -76,7 +85,8 @@ const AssetItem: React.FC<AssetItemProps> = ({
                       String(asset.price * totalAmount * currencyRate),
                       currency,
                       true,
-                      settingsHideAmount
+                      settingsHideAmount,
+                      get(collateral, 'digits', 6)
                     )
                   : ''}
               </Typography>
