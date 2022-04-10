@@ -87,12 +87,34 @@ export const supportedTokens = {
   },
 }
 
+export const anchorOverseerContract = 'terra1tmnqgvg567ypvsvk6rwsga3srp7e3lg6u0elp8'
 export const colleteralsInfo = {
   BETH: {
-    img: 'https://app.terraswap.io/images/CW20/bETH.png',
+    symbol: 'bETH',
+    image: 'https://app.terraswap.io/images/CW20/bETH.png',
+    token: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
+    custody: 'terra10cxuzggyvvv44magvrh3thpdnk9cmlgk93gmx2',
+    tradeable: true,
   },
   BLUNA: {
-    img: 'https://app.terraswap.io/images/CW20/bLUNA.png',
+    symbol: 'bLUNA',
+    image: 'https://app.terraswap.io/images/CW20/bLUNA.png',
+    token: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+    custody: 'terra1ptjp2vfjrwh0j0faj9r6katm640kgjxnwwq9kn',
+    tradeable: true,
+  },
+  SAVAX: {
+    symbol: 'wasAVAX',
+    image: 'https://app.astroport.fi/tokens/wasAVAX.png',
+    token: 'terra1z3e2e4jpk4n0xzzwlkgcfvc95pc5ldq0xcny58',
+    custody: 'terra1t4x4393l2kx8e5rpdkjkmt8c4ghkkpak6mdwxn',
+  },
+  bATOM: {
+    symbol: 'bATOM',
+    image:
+      'https://firebasestorage.googleapis.com/v0/b/thinka-v2.appspot.com/o/bATOM.png?alt=media&token=c566fcd5-28e1-4315-a076-4aaed5e82de2',
+    token: 'terra18zqcnl83z98tf6lly37gghm7238k7lh79u4z9a',
+    custody: 'terra1zdxlrtyu74gf6pvjkg9t22hentflmfcs86llva',
   },
 }
 

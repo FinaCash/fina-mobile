@@ -47,7 +47,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Image source={{ uri: asset.image }} style={styles.avatar} />
               <View>
                 <Typography style={styles.gutterBottom} type="H6">
-                  {asset.symbol}
+                  {asset.displaySymbol || asset.symbol}
                 </Typography>
                 <Typography type="Small" color={theme.palette.grey[7]}>
                   {asset.name}

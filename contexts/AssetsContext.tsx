@@ -10,6 +10,7 @@ import {
   MsgExecuteContract,
   MnemonicKey,
   Int,
+  Dec,
 } from '@terra-money/terra.js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import base64 from 'react-native-base64'
@@ -23,6 +24,7 @@ import {
   extraterrestrialPriceApiUrl,
   terraLCDUrl,
   colleteralsInfo,
+  anchorOverseerContract,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets, transformFarmsToAssets } from '../utils/transformAssets'
 import {
@@ -650,16 +652,28 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const ops = anchorClient.borrow.provideCollateral({
-        market,
-        amount: String(amount),
-        collateral: (COLLATERAL_DENOMS as any)[`U${symbol.toUpperCase()}`],
-      })
+      const collateral = (colleteralsInfo as any)[symbol]
+      const msgs = [
+        // provide_collateral call
+        new MsgExecuteContract(address, collateral.token, {
+          send: {
+            contract: collateral.custody,
+            amount: new Int(new Dec(amount).mul(1000000)).toString(),
+            msg: 'eyJkZXBvc2l0X2NvbGxhdGVyYWwiOnt9fQ==',
+          },
+        }),
+        // lock_collateral call
+        new MsgExecuteContract(address, anchorOverseerContract, {
+          lock_collateral: {
+            collaterals: [[collateral.token, new Int(new Dec(amount).mul(1000000)).toString()]],
+          },
+        }),
+      ]
       const result = await signAndBroadcastTx(
         decryptSeedPhrase(password),
         terraApp,
         hdPath,
-        { msgs: ops.generateWithAddress(address) as any },
+        { msgs },
         address,
         simulate,
         () => {
@@ -680,16 +694,26 @@ const AssetsProvider: React.FC = ({ children }) => {
       terraApp?: TerraApp,
       simulate?: boolean
     ) => {
-      const ops = anchorClient.borrow.withdrawCollateral({
-        market,
-        amount: String(amount),
-        collateral: (COLLATERAL_DENOMS as any)[`U${symbol.toUpperCase()}`],
-      })
+      const collateral = (colleteralsInfo as any)[symbol]
+      const msgs = [
+        // unlock collateral
+        new MsgExecuteContract(address, anchorOverseerContract, {
+          unlock_collateral: {
+            collaterals: [[collateral.token, new Int(new Dec(amount).mul(1000000)).toString()]],
+          },
+        }),
+        // withdraw from custody
+        new MsgExecuteContract(address, collateral.custody, {
+          withdraw_collateral: {
+            amount: new Int(new Dec(amount).mul(1000000)).toString(),
+          },
+        }),
+      ]
       const result = await signAndBroadcastTx(
         decryptSeedPhrase(password),
         terraApp,
         hdPath,
-        { msgs: ops.generateWithAddress(address) as any },
+        { msgs },
         address,
         simulate,
         () => {

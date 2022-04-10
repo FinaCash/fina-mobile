@@ -22,6 +22,7 @@ import {
   astroApiUrl,
   astroportGeneratorContract,
   colleteralsInfo,
+  extraterrestrialPriceApiUrl,
   mirrorGraphqlUrl,
   mirrorOptions,
   supportedTokens,
@@ -144,30 +145,45 @@ export const fetchAvailableCollaterals = async (): Promise<AvailableAsset[]> => 
   const { elems } = await (
     await queryOverseerWhitelist({ lcd: terraLCDClient, market: MARKET_DENOMS.UUSD })
   )(anchorAddressProvider)
-  const [price, prevPrice] = await fetch(`${anchorApiUrl}/v1/collaterals/1d`).then((r) => r.json())
+  const {
+    data: { oraclePrices },
+  } = await fetch(`${terraMantleUrl}/?borrow--market`, {
+    method: 'POST',
+    body: JSON.stringify({
+      query: `
+        {
+          oraclePrices: WasmContractsContractAddressStore(
+            ContractAddress: "terra1cgg6yef7qcdm070qftghfulaxmllgmvk77nc7t"
+            QueryMsg: "{\\"prices\\":{}}"
+          ) {
+            Result
+            Height
+          }
+        }        
+        `,
+      variables: {},
+    }),
+  }).then((r) => r.json())
+  const { prices } = JSON.parse(oraclePrices.Result)
+
   return elems
     .filter((c) => !!(colleteralsInfo as any)[c.symbol])
-    .map((c) => ({
-      type: AssetTypes.Collaterals,
-      name: c.name,
-      symbol: c.symbol,
-      coin: { denom: c.symbol },
-      image: get(colleteralsInfo, `${c.symbol}.img`, ''),
-      price: Number(
-        get(
-          price.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
-          'price',
-          0
-        )
-      ),
-      prevPrice: Number(
-        get(
-          prevPrice.collaterals.find((cc: any) => cc.symbol.toUpperCase() === c.symbol),
-          'price',
-          0
-        )
-      ),
-    }))
+    .map((c) => {
+      const symbol = get(colleteralsInfo, `${c.symbol}.symbol`, '')
+      const price =
+        Number(
+          prices.find((p: any) => p.asset === get(colleteralsInfo, `${c.symbol}.token`, ''))?.price
+        ) || 0
+      return {
+        type: AssetTypes.Collaterals,
+        name: c.name,
+        symbol: c.symbol,
+        displaySymbol: symbol,
+        coin: { denom: c.symbol },
+        image: get(colleteralsInfo, `${c.symbol}.image`, ''),
+        price,
+      }
+    })
 }
 
 export const fetchAnchorCollaterals = async (address: string) => {

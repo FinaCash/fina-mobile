@@ -20,6 +20,7 @@ import ReceiveIcon from '../../assets/images/icons/receive.svg'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import TerraApp from '@terra-money/ledger-terra-js'
+import { colleteralsInfo } from '../../utils/terraConfig'
 
 const Loan: React.FC = () => {
   const { styles, theme } = useStyles(getStyles)
@@ -45,22 +46,25 @@ const Loan: React.FC = () => {
 
   const onCollateralPress = React.useCallback(
     (asset: Asset, availableAsset: AvailableAsset) => {
+      const options = (colleteralsInfo as any)[asset.symbol].tradeable
+        ? [t('provide'), t('withdraw'), t('buy'), t('sell'), t('cancel')]
+        : [t('provide'), t('withdraw'), t('cancel')]
       showActionSheetWithOptions(
         {
-          options: [t('buy'), t('sell'), t('provide'), t('withdraw'), t('cancel')],
-          cancelButtonIndex: 4,
+          options,
+          cancelButtonIndex: options.length - 1,
         },
         (i) => {
           if (i === 0 || i === 1) {
-            Actions.Swap({
-              mode: i === 0 ? 'buy' : 'sell',
-              asset,
-            })
-          } else if (i === 2 || i === 3) {
             Actions.ProvideCollateral({
               asset,
               availableAsset,
-              mode: i === 2 ? 'provide' : 'withdraw',
+              mode: i === 0 ? 'provide' : 'withdraw',
+            })
+          } else if (options.length > 3 && (i === 2 || i === 3)) {
+            Actions.Swap({
+              mode: i === 2 ? 'buy' : 'sell',
+              asset,
             })
           }
         }

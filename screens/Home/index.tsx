@@ -33,7 +33,7 @@ import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import AssetFilter from '../../components/AssetFilter'
-import { getTransakUrl } from '../../utils/terraConfig'
+import { colleteralsInfo, getTransakUrl } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import useSendToken from '../../utils/useSendToken'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -108,7 +108,9 @@ const Home: React.FC = () => {
               : [t('buy'), t('sell'), t('cancel')]
           break
         case AssetTypes.Collaterals:
-          options = [t('buy'), t('sell'), t('provide'), t('withdraw'), t('cancel')]
+          options = (colleteralsInfo as any)[asset.symbol].tradeable
+            ? [t('provide'), t('withdraw'), t('buy'), t('sell'), t('cancel')]
+            : [t('provide'), t('withdraw'), t('cancel')]
           break
         case AssetTypes.Farms:
           options = [t('provide liquidity'), t('withdraw liquidity'), t('cancel')]
@@ -157,16 +159,20 @@ const Home: React.FC = () => {
             return Actions.jump('Earn')
           }
           if (asset.type === AssetTypes.Collaterals && (index === 0 || index === 1)) {
-            Actions.Swap({
-              mode: index === 0 ? 'buy' : 'sell',
-              asset,
-            })
-          }
-          if (asset.type === AssetTypes.Collaterals && (index === 2 || index === 3)) {
             Actions.ProvideCollateral({
               asset,
               availableAsset: availableAssets.find((a) => a.symbol === asset.symbol),
-              mode: index === 2 ? 'provide' : 'withdraw',
+              mode: index === 0 ? 'provide' : 'withdraw',
+            })
+          }
+          if (
+            options.length > 3 &&
+            asset.type === AssetTypes.Collaterals &&
+            (index === 2 || index === 3)
+          ) {
+            Actions.Swap({
+              mode: index === 2 ? 'buy' : 'sell',
+              asset,
             })
           }
           if (asset.type === AssetTypes.Farms && index === 0) {

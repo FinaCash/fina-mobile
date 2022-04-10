@@ -22,6 +22,7 @@ export interface Asset {
   type: AssetTypes
   name: string
   symbol: string
+  displaySymbol?: symbol
   image: string
   coin: {
     denom: string
@@ -45,10 +46,11 @@ export interface AvailableAsset {
   type: AssetTypes.Investments | AssetTypes.Tokens | AssetTypes.Collaterals
   name: string
   symbol: string
+  displaySymbol?: string
   coin: { denom: string }
   image: string
   price: number // In USD
-  prevPrice: number
+  prevPrice?: number
   addresses?: {
     token: string
     lpToken: string

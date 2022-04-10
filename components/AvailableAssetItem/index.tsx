@@ -20,7 +20,10 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
   const { styles, theme } = useStyles(getStyles)
   const { currency, currencyRate } = useSettingsContext()
 
-  const deltaPercent = (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
+  const deltaPercent =
+    availableAsset.prevPrice === undefined
+      ? undefined
+      : (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
 
   return (
     <TouchableOpacity {...props}>
@@ -28,7 +31,9 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
         <View style={styles.row}>
           <Image source={{ uri: availableAsset.image }} style={styles.avatar} />
           <View>
-            <Typography type="H6">{availableAsset.symbol}</Typography>
+            <Typography type="H6">
+              {availableAsset.displaySymbol || availableAsset.symbol}
+            </Typography>
             <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
               {availableAsset.name}
             </Typography>
@@ -40,13 +45,15 @@ const AvailableAssetItem: React.FC<AvailableAssetItemProps> = ({
             <Typography type="H6">
               {formatCurrency(availableAsset.price * 10 ** 6 * currencyRate, currency, true)}
             </Typography>
-            <Typography
-              bold
-              type="Small"
-              color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
-            >
-              {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
-            </Typography>
+            {deltaPercent === undefined ? null : (
+              <Typography
+                bold
+                type="Small"
+                color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
+              >
+                {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
+              </Typography>
+            )}
           </View>
         ) : (
           <View style={styles.rightAligned}>

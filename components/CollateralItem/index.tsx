@@ -25,7 +25,9 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
   const { t } = useLocalesContext()
   const { currency, currencyRate, hideAmount } = useSettingsContext()
   const deltaPercent = availableAsset
-    ? (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
+    ? availableAsset.prevPrice === undefined
+      ? undefined
+      : (availableAsset.price - availableAsset.prevPrice) / availableAsset.prevPrice
     : 0
 
   return (
@@ -35,7 +37,7 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
           <View style={styles.row}>
             <Image source={{ uri: asset.image }} style={styles.avatar} />
             <View>
-              <Typography type="H6">{asset.symbol}</Typography>
+              <Typography type="H6">{asset.displaySymbol || asset.symbol}</Typography>
               <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
                 {asset.name}
               </Typography>
@@ -47,13 +49,15 @@ const CollateralItem: React.FC<CollateralItemProps> = ({
               <Typography type="H6">
                 {formatCurrency(availableAsset.price * 10 ** 6 * currencyRate, currency, true)}
               </Typography>
-              <Typography
-                bold
-                type="Small"
-                color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
-              >
-                {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
-              </Typography>
+              {deltaPercent === undefined ? null : (
+                <Typography
+                  bold
+                  type="Small"
+                  color={deltaPercent >= 0 ? theme.palette.green : theme.palette.red}
+                >
+                  {deltaPercent >= 0 ? '▲' : '▼'} {formatPercentage(Math.abs(deltaPercent), 2)}
+                </Typography>
+              )}
             </View>
           ) : (
             <View style={styles.rightAligned}>

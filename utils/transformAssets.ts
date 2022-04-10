@@ -105,7 +105,8 @@ export const getCollateralAssetDetail = (coin: {
     },
     name: coin.extra.collateral.name,
     symbol: coin.extra.collateral.symbol,
-    image: (colleteralsInfo as any)[coin.extra.collateral.symbol].img,
+    displaySymbol: (colleteralsInfo as any)[coin.extra.collateral.symbol].symbol,
+    image: (colleteralsInfo as any)[coin.extra.collateral.symbol].image,
     price: Number(coin.extra.collateral.price),
     provided: Number(coin.extra.balance.provided),
     notProvided: Number(coin.extra.balance.notProvided),
@@ -176,7 +177,7 @@ export const transformFarmsToAssets = (farms: Farm[], availableAssets: Available
       image: availableAssets.find((a) => a.symbol === f.symbol)?.image || '',
       coin: {
         denom: f.symbol + ' + UST',
-        amount: f.balance,
+        amount: String(f.balance),
       },
       price: f.rate.ust * 2,
     }))
