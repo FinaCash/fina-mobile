@@ -21,10 +21,10 @@ import {
   supportedTokens,
   anchorAddressProvider,
   astroportGeneratorContract,
-  extraterrestrialPriceApiUrl,
   terraLCDUrl,
   colleteralsInfo,
   anchorOverseerContract,
+  coingeckoApiUrl,
 } from '../utils/terraConfig'
 import { transformCoinsToAssets, transformFarmsToAssets } from '../utils/transformAssets'
 import {
@@ -270,17 +270,23 @@ const AssetsProvider: React.FC = ({ children }) => {
     const tokens = Object.values(supportedTokens)
 
     const tokenAssets = []
-    const prices = await fetch(extraterrestrialPriceApiUrl).then((r) => r.json())
+    const prices = await fetch(
+      `${coingeckoApiUrl}/coins/markets?ids=${tokens
+        .map((t) => t.coingeckoId)
+        .join(',')}&vs_currency=usd&price_change_percentage=24h`
+    ).then((r) => r.json())
     for (let i = 0; i < tokens.length; i += 1) {
-      const price = get(prices, ['prices', tokens[i].symbol, 'price'], 0)
+      const price = prices.find((p: any) => p.id === tokens[i].coingeckoId)
       tokenAssets.push({
         type: AssetTypes.Tokens,
         name: tokens[i].name,
         symbol: tokens[i].symbol,
         coin: { denom: tokens[i].denom },
         image: tokens[i].image,
-        price,
-        prevPrice: price / (1 + get(prices, ['prices', tokens[i].symbol, 'pct_change_24h'], 0)),
+        price: get(price, 'current_price', 0),
+        prevPrice:
+          get(price, 'current_price', 0) /
+          (1 + get(price, 'price_change_percentage_24h_in_currency', 0) / 100),
       })
     }
 

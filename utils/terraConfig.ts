@@ -26,7 +26,7 @@ export const terraHiveUrl = 'https://hive.terra.dev/graphql' // Astroport
 export const astroApiUrl = 'https://api.astroport.fi/graphql'
 export const astroportGeneratorContract = 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9'
 
-export const extraterrestrialPriceApiUrl = 'https://api.extraterrestrial.money/v1/api/prices'
+export const coingeckoApiUrl = 'https://api.coingecko.com/api/v3'
 
 export const anchorAddressProvider = new AddressProviderFromJson(columbus5)
 
@@ -43,6 +43,7 @@ export const mirrorOptions = DEFAULT_MIRROR_OPTIONS
 
 export const supportedTokens = {
   uluna: {
+    coingeckoId: 'terra-luna',
     symbol: 'LUNA',
     denom: 'uluna',
     name: 'Terra LUNA',
@@ -53,6 +54,7 @@ export const supportedTokens = {
     },
   },
   MIR: {
+    coingeckoId: 'mirror-protocol',
     symbol: 'MIR',
     denom: 'MIR',
     name: 'Mirror Token',
@@ -64,6 +66,7 @@ export const supportedTokens = {
     },
   },
   ANC: {
+    coingeckoId: 'anchor-protocol',
     symbol: 'ANC',
     denom: 'ANC',
     name: 'Anchor Token',
@@ -75,6 +78,7 @@ export const supportedTokens = {
     },
   },
   ASTRO: {
+    coingeckoId: 'astroport',
     symbol: 'ASTRO',
     denom: 'ASTRO',
     name: 'Astroport Token',

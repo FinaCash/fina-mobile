@@ -5,6 +5,7 @@ import getStyles from './styles'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import Farm from './Farm'
 import Stake from './Stake'
+import Savings from './Savings'
 import HeaderBar from '../../components/HeaderBar'
 
 interface EarnProps {
@@ -18,6 +19,7 @@ const Earn: React.FC<EarnProps> = ({ toFarm }) => {
   const routes = React.useMemo(
     () => [
       { key: 'Stake', title: t('stake') },
+      { key: 'Savings', title: t('savings') },
       { key: 'Farm', title: t('farm') },
     ],
     [t]
@@ -27,7 +29,7 @@ const Earn: React.FC<EarnProps> = ({ toFarm }) => {
 
   React.useEffect(() => {
     if (toFarm) {
-      setIndex(1)
+      setIndex(2)
     }
   }, [toFarm])
 
@@ -39,7 +41,7 @@ const Earn: React.FC<EarnProps> = ({ toFarm }) => {
           index,
           routes,
         }}
-        renderScene={SceneMap({ Stake, Farm })}
+        renderScene={SceneMap({ Savings, Stake, Farm })}
         onIndexChange={setIndex}
         initialLayout={{ width: theme.screenWidth }}
         renderTabBar={(props) => (

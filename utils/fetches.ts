@@ -22,7 +22,6 @@ import {
   astroApiUrl,
   astroportGeneratorContract,
   colleteralsInfo,
-  extraterrestrialPriceApiUrl,
   mirrorGraphqlUrl,
   mirrorOptions,
   supportedTokens,
