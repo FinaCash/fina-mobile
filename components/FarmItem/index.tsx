@@ -45,7 +45,7 @@ const FarmItem: React.FC<FarmItemProps> = ({
         <View style={styles.topContainer}>
           <View style={styles.row}>
             <Image source={{ uri: asset.image }} style={styles.avatar} />
-            {ust ? <Image source={{ uri: ust.image }} style={styles.avatar} /> : null}
+            {ust ? <Image source={{ uri: ust.image }} style={styles.secondAvatar} /> : null}
             <View>
               <Typography style={styles.gutterBottom} type="H6">
                 {asset.symbol}

@@ -25,6 +25,14 @@ export default (theme: Theme) => ({
     borderRadius: theme.baseSpace * 4,
     marginRight: theme.baseSpace * 6,
   },
+  secondAvatar: {
+    width: theme.baseSpace * 6,
+    height: theme.baseSpace * 6,
+    borderRadius: theme.baseSpace * 4,
+    marginRight: theme.baseSpace * 3,
+    marginLeft: theme.baseSpace * -9,
+    marginTop: theme.baseSpace * 4,
+  },
   badge: {
     paddingHorizontal: 1.5 * theme.baseSpace,
     paddingVertical: 1 * theme.baseSpace,

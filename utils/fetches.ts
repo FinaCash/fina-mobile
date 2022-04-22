@@ -28,6 +28,7 @@ import {
   terraFCDUrl,
   terraHiveUrl,
   terraLCDClient,
+  terraLCDUrl,
   terraMantleUrl,
 } from './terraConfig'
 
@@ -556,4 +557,23 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     // })),
   ]
   return farms
+}
+
+export const fetchOtherTokensBalance = async (address: string) => {
+  const otherTokens = Object.values(supportedTokens).filter(
+    (t) => !['LUNA', 'ANC', 'MIR'].includes(t.symbol)
+  )
+  const otherTokensBalances = await Promise.all(
+    otherTokens.map((t) =>
+      fetch(
+        `${terraLCDUrl}/wasm/contracts/${t.addresses.token}/store?query_msg={"balance":{"address":"${address}"}}`
+      ).then((r) => r.json())
+    )
+  )
+  return otherTokens
+    .map((o, i) => ({
+      denom: o.denom,
+      amount: get(otherTokensBalances, [i, 'result', 'balance'], '0'),
+    }))
+    .filter((o) => Number(o.amount) > 0)
 }

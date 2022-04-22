@@ -2,7 +2,7 @@ import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
 import { FontAwesome as Icon } from '@expo/vector-icons'
 import useStyles from '../../theme/useStyles'
-import { Asset, StakingInfo } from '../../types/assets'
+import { Asset, AssetTypes, StakingInfo } from '../../types/assets'
 import { formatCurrency, formatPercentage, getCurrencySymbol } from '../../utils/formatNumbers'
 import Typography from '../Typography'
 import getStyles from './styles'
@@ -10,6 +10,7 @@ import get from 'lodash/get'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { colleteralsInfo } from '../../utils/terraConfig'
+import { getCurrentAssetDetail } from '../../utils/transformAssets'
 
 export interface AssetItemProps extends TouchableOpacityProps {
   asset?: Asset
@@ -48,6 +49,12 @@ const AssetItem: React.FC<AssetItemProps> = ({
           {asset ? (
             <View style={styles.row}>
               <Image source={{ uri: asset.image }} style={styles.avatar} />
+              {asset.type === AssetTypes.Farms ? (
+                <Image
+                  source={{ uri: getCurrentAssetDetail({ denom: 'uusd', amount: '0' }).image }}
+                  style={styles.secondAvatar}
+                />
+              ) : null}
               <View>
                 <Typography style={styles.gutterBottom} type="H6">
                   {asset.displaySymbol || asset.symbol}

@@ -55,6 +55,7 @@ import {
   fetchMirrorBalance,
   fetchLunaStakingInfo,
   fetchFarmingInfo,
+  fetchOtherTokensBalance,
 } from '../utils/fetches'
 import sortBy from 'lodash/sortBy'
 import { useAccountsContext } from './AccountsContext'
@@ -308,9 +309,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     }
     const anchorBalances = await fetchAnchorBalances(address)
     const mAssetsBalances = await fetchMirrorBalance(address)
-    const astroBalance = await fetch(
-      `${terraLCDUrl}/wasm/contracts/${supportedTokens.ASTRO.addresses.token}/store?query_msg={"balance":{"address":"${address}"}}`
-    ).then((r) => r.json())
+    const otherBalance = await fetchOtherTokensBalance(address)
 
     setRawAssets((a) => {
       return uniqBy(
@@ -318,11 +317,9 @@ const AssetsProvider: React.FC = ({ children }) => {
           ...nativeBalances,
           ...anchorBalances,
           ...mAssetsBalances,
-          Number(astroBalance.result.balance) > 0
-            ? { denom: 'ASTRO', amount: astroBalance.result.balance }
-            : undefined,
+          ...otherBalance,
           ...a.filter((aa) => !!(colleteralsInfo as any)[aa.denom]), // Do not replace collaterals
-        ].filter((a) => a),
+        ].filter((b) => b),
         'denom'
       )
     })

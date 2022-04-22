@@ -50,6 +50,7 @@ export const supportedTokens = {
     image: 'https://assets.terra.money/icon/600/Luna.png',
     addresses: {
       pair: 'terra1m6ywlgn6wrjuagcmmezzz2a029gtldhey5k552',
+      token: '',
       lpToken: 'terra1m24f7k4g66gnh9f7uncp32p722v0kyt3q4l3u5',
     },
   },
@@ -87,6 +88,30 @@ export const supportedTokens = {
       pair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
       token: 'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3',
       lpToken: 'terra17n5sunn88hpy965mzvt3079fqx3rttnplg779g',
+    },
+  },
+  MINE: {
+    coingeckoId: 'pylon-protocol',
+    symbol: 'MINE',
+    denom: 'MINE',
+    name: 'Pylon Protocol',
+    image: 'https://assets.pylon.rocks/logo/MINE.png',
+    addresses: {
+      pair: 'terra134m8n2epp0n40qr08qsvvrzycn2zq4zcpmue48',
+      token: 'terra1kcthelkax4j9x8d3ny6sdag0qmxxynl3qtcrpy',
+      lpToken: 'terra16unvjel8vvtanxjpw49ehvga5qjlstn8c826qe',
+    },
+  },
+  MARS: {
+    coingeckoId: 'mars-protocol',
+    symbol: 'MARS',
+    denom: 'MARS',
+    name: 'Mars Protocol',
+    image: 'https://app.astroport.fi/tokens/mars.png',
+    addresses: {
+      pair: 'terra19wauh79y42u5vt62c5adt2g5h4exgh26t3rpds',
+      token: 'terra12hgwnpupflfpuual532wgrxu2gjp0tcagzgx4n',
+      lpToken: 'terra1ww6sqvfgmktp0afcmvg78st6z89x5zr3tmvpss',
     },
   },
 }
