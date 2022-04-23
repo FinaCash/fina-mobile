@@ -151,9 +151,21 @@ export const colleteralsInfo = {
   },
 }
 
+export const nonUstFarms = [
+  {
+    symbol: 'BLUNA',
+    denom: 'bLUNA',
+    pairSymbol: 'LUNA',
+    pairDenom: 'uluna',
+    addresses: {
+      token: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
+      lpToken: 'terra1htw7hm40ch0hacm8qpgd24sus4h0tq3hsseatl',
+      pair: 'terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w',
+    },
+  },
+]
+
 export const defaultValidatorAddress = 'terravaloper1jkqr2vfg4krfd4zwmsf7elfj07cjuzss30ux8g'
 
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
-
-export const defaultAvatarUrl = 'https://iupac.org/wp-content/uploads/2018/05/default-avatar.png'

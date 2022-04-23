@@ -1,6 +1,5 @@
 import React from 'react'
 import { Image, TouchableOpacity, TouchableOpacityProps, View } from 'react-native'
-import { FontAwesome as Icon } from '@expo/vector-icons'
 import useStyles from '../../theme/useStyles'
 import { AvailableAsset, FarmType } from '../../types/assets'
 import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
@@ -11,19 +10,21 @@ import { useSettingsContext } from '../../contexts/SettingsContext'
 
 export interface FarmItemProps extends TouchableOpacityProps {
   asset: AvailableAsset
+  pairAsset?: AvailableAsset
   farmType: FarmType
   dex: string
   apr?: number
   balance?: number
   rate?: {
     token: number
-    ust: number
+    pairToken: number
   }
   hideBorder?: boolean
 }
 
 const FarmItem: React.FC<FarmItemProps> = ({
   asset,
+  pairAsset,
   farmType,
   apr,
   balance,
@@ -34,9 +35,11 @@ const FarmItem: React.FC<FarmItemProps> = ({
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { currency, currencyRate } = useSettingsContext()
-  const ust =
+  const pairToken =
     farmType === FarmType.Long
-      ? getCurrentAssetDetail({ denom: 'uusd', amount: '0' }, 1)
+      ? pairAsset?.symbol
+        ? pairAsset
+        : getCurrentAssetDetail({ denom: 'uusd', amount: '0' }, 1)
       : undefined
 
   return (
@@ -45,11 +48,13 @@ const FarmItem: React.FC<FarmItemProps> = ({
         <View style={styles.topContainer}>
           <View style={styles.row}>
             <Image source={{ uri: asset.image }} style={styles.avatar} />
-            {ust ? <Image source={{ uri: ust.image }} style={styles.secondAvatar} /> : null}
+            {pairToken ? (
+              <Image source={{ uri: pairToken.image }} style={styles.secondAvatar} />
+            ) : null}
             <View>
               <Typography style={styles.gutterBottom} type="H6">
                 {asset.symbol}
-                {ust ? ` + ${ust.symbol}` : ''}
+                {pairToken ? ` + ${pairToken.symbol}` : ''}
               </Typography>
               <Typography type="Small" color={theme.palette.grey[7]}>
                 {dex}
@@ -62,7 +67,7 @@ const FarmItem: React.FC<FarmItemProps> = ({
             </Typography>
             {rate && balance !== undefined ? (
               <Typography type="Small" color={theme.palette.grey[7]}>
-                {formatCurrency(balance * rate.ust * 2 * currencyRate, currency, true)}
+                {formatCurrency(balance * rate.pairToken * 2 * currencyRate, currency, true)}
               </Typography>
             ) : null}
           </View>

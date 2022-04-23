@@ -24,6 +24,7 @@ import {
   colleteralsInfo,
   mirrorGraphqlUrl,
   mirrorOptions,
+  nonUstFarms,
   supportedTokens,
   terraFCDUrl,
   terraHiveUrl,
@@ -392,7 +393,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     body: JSON.stringify({
       query: `
         {
-          ${Object.values(supportedTokens)
+          ${[...Object.values(supportedTokens), ...nonUstFarms]
             .map(
               (t) => `
             ${t.addresses.lpToken}: wasm {
@@ -421,7 +422,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     body: JSON.stringify({
       query: `
         {
-          ${Object.values(supportedTokens)
+          ${[...Object.values(supportedTokens), ...nonUstFarms]
             .map(
               (t) => `
                 ${t.addresses.lpToken}: wasm {
@@ -478,7 +479,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     .filter((a: any) => a.symbol !== 'MIR')
     .sort((a: any, b: any) => (a.symbol > b.symbol ? 1 : -1))
   const farms = [
-    ...Object.values(supportedTokens).map((a) => ({
+    ...[...Object.values(supportedTokens), ...nonUstFarms].map((a: any) => ({
       type: FarmType.Long,
       symbol: a.symbol,
       dex: 'Astroport',
@@ -492,7 +493,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
               0
             )
           ) / Number(get(tokensInfo, [a.addresses.pair, 'contractQuery', 'total_share'], 1)),
-        ust:
+        pairToken:
           Number(
             get(
               tokensInfo,
@@ -517,6 +518,8 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
           ),
         },
       ].filter((a: any) => a.amount > 0),
+      pairSymbol: a.pairSymbol || 'UST',
+      pairDenom: a.pairDenom || 'uusd',
     })),
     ...sortedMAssets.map((a: any) => ({
       type: FarmType.Long,
@@ -529,13 +532,15 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
       },
       rate: {
         token: Number(a.positions.pool) / Number(a.positions.lpShares),
-        ust: Number(a.positions.uusdPool) / Number(a.positions.lpShares),
+        pairToken: Number(a.positions.uusdPool) / Number(a.positions.lpShares),
       },
       apr: Number(a.statistic.apr.long),
       balance: Number(get(rewardsInfo, [a.token, 'bond_amount'], 0)),
       rewards: [get(rewardsInfo, [a.token, 'pending_reward'], 0)]
         .filter((a: any) => a > 0)
         .map((a) => ({ amount: Number(a), denom: 'MIR' })),
+      pairSymbol: 'UST',
+      pairDenom: 'uusd',
     })),
     // ...sortedMAssets.map((a: any) => ({
     //   type: FarmType.Short,

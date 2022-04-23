@@ -14,7 +14,7 @@ import Input from '../../components/Input'
 import { Actions } from 'react-native-router-flux'
 import isAddressValid from '../../utils/isAddressValid'
 import { useLocalesContext } from '../../contexts/LocalesContext'
-import { defaultAvatarUrl } from '../../utils/terraConfig'
+import DefaultAvatarImage from '../../assets/images/defaultAvatar.svg'
 
 interface UpdateRecipientProps {
   recipient?: Recipient
@@ -66,7 +66,11 @@ const UpdateRecipient: React.FC<UpdateRecipientProps> = ({
         <ScrollView>
           <View style={styles.imageContainer}>
             <TouchableOpacity onPress={setImage}>
-              <Image source={{ uri: recipient.image || defaultAvatarUrl }} style={styles.avatar} />
+              {recipient.image ? (
+                <Image source={{ uri: recipient.image }} style={styles.avatar} />
+              ) : (
+                <DefaultAvatarImage style={styles.avatar} />
+              )}
             </TouchableOpacity>
           </View>
           <View style={styles.splitRow}>

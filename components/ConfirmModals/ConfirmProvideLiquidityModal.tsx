@@ -26,7 +26,7 @@ interface ConfirmProvideLiquidityModalProps {
   onClose(): void
   farm: Farm
   amount: number
-  ustAmount: number
+  pairAmount: number
   onConfirm(): void
 }
 
@@ -35,7 +35,7 @@ const ConfirmProvideLiquidityModal: React.FC<ConfirmProvideLiquidityModalProps> 
   onClose,
   farm,
   amount,
-  ustAmount,
+  pairAmount,
   onConfirm,
 }) => {
   const { styles, theme } = useStyles(getStyles)
@@ -50,8 +50,10 @@ const ConfirmProvideLiquidityModal: React.FC<ConfirmProvideLiquidityModalProps> 
     ) ||
     undefined
 
-  const ustAsset =
-    getCurrentAssetDetail({ denom: 'uusd', amount: String(ustAmount * 10 ** 6) }, 1) || undefined
+  const pairAsset =
+    farm.pairDenom !== 'uusd'
+      ? getTokenAssetDetail({ denom: farm.pairDenom, amount: String(pairAmount * 10 ** 6) })!
+      : getCurrentAssetDetail({ denom: farm.pairDenom, amount: String(pairAmount * 10 ** 6) }, 1)
 
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {
@@ -66,21 +68,21 @@ const ConfirmProvideLiquidityModal: React.FC<ConfirmProvideLiquidityModalProps> 
         }
       }
 
-      if (result[ustAsset.coin.denom]) {
-        result[ustAsset.coin.denom].amount += Number(ustAsset.coin.amount) / 10 ** 6
+      if (result[pairAsset.coin.denom]) {
+        result[pairAsset.coin.denom].amount += Number(pairAsset.coin.amount) / 10 ** 6
       } else {
-        result[ustAsset.coin.denom] = {
-          denom: ustAsset.coin.denom,
-          amount: Number(ustAsset.coin.amount) / 10 ** 6,
+        result[pairAsset.coin.denom] = {
+          denom: pairAsset.coin.denom,
+          amount: Number(pairAsset.coin.amount) / 10 ** 6,
         }
       }
     }
     return result
-  }, [fee, asset, ustAsset])
+  }, [fee, asset, pairAsset])
 
   const estimateGasFee = React.useCallback(async () => {
     try {
-      const tx = await provideLiquidity(farm, amount, ustAmount, '', undefined, true)
+      const tx = await provideLiquidity(farm, amount, pairAmount, '', undefined, true)
       setFee(
         keyBy(
           JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
@@ -93,7 +95,7 @@ const ConfirmProvideLiquidityModal: React.FC<ConfirmProvideLiquidityModalProps> 
     } catch (err: any) {
       console.log(err)
     }
-  }, [farm, amount, ustAmount, provideLiquidity])
+  }, [farm, amount, pairAmount, provideLiquidity])
 
   React.useEffect(() => {
     if (!open) {
@@ -124,7 +126,7 @@ const ConfirmProvideLiquidityModal: React.FC<ConfirmProvideLiquidityModalProps> 
         color={theme.fonts.H6.color}
         style={styles.arrow}
       />
-      <AssetItem disabled asset={ustAsset} hideApr />
+      <AssetItem disabled asset={pairAsset} hideApr />
       <View style={[styles.confirmMiodalRow, styles.borderBottom]}>
         <Typography type="Large" color={theme.palette.grey[7]}>
           {t('transaction fee')}

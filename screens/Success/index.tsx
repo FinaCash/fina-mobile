@@ -68,11 +68,12 @@ interface SuccessProps {
     | {
         type: 'provide liquidity'
         asset: Asset
-        ustAsset: Asset
+        pairAsset: Asset
       }
     | {
         type: 'withdraw liquidity'
         availableAsset: AvailableAsset
+        pairAsset: AvailableAsset
         farm: Farm
         amount: number
       }
@@ -253,7 +254,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 color={theme.fonts.H6.color}
                 style={styles.arrow}
               />
-              <AssetItem asset={message.ustAsset} hideBorder hideApr />
+              <AssetItem asset={message.pairAsset} hideBorder hideApr />
             </>
           ) : null}
           {message.type === 'withdraw liquidity' ? (
@@ -263,6 +264,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
               </Typography>
               <FarmItem
                 asset={message.availableAsset}
+                pairAsset={message.pairAsset}
                 farmType={message.farm.type}
                 balance={message.amount * 10 ** 6}
                 rate={message.farm.rate}

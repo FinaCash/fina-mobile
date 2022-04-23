@@ -101,6 +101,8 @@ export interface Farm {
   type: FarmType
   dex: string
   symbol: string
+  pairSymbol: string
+  pairDenom: string
   addresses: {
     token: string
     lpToken: string
@@ -108,7 +110,7 @@ export interface Farm {
   }
   rate: {
     token: number
-    ust: number
+    pairToken: number
   }
   apr: number
   balance: number

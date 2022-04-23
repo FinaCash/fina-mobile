@@ -20,6 +20,7 @@ interface AssetAmountInputProps {
   farm?: Farm
   asset?: Asset
   availableAsset?: AvailableAsset
+  pairAsset?: AvailableAsset
   validator?: Validator
   stakedAmount?: number
   amount: string
@@ -29,12 +30,14 @@ interface AssetAmountInputProps {
   inputProps?: InputProps
   max?: number
   bottomElement?: React.ReactNode
+  hideProvided?: boolean
 }
 
 const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   asset,
   farm,
   availableAsset,
+  pairAsset,
   validator,
   stakedAmount,
   amount,
@@ -44,6 +47,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
   inputProps,
   max,
   bottomElement,
+  hideProvided,
 }) => {
   const { t } = useLocalesContext()
   const { styles, theme } = useStyles(getStyles)
@@ -63,6 +67,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
       ) : farm && availableAsset ? (
         <FarmItem
           asset={availableAsset}
+          pairAsset={pairAsset}
           farmType={farm.type}
           balance={farm.balance}
           rate={farm.rate}
@@ -71,7 +76,7 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
         />
       ) : availableAsset ? (
         <AvailableAssetItem availableAsset={availableAsset} {...availableAssetItemProps} />
-      ) : asset && asset.type === AssetTypes.Collaterals ? (
+      ) : asset && asset.type === AssetTypes.Collaterals && !hideProvided ? (
         <CollateralItem asset={asset} />
       ) : (
         <AssetItem asset={asset} {...assetItemProps} />
@@ -129,11 +134,14 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
           {farm && farm.type === FarmType.Long
             ? `${formatCurrency(Number(amount) * farm.rate.token * 10 ** 6, farm.symbol)} ${
                 farm.symbol
-              } + ${formatCurrency(Number(amount) * farm.rate.ust * 10 ** 6, 'UST')} UST = `
+              } + ${formatCurrency(
+                Number(amount) * farm.rate.pairToken * 10 ** 6,
+                farm.pairSymbol
+              )} ${farm.pairSymbol} = `
             : '~'}
           {formatCurrency(
             Number(amount) *
-              (asset ? asset.price : farm ? farm.rate.ust * 2 : 0) *
+              (asset ? asset.price : farm ? farm.rate.pairToken * 2 : 0) *
               10 ** get(collateral, 'digits', 6) *
               currencyRate,
             currency,

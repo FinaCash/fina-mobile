@@ -36,6 +36,7 @@ import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import get from 'lodash/get'
+import { cloneDeep } from 'lodash'
 
 const mirror = new Mirror(mirrorOptions)
 
@@ -56,9 +57,19 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
   const { address, type } = useAccountsContext()
   const { currency } = useSettingsContext()
 
-  const [asset, setAsset] = React.useState(
+  const [rawAsset, setAsset] = React.useState(
     assets.find((a) => a.symbol === defaultAsset.symbol) || defaultAsset
   )
+  const asset = React.useMemo(() => {
+    const temp = cloneDeep(rawAsset)
+    if (temp && (temp as any).provided) {
+      ;(temp as any).coin.amount = String(
+        Number((temp as any).coin.amount) - (temp as any).provided
+      )
+      ;(temp as any).provided = 0
+    }
+    return temp
+  }, [rawAsset])
   const [mode, setMode] = React.useState(defaultMode)
   const [fromAmount, setFromAmount] = React.useState('')
   const [toAmount, setToAmount] = React.useState('')
@@ -265,6 +276,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
                   })
                 },
               }}
+              hideProvided
             />
           ) : (
             <AssetAmountInput
@@ -285,6 +297,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
                   })
                 },
               }}
+              hideProvided
             />
           )}
           <TouchableOpacity

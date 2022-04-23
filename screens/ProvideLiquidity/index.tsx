@@ -41,15 +41,21 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
       availableAssets
     ) ||
     undefined
+  if (asset?.provided) {
+    asset.coin.amount = String(Number(asset.coin.amount) - asset.provided)
+    asset.provided = 0
+  }
 
-  const ustAsset =
-    assets.find((a) => a.symbol === 'UST') ||
-    getCurrentAssetDetail({ denom: 'uusd', amount: '0' }, 1) ||
+  const pairAsset =
+    assets.find((a) => a.symbol === farm.pairSymbol) ||
+    (farm.pairSymbol !== 'UST'
+      ? getTokenAssetDetail({ denom: farm.pairDenom, amount: '0' })
+      : getCurrentAssetDetail({ denom: 'uusd', amount: '0' }, 1)) ||
     undefined
 
   const { t } = useLocalesContext()
   const [amount, setAmount] = React.useState('')
-  const [ustAmount, setUstAmount] = React.useState('')
+  const [pairAmount, setPairAmount] = React.useState('')
   const [isConfirming, setIsConfirming] = React.useState(false)
 
   const onSubmit = React.useCallback(
@@ -60,13 +66,13 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
           ...asset,
           coin: { denom: asset?.coin.denom, amount: String(Number(amount) * 10 ** 6) },
         },
-        ustAsset: {
-          ...ustAsset,
-          coin: { denom: ustAsset?.coin.denom, amount: String(Number(ustAmount) * 10 ** 6) },
+        pairAsset: {
+          ...pairAsset,
+          coin: { denom: pairAsset?.coin.denom, amount: String(Number(pairAmount) * 10 ** 6) },
         },
       }
       try {
-        await provideLiquidity(farm, Number(amount), Number(ustAmount), password, terraApp)
+        await provideLiquidity(farm, Number(amount), Number(pairAmount), password, terraApp)
         Actions.Success({
           message,
           onClose: () => Actions.jump('Earn'),
@@ -79,7 +85,7 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
         })
       }
     },
-    [amount, ustAmount, asset, ustAsset, provideLiquidity, farm]
+    [amount, pairAmount, asset, pairAsset, provideLiquidity, farm]
   )
 
   React.useEffect(() => {
@@ -99,10 +105,11 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
             setAmount={(a) => {
               setAmount(a)
               if (asset) {
-                setUstAmount(a ? String(Number(a) * asset.price) : '')
+                setPairAmount(a ? String((Number(a) * asset.price) / (pairAsset?.price || 1)) : '')
               }
             }}
             assetItemProps={{ disabled: true }}
+            hideProvided
           />
           <Icon
             name="plus"
@@ -111,24 +118,25 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
             style={styles.arrow}
           />
           <AssetAmountInput
-            asset={ustAsset}
-            amount={ustAmount}
+            asset={pairAsset}
+            amount={pairAmount}
             setAmount={(a) => {
-              setUstAmount(a)
+              setPairAmount(a)
               if (asset) {
-                setAmount(a ? String(Number(a) / asset.price) : '')
+                setAmount(a ? String((Number(a) / asset.price) * (pairAsset?.price || 1)) : '')
               }
             }}
             assetItemProps={{ disabled: true }}
+            hideProvided
           />
         </KeyboardAwareScrollView>
         <Button
           disabled={
             asset &&
             (!Number(amount) ||
-              Number(amount) * 10 ** 6 > Number(asset.coin.amount) ||
-              !Number(ustAmount) ||
-              Number(ustAmount) * 10 ** 6 > Number(ustAsset.coin.amount))
+              Math.round(Number(amount) * 10 ** 6) > Number(asset.coin.amount) ||
+              !Number(pairAmount) ||
+              Math.round(Number(pairAmount) * 10 ** 6) > Number(pairAsset?.coin.amount))
           }
           style={styles.button}
           size="Large"
@@ -142,7 +150,7 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
           open={isConfirming}
           farm={farm}
           amount={Number(amount)}
-          ustAmount={Number(ustAmount)}
+          pairAmount={Number(pairAmount)}
           onClose={() => setIsConfirming(false)}
           onConfirm={() => {
             getPasswordOrLedgerApp(onSubmit, type)

@@ -181,7 +181,7 @@ export const transformFarmsToAssets = (farms: Farm[], availableAssets: Available
         denom: f.symbol + ' + UST',
         amount: String(f.balance),
       },
-      price: f.rate.ust * 2,
+      price: f.rate.pairToken * 2,
     }))
 }
 

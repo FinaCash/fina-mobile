@@ -5113,10 +5113,10 @@ expo-clipboard@~2.1.0:
   resolved "https://registry.yarnpkg.com/expo-clipboard/-/expo-clipboard-2.1.0.tgz#33e32ca453cdc2e3da8ccecc86b197da554c3387"
   integrity sha512-wJLATd1roEUsatx+GNREBtS8g5vkPWS/0jsLoaPTDVjBVib7RgavaMHj5Wob430qujg+leQmnhPViFk1BXzLYw==
 
-expo-community-flipper@^44.0.1:
-  version "44.0.1"
-  resolved "https://registry.yarnpkg.com/expo-community-flipper/-/expo-community-flipper-44.0.1.tgz#535571158058edf15393018691dab615a6c494a4"
-  integrity sha512-NtRtFMQx/s3mbsxMBs2Q7ezWx4lDHOQswCtk7EdtwTk9xb4rzCO6UbloOgMr1AOTpijIouEa54xLUTrdkHb8Pg==
+expo-community-flipper@^44.0.3:
+  version "44.0.3"
+  resolved "https://registry.yarnpkg.com/expo-community-flipper/-/expo-community-flipper-44.0.3.tgz#1acb5fb9b955ab27aa87e2910a598faa82dcaa3d"
+  integrity sha512-CXCpZOIMe+NrRPatIaCJq8s5kBXM9Edx5eJm3cxnbxuIwh97raV4bQ1O8p1wWrp3hHMY2MrEDs0D5iA7rUD+RQ==
   dependencies:
     "@expo/config-plugins" "^4.0.15"
     resolve-from "^5.0.0"

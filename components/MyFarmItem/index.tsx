@@ -22,14 +22,14 @@ const MyFarmItem: React.FC<MyFarmItemProps> = ({ farm, availableAssetsMap, ...pr
 
   let poolName = ''
   if (farm.type === FarmType.Long) {
-    poolName = `${farm.symbol} - UST`
+    poolName = `${farm.symbol} - ${farm.pairSymbol || 'UST'}`
   } else {
     poolName = farm.symbol
   }
 
   const assets = [
     { amount: farm.balance * farm.rate.token, denom: farm.symbol },
-    { amount: farm.balance * farm.rate.ust, denom: getSymbolFromDenom('uusd') },
+    { amount: farm.balance * farm.rate.pairToken, denom: farm.pairSymbol || 'UST' },
   ].filter((a) => a.amount > 0)
 
   return (

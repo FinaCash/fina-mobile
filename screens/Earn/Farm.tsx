@@ -50,7 +50,11 @@ const FarmTab: React.FC = () => {
         .map(
           (farm) =>
             farm.balance * farm.rate.token * get(availableAssetsMap, [farm.symbol, 'price'], 0) +
-            farm.balance * farm.rate.ust
+            farm.balance *
+              farm.rate.pairToken *
+              (farm.pairSymbol === 'UST'
+                ? 1
+                : get(availableAssetsMap, [farm.pairSymbol, 'price'], 0))
         )
         .reduce((a, b) => a + b, 0),
     [farmInfo, availableAssetsMap]
@@ -261,6 +265,7 @@ const FarmTab: React.FC = () => {
         renderItem={({ item }) => (
           <FarmItem
             asset={(availableAssetsMap as any)[item.symbol]}
+            pairAsset={(availableAssetsMap as any)[item.pairSymbol]}
             apr={item.apr}
             farmType={farmType}
             dex={item.dex}

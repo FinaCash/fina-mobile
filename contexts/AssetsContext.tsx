@@ -861,7 +861,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     async (
       farm: Farm,
       amount: number,
-      ustAmount: number,
+      pairAmount: number,
       password?: string,
       terraApp?: TerraApp,
       simulate?: boolean
@@ -904,10 +904,10 @@ const AssetsProvider: React.FC = ({ children }) => {
                             },
                     },
                     {
-                      amount: (ustAmount * 10 ** 6).toFixed(0),
+                      amount: (pairAmount * 10 ** 6).toFixed(0),
                       info: {
                         native_token: {
-                          denom: 'uusd',
+                          denom: farm.pairDenom,
                         },
                       },
                     },
@@ -917,7 +917,7 @@ const AssetsProvider: React.FC = ({ children }) => {
                 },
               },
               [
-                new Coin('uusd', new Int((ustAmount * 10 ** 6).toFixed(0))),
+                new Coin(farm.pairDenom, new Int((pairAmount * 10 ** 6).toFixed(0))),
                 farm.symbol === 'LUNA'
                   ? new Coin('uluna', new Int((amount * 10 ** 6).toFixed(0)))
                   : undefined,

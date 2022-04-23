@@ -20,6 +20,7 @@ interface ConfirmWithdrawLiquidityModalProps {
   onClose(): void
   farm: Farm
   availableAsset: AvailableAsset
+  pairAsset: AvailableAsset
   amount: number
   onConfirm(): void
 }
@@ -29,12 +30,13 @@ const ConfirmWithdrawLiquidityModal: React.FC<ConfirmWithdrawLiquidityModalProps
   onClose,
   farm,
   availableAsset,
+  pairAsset,
   amount,
   onConfirm,
 }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
-  const { withdrawLiquidity, availableAssets } = useAssetsContext()
+  const { withdrawLiquidity } = useAssetsContext()
 
   const [fee, setFee] = React.useState<{ [denom: string]: { amount: number; denom: string } }>({})
   const total = React.useMemo(() => {
@@ -83,6 +85,7 @@ const ConfirmWithdrawLiquidityModal: React.FC<ConfirmWithdrawLiquidityModalProps
       </Typography>
       <FarmItem
         asset={availableAsset}
+        pairAsset={pairAsset}
         farmType={farm.type}
         balance={amount * 10 ** 6}
         rate={farm.rate}
