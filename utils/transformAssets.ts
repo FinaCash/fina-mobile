@@ -172,17 +172,22 @@ export const transformCoinsToAssets = (
 export const transformFarmsToAssets = (farms: Farm[], availableAssets: AvailableAsset[]) => {
   return farms
     .filter((f) => !!f.balance)
-    .map((f) => ({
-      type: AssetTypes.Farms,
-      name: f.dex,
-      symbol: f.symbol + ' + UST',
-      image: availableAssets.find((a) => a.symbol === f.symbol)?.image || '',
-      coin: {
-        denom: f.symbol + ' + UST',
-        amount: String(f.balance),
-      },
-      price: f.rate.pairToken * 2,
-    }))
+    .map((f) => {
+      const availableAsset = availableAssets.find((a) => a.symbol === f.symbol)
+      const pairAvailableAsset = availableAssets.find((a) => a.symbol === f.pairSymbol)
+      return {
+        type: AssetTypes.Farms,
+        name: f.dex,
+        symbol: f.symbol + ' + ' + f.pairSymbol,
+        image: availableAsset?.image || '',
+        pairImage: pairAvailableAsset?.image || '',
+        coin: {
+          denom: f.symbol + ' + ' + f.pairSymbol,
+          amount: String(f.balance),
+        },
+        price: f.rate.token * 2 * (availableAsset?.price || 1),
+      }
+    })
 }
 
 export const transformAssetsToDistributions = (assets: Asset[], stakingInfo: StakingInfo) => {

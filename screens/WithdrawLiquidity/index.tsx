@@ -23,6 +23,7 @@ const WithdrawLiquidity: React.FC<WithdrawLiquidityProps> = ({ farm }) => {
   const { type } = useAccountsContext()
   const { withdrawLiquidity, availableAssets } = useAssetsContext()
   const availableAsset = availableAssets.find((a) => a.symbol === farm.symbol)!
+  const pairAsset = availableAssets.find((a) => a.symbol === farm.pairSymbol)!
 
   const { t } = useLocalesContext()
   const [amount, setAmount] = React.useState('')
@@ -33,6 +34,7 @@ const WithdrawLiquidity: React.FC<WithdrawLiquidityProps> = ({ farm }) => {
       const message = {
         type: 'withdraw liquidity',
         availableAsset,
+        pairAsset,
         farm,
         amount: Number(amount),
       }
@@ -50,7 +52,7 @@ const WithdrawLiquidity: React.FC<WithdrawLiquidityProps> = ({ farm }) => {
         })
       }
     },
-    [amount, withdrawLiquidity, farm, availableAsset]
+    [amount, withdrawLiquidity, farm, availableAsset, pairAsset]
   )
 
   React.useEffect(() => {
@@ -65,6 +67,7 @@ const WithdrawLiquidity: React.FC<WithdrawLiquidityProps> = ({ farm }) => {
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <AssetAmountInput
           availableAsset={availableAsset}
+          pairAsset={pairAsset}
           farm={farm}
           amount={amount}
           setAmount={(a) => {
@@ -88,6 +91,7 @@ const WithdrawLiquidity: React.FC<WithdrawLiquidityProps> = ({ farm }) => {
           farm={farm}
           amount={Number(amount)}
           availableAsset={availableAsset}
+          pairAsset={pairAsset}
           onClose={() => setIsConfirming(false)}
           onConfirm={() => {
             getPasswordOrLedgerApp(onSubmit, type)

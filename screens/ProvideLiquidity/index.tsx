@@ -5,23 +5,19 @@ import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
 import getStyles from './styles'
 import { Actions } from 'react-native-router-flux'
-import { anchorClient } from '../../utils/terraConfig'
 import Button from '../../components/Button'
 import {
   getCurrentAssetDetail,
   getMAssetDetail,
-  getSavingAssetDetail,
   getTokenAssetDetail,
 } from '../../utils/transformAssets'
 import HeaderBar from '../../components/HeaderBar'
 import AssetAmountInput from '../../components/AssetAmountInput'
-import ConfirmSavingsModal from '../../components/ConfirmModals/ConfirmSavingsModal'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import TerraApp from '@terra-money/ledger-terra-js'
-import cloneDeep from 'lodash/cloneDeep'
-import { AvailableAsset, Farm } from '../../types/assets'
+import { Farm } from '../../types/assets'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import ConfirmProvideLiquidityModal from '../../components/ConfirmModals/ConfirmProvideLiquidityModal'
 

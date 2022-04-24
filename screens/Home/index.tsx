@@ -176,14 +176,13 @@ const Home: React.FC = () => {
             })
           }
           if (asset.type === AssetTypes.Farms && index === 0) {
-            console.log(farmInfo, asset)
             Actions.ProvideLiquidity({
-              farm: farmInfo.find((f) => f.symbol + ' + UST' === asset.symbol),
+              farm: farmInfo.find((f) => f.symbol + ' + ' + f.pairSymbol === asset.symbol),
             })
           }
           if (asset.type === AssetTypes.Farms && index === 1) {
             Actions.WithdrawLiquidity({
-              farm: farmInfo.find((f) => f.symbol + ' + UST' === asset.symbol),
+              farm: farmInfo.find((f) => f.symbol + ' + ' + f.pairSymbol === asset.symbol),
             })
           }
         }

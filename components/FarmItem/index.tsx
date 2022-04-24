@@ -67,7 +67,11 @@ const FarmItem: React.FC<FarmItemProps> = ({
             </Typography>
             {rate && balance !== undefined ? (
               <Typography type="Small" color={theme.palette.grey[7]}>
-                {formatCurrency(balance * rate.pairToken * 2 * currencyRate, currency, true)}
+                {formatCurrency(
+                  balance * rate.token * 2 * asset.price * currencyRate,
+                  currency,
+                  true
+                )}
               </Typography>
             ) : null}
           </View>

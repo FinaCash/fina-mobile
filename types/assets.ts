@@ -24,6 +24,7 @@ export interface Asset {
   symbol: string
   displaySymbol?: symbol
   image: string
+  pairImage?: string
   coin: {
     denom: string
     amount: string

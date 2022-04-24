@@ -999,7 +999,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         {
           msgs: [
             ...farms
-              .filter((f) => !f.symbol.match(/^m/))
+              .filter((f) => !f.symbol.match(/^m/) && f.rewards.length > 0)
               .map(
                 (f) =>
                   new MsgExecuteContract(address, astroportGeneratorContract, {

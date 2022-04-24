@@ -51,7 +51,11 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Image source={{ uri: asset.image }} style={styles.avatar} />
               {asset.type === AssetTypes.Farms ? (
                 <Image
-                  source={{ uri: getCurrentAssetDetail({ denom: 'uusd', amount: '0' }).image }}
+                  source={{
+                    uri:
+                      asset.pairImage ||
+                      getCurrentAssetDetail({ denom: 'uusd', amount: '0' }).image,
+                  }}
                   style={styles.secondAvatar}
                 />
               ) : null}

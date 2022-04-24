@@ -141,7 +141,11 @@ const AssetAmountInput: React.FC<AssetAmountInputProps> = ({
             : '~'}
           {formatCurrency(
             Number(amount) *
-              (asset ? asset.price : farm ? farm.rate.pairToken * 2 : 0) *
+              (asset
+                ? asset.price
+                : farm
+                ? farm.rate.token * 2 * (availableAsset?.price || 1)
+                : 0) *
               10 ** get(collateral, 'digits', 6) *
               currencyRate,
             currency,
