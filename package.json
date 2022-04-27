@@ -24,6 +24,7 @@
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@terra-money/ledger-terra-js": "^1.1.0",
     "@terra-money/terra.js": "^3.0.0",
+    "@walletconnect/client": "^1.7.8",
     "crypto-js": "^4.0.0",
     "date-fns": "^2.27.0",
     "dotenv": "^9.0.2",
