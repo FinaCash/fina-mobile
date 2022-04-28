@@ -30,7 +30,8 @@ export default (theme: Theme) => ({
   },
   iconButtonsRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
     paddingHorizontal: theme.baseSpace * 2,
     marginBottom: theme.baseSpace * 2,

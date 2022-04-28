@@ -11,6 +11,7 @@ import {
   MnemonicKey,
   Int,
   Dec,
+  Fee,
 } from '@terra-money/terra.js'
 import { Mirror, UST } from '@mirror-protocol/mirror.js'
 import base64 from 'react-native-base64'
@@ -181,6 +182,7 @@ interface AssetsState {
     simulate?: boolean
   ): void
   claimFarmRewards(farms: Farm[], password?: string, terraApp?: TerraApp, simulate?: boolean): void
+  sendRawTx(msgs: any, fee: any, password?: string, terraApp?: TerraApp, simulate?: boolean): void
 }
 
 const initialState: AssetsState = {
@@ -226,6 +228,7 @@ const initialState: AssetsState = {
   provideLiquidity: () => null,
   withdrawLiquidity: () => null,
   claimFarmRewards: () => null,
+  sendRawTx: () => null,
 }
 
 const AssetsContext = React.createContext<AssetsState>(initialState)
@@ -1028,6 +1031,43 @@ const AssetsProvider: React.FC = ({ children }) => {
     [fetchAssets, decryptSeedPhrase, address, hdPath, fetchFarmInfo, fetchBorrowInfo]
   )
 
+  const sendRawTx = React.useCallback(
+    async (msgs: any, fee: any, password?: string, terraApp?: TerraApp, simulate?: boolean) => {
+      const result = await signAndBroadcastTx(
+        decryptSeedPhrase(password),
+        terraApp,
+        hdPath,
+        {
+          msgs: msgs.map((m: any) => MsgExecuteContract.fromData(m)),
+          fee: new Fee(
+            Number(fee.gas_limit),
+            fee.amount.map((a: any) => new Coin(a.denom, a.amount)),
+            fee.payer,
+            fee.granter
+          ),
+        },
+        address,
+        simulate,
+        () => {
+          fetchAssets()
+          fetchFarmInfo()
+          fetchBorrowInfo()
+          fetchStakingInfo()
+        }
+      )
+      return result
+    },
+    [
+      fetchAssets,
+      decryptSeedPhrase,
+      address,
+      hdPath,
+      fetchFarmInfo,
+      fetchBorrowInfo,
+      fetchStakingInfo,
+    ]
+  )
+
   return (
     <AssetsContext.Provider
       value={{
@@ -1059,6 +1099,7 @@ const AssetsProvider: React.FC = ({ children }) => {
         provideLiquidity,
         withdrawLiquidity,
         claimFarmRewards,
+        sendRawTx,
       }}
     >
       {children}

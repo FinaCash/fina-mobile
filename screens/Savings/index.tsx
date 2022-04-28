@@ -98,7 +98,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
         })
       }
     },
-    [mode, depositSavings, withdrawSavings, amount, denom, apr]
+    [mode, depositSavings, withdrawSavings, amount, denom, apr, savingAsset]
   )
 
   const fetchApr = React.useCallback(async () => {

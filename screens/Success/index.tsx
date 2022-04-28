@@ -18,6 +18,10 @@ import StakingItem from '../../components/StakingItem'
 import { getTokenAssetDetail } from '../../utils/transformAssets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import FarmItem from '../../components/FarmItem'
+import { ScrollView } from 'react-native-gesture-handler'
+import JSONTree from 'react-native-json-tree'
+import jsonTree from '../../theme/jsonTree'
+import { useSettingsContext } from '../../contexts/SettingsContext'
 
 interface SuccessProps {
   message:
@@ -81,6 +85,11 @@ interface SuccessProps {
         type: 'claim farm rewards'
         farms: Farm[]
       }
+    | {
+        type: 'wallet connect'
+        msgs: string[]
+        fee: string
+      }
   error?: string
   onClose(): void
 }
@@ -90,6 +99,7 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
   const { t } = useLocalesContext()
   const { availableAssets } = useAssetsContext()
   const { recipients } = useRecipientsContext()
+  const { theme: themeType } = useSettingsContext()
   const recipient =
     message.type === 'send' ? recipients.find((r) => r.address === message.address) : undefined
 
@@ -292,6 +302,19 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
                 />
               ))}
             </>
+          ) : null}
+          {message.type === 'wallet connect' ? (
+            <ScrollView
+              style={{ height: theme.baseSpace * 60, paddingRight: theme.baseSpace * 20 }}
+            >
+              <JSONTree
+                data={message.msgs.map((m) => JSON.parse(m))}
+                hideRoot
+                shouldExpandNode={() => true}
+                theme={jsonTree}
+                invertTheme={themeType === 'light'}
+              />
+            </ScrollView>
           ) : null}
         </View>
         <Typography style={styles.title} type="H6">

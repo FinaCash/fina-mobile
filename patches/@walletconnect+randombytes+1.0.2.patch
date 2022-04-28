@@ -1,0 +1,13 @@
+diff --git a/node_modules/@walletconnect/randombytes/dist/cjs/node/index.js b/node_modules/@walletconnect/randombytes/dist/cjs/node/index.js
+index cdf2b06..be57482 100644
+--- a/node_modules/@walletconnect/randombytes/dist/cjs/node/index.js
++++ b/node_modules/@walletconnect/randombytes/dist/cjs/node/index.js
+@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.randomBytes = void 0;
+-const crypto_1 = __importDefault(require("crypto"));
++const crypto_1 = __importDefault(require("crypto-browserify"));
+ const encoding_1 = require("@walletconnect/encoding");
+ function randomBytes(length) {
+     const buf = crypto_1.default.randomBytes(length);

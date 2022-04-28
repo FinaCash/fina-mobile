@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { Modalize } from 'react-native-modalize'
-import { Feather as Icon } from '@expo/vector-icons'
+import { Feather as Icon, MaterialIcons as MIcon } from '@expo/vector-icons'
 import * as WebBrowser from 'expo-web-browser'
 import ContactIcon from '../../assets/images/icons/recipients.svg'
 import QRCodeIcon from '../../assets/images/icons/qrcode.svg'
@@ -238,30 +238,35 @@ const Home: React.FC = () => {
     >
       <View style={styles.header}>
         <View style={styles.iconButtonsRow}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.History()}>
-            <Icon name="activity" size={theme.baseSpace * 5} color={theme.palette.white} />
+          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.DappView()}>
+            <MIcon name="apps" size={theme.baseSpace * 6} color={theme.palette.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={() => setHideAmount((a) => !a)}>
-            <Icon
-              name={hideAmount ? 'eye' : 'eye-off'}
-              size={theme.baseSpace * 5}
-              color={theme.palette.white}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.Recipients()}>
-            <ContactIcon fill={theme.palette.white} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() =>
-              Actions.ScanQRCode({
-                onScan: (to: string) =>
-                  sendToken({ recipient: { address: to, name: '', image: '' } }),
-              })
-            }
-          >
-            <QRCodeIcon fill={theme.palette.white} />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => Actions.History()}>
+              <Icon name="activity" size={theme.baseSpace * 5} color={theme.palette.white} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={() => setHideAmount((a) => !a)}>
+              <Icon
+                name={hideAmount ? 'eye' : 'eye-off'}
+                size={theme.baseSpace * 5}
+                color={theme.palette.white}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={() => Actions.Recipients()}>
+              <ContactIcon fill={theme.palette.white} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() =>
+                Actions.ScanQRCode({
+                  onScan: (to: string) =>
+                    sendToken({ recipient: { address: to, name: '', image: '' } }),
+                })
+              }
+            >
+              <QRCodeIcon fill={theme.palette.white} />
+            </TouchableOpacity>
+          </View>
         </View>
         <AssetFilter withOverview currentFilter={filterAsset} onChange={setFilterAsset} />
         <Typography style={styles.title} color={theme.palette.white} type="Large">

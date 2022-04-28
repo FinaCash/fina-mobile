@@ -169,3 +169,36 @@ export const defaultValidatorAddress = 'terravaloper1jkqr2vfg4krfd4zwmsf7elfj07c
 
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
+
+export const dapps = [
+  {
+    name: 'Anchor Protocol',
+    url: 'https://app.anchorprotocol.com/',
+    image: 'https://whitelist.anchorprotocol.com/logo/ANC.png',
+  },
+  {
+    name: 'Mirror Protocol',
+    url: 'https://mirrorprotocol.app/',
+    image: 'https://whitelist.mirror.finance/icon/MIR.png',
+  },
+  {
+    name: 'Astroport',
+    url: 'https://app.astroport.fi/',
+    image: 'https://app.astroport.fi/tokens/astro.png',
+  },
+  {
+    name: 'Mars Protocol',
+    url: 'https://app.marsprotocol.io/',
+    image: 'https://app.astroport.fi/tokens/mars.png',
+  },
+  {
+    name: 'Stader',
+    url: 'https://terra.staderlabs.com/lt-pools',
+    image: 'https://pbs.twimg.com/profile_images/1478369852956020739/xCY_D-NG_400x400.jpg',
+  },
+  {
+    name: 'Loop DEX',
+    url: 'https://dex.loop.markets/',
+    image: 'https://dex.loop.markets/log-loop.png',
+  },
+]
