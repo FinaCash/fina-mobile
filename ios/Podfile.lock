@@ -13,9 +13,11 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (2.1.0):
     - ExpoModulesCore
-  - EXConstants (13.0.0):
+  - EXConstants (13.0.2):
     - ExpoModulesCore
   - EXCrypto (10.1.1):
+    - ExpoModulesCore
+  - EXDevice (4.1.1):
     - ExpoModulesCore
   - EXErrorRecovery (3.0.4):
     - ExpoModulesCore
@@ -124,7 +126,7 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXStructuredHeaders (2.1.0)
-  - EXUpdates (0.11.6):
+  - EXUpdates (0.11.7):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -496,8 +498,14 @@ PODS:
   - RNScreens (3.10.1):
     - React-Core
     - React-RCTImage
+  - RNSentry (3.4.1):
+    - React-Core
+    - Sentry (= 7.11.0)
   - RNSVG (12.1.1):
     - React
+  - Sentry (7.11.0):
+    - Sentry/Core (= 7.11.0)
+  - Sentry/Core (7.11.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -515,6 +523,7 @@ DEPENDENCIES:
   - EXClipboard (from `../node_modules/expo-clipboard/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXCrypto (from `../node_modules/expo-crypto/ios`)
+  - EXDevice (from `../node_modules/expo-device/ios`)
   - EXErrorRecovery (from `../node_modules/expo-error-recovery/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
@@ -598,6 +607,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -615,6 +625,7 @@ SPEC REPOS:
     - libevent
     - MultiplatformBleAdapter
     - OpenSSL-Universal
+    - Sentry
     - YogaKit
     - ZXingObjC
 
@@ -633,6 +644,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-constants/ios"
   EXCrypto:
     :path: "../node_modules/expo-crypto/ios"
+  EXDevice:
+    :path: "../node_modules/expo-device/ios"
   EXErrorRecovery:
     :path: "../node_modules/expo-error-recovery/ios"
   EXFileSystem:
@@ -757,6 +770,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -770,8 +785,9 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 7deeeb35f396ce9a13434a75b581c19fc2564205
   EXCamera: 4a0d00d6d1e4703c31a75514d8bc804a2eab27bd
   EXClipboard: 4d6ee6f9572ef999fc323e4b99c8d180e041ad33
-  EXConstants: 5d18484e38e8eacef7695a82214b6ac90133dedf
+  EXConstants: 88bf79622fbd9b476c96d8ec57fe97ca44fe8e3c
   EXCrypto: e3c0853c2a9ef885928f6227b967b9598132f727
+  EXDevice: aa5e1edbf350481a948c3258b750dd11e6e4579e
   EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFileSystem: 7d1309ba6b38b82ef7fc9e80174de3f9184ac8b4
   EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
@@ -795,7 +811,7 @@ SPEC CHECKSUMS:
   EXSecureStore: fa0fdde1c81ceee2a3cb0519e649feae42767969
   EXSplashScreen: 7872675b95bb07c25f922b3d3dfae70c76fb5a00
   EXStructuredHeaders: 2ce79a3770bd3795bade1aab215ada70deae8bbc
-  EXUpdates: bd5fa64f02685ed3e96be86b5ca350cdc2cd8d02
+  EXUpdates: a83e036243b0f6ece53a8c1cb883b6751c88a5f8
   EXUpdatesInterface: f459b515151bd73fff7a35366eace34a6c6a0d3f
   EXWebBrowser: 37388663fa51cbfc883de2244931a5182d948e5f
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
@@ -844,7 +860,9 @@ SPEC CHECKSUMS:
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNReanimated: 7f143675d94978c3555345d5bfa8ed6ae800c5d3
   RNScreens: 522705f2e5c9d27efb17f24aceb2bf8335bc7b8e
+  RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
+  Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb

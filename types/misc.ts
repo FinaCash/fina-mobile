@@ -51,3 +51,9 @@ export interface Theme {
   screenHeight: number
   isSmallScreen: boolean
 }
+
+export interface Dapp {
+  name: string
+  image: string
+  url: string
+}

@@ -238,7 +238,7 @@ const Home: React.FC = () => {
     >
       <View style={styles.header}>
         <View style={styles.iconButtonsRow}>
-          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.DappView()}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => Actions.DappsList()}>
             <MIcon name="apps" size={theme.baseSpace * 6} color={theme.palette.white} />
           </TouchableOpacity>
           <View style={{ flexDirection: 'row' }}>

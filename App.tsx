@@ -17,6 +17,13 @@ import { AccountsProvider, useAccountsContext } from './contexts/AccountsContext
 import { LocalesProvider } from './contexts/LocalesContext'
 import { PortalProvider } from '@gorhom/portal'
 import { connectToDevTools } from 'react-devtools-core'
+import * as Sentry from 'sentry-expo'
+
+Sentry.init({
+  dsn: 'https://7d28fcd699634b85a7fab8ae940d2403@o1223960.ingest.sentry.io/6368512',
+  enableInExpoDevelopment: false,
+  debug: __DEV__,
+})
 
 if (__DEV__) {
   connectToDevTools({

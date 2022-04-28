@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 export default {
   name: 'Fina',
   slug: 'fina',
@@ -7,7 +9,7 @@ export default {
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   icon: './assets/icon.png',
-  plugins: ['@config-plugins/react-native-ble-plx', 'expo-community-flipper'],
+  plugins: ['@config-plugins/react-native-ble-plx', 'expo-community-flipper', 'sentry-expo'],
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
@@ -58,6 +60,18 @@ export default {
       'json',
       'wasm',
       'svg',
+    ],
+  },
+  hooks: {
+    postPublish: [
+      {
+        file: 'sentry-expo/upload-sourcemaps',
+        config: {
+          organization: 'fina-limited',
+          project: 'fina-mobile',
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+        },
+      },
     ],
   },
 }

@@ -1,7 +1,7 @@
 import { Anchor, bombay12, AddressProviderFromJson, columbus5 } from '@anchor-protocol/anchor.js'
 import { DEFAULT_BOMBAY_MIRROR_OPTIONS, DEFAULT_MIRROR_OPTIONS } from '@mirror-protocol/mirror.js'
 import { LCDClient } from '@terra-money/terra.js'
-import get from 'lodash/get'
+import { Dapp } from '../types/misc'
 
 export const defaultHdPath = [44, 330, 0, 0, 0]
 export const defaultPrefix = 'terra'
@@ -170,7 +170,7 @@ export const defaultValidatorAddress = 'terravaloper1jkqr2vfg4krfd4zwmsf7elfj07c
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
 
-export const dapps = [
+export const dapps: Dapp[] = [
   {
     name: 'Anchor Protocol',
     url: 'https://app.anchorprotocol.com/',

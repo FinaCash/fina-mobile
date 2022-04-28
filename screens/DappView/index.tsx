@@ -13,10 +13,11 @@ import { getPasswordOrLedgerApp } from '../../utils/signAndBroadcastTx'
 import { Actions } from 'react-native-router-flux'
 import TerraApp from '@terra-money/ledger-terra-js'
 import { useAssetsContext } from '../../contexts/AssetsContext'
+import { Dapp } from '../../types/misc'
 
 let connector: WalletConnect
 
-const DappView: React.FC = () => {
+const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
   const webview = React.useRef<WebView>(null)
 
   const { theme, styles } = useStyles(getStyles)
@@ -25,12 +26,19 @@ const DappView: React.FC = () => {
 
   const [txParams, setTxParams] = useState<{ msgs: string[]; fee: string }>()
   const [isConfirming, setIsConfirming] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     return () => {
       connector?.killSession()
     }
   }, [])
+
+  useEffect(() => {
+    if (refreshing) {
+      setRefreshing(false)
+    }
+  }, [refreshing])
 
   const onSubmit = useCallback(
     async (password?: string, terraApp?: TerraApp) => {
@@ -64,65 +72,67 @@ const DappView: React.FC = () => {
   return (
     <>
       <HeaderBar
-        title={'Anchor Protocol'}
+        title={dapp.name}
         back
         rightButton={{
           icon: <Icon name="refresh-cw" size={theme.baseSpace * 5} color={theme.palette.white} />,
           onPress: () => {
-            webview.current?.reload()
+            setRefreshing(true)
           },
         }}
       />
       <View style={styles.webview}>
-        <WebView
-          ref={webview}
-          originWhitelist={['*']}
-          source={{ uri: 'https://app.anchorprotocol.com/' }}
-          onShouldStartLoadWithRequest={(e) => {
-            if (e.url.includes('https://preview.page.link/')) {
-              const uri = e.url
-                .split('payload%3D')[1]
-                .split('&apn=')[0]
-                .replace(/%25/g, '%')
-                .replace(/%3D/g, '=')
-                .replace(/%25/g, '%')
-                .replace(/%26/g, '&')
-              connector = new WalletConnect({
-                uri,
-                clientMeta: {
-                  description: 'Terra DeFi Wallet On The Go',
-                  url: 'https://fina.cash',
-                  icons: ['https://fina.cash/images/logo.png?imwidth=1920'],
-                  name: 'Fina',
-                },
-              })
-              if (!connector.connected) {
-                connector.createSession()
-              }
-              connector.on('session_request', (error, payload) => {
-                if (!error) {
-                  connector.approveSession({
-                    accounts: [address],
-                    chainId: 1,
-                  })
+        {refreshing ? null : (
+          <WebView
+            ref={webview}
+            originWhitelist={['*']}
+            source={{ uri: dapp.url }}
+            onShouldStartLoadWithRequest={(e) => {
+              if (e.url.includes('https://preview.page.link/')) {
+                const uri = e.url
+                  .split('payload%3D')[1]
+                  .split('&apn=')[0]
+                  .replace(/%25/g, '%')
+                  .replace(/%3D/g, '=')
+                  .replace(/%25/g, '%')
+                  .replace(/%26/g, '&')
+                connector = new WalletConnect({
+                  uri,
+                  clientMeta: {
+                    description: 'Terra DeFi Wallet On The Go',
+                    url: 'https://fina.cash',
+                    icons: ['https://fina.cash/images/logo.png?imwidth=1920'],
+                    name: 'Fina',
+                  },
+                })
+                if (!connector.connected) {
+                  connector.createSession()
                 }
-              })
-              return false
-            } else if (e.url.includes('terrastation://')) {
-              const payload = JSON.parse(
-                Buffer.from(
-                  e.url.replace('terrastation://walletconnect_confirm/?payload=', ''),
-                  'base64'
-                ).toString()
-              )
-              setTxParams(payload.params)
-              setIsConfirming(true)
-              return false
-            } else {
-              return true
-            }
-          }}
-        />
+                connector.on('session_request', (error, payload) => {
+                  if (!error) {
+                    connector.approveSession({
+                      accounts: [address],
+                      chainId: 1,
+                    })
+                  }
+                })
+                return false
+              } else if (e.url.includes('terrastation://')) {
+                const payload = JSON.parse(
+                  Buffer.from(
+                    e.url.replace('terrastation://walletconnect_confirm/?payload=', ''),
+                    'base64'
+                  ).toString()
+                )
+                setTxParams(payload.params)
+                setIsConfirming(true)
+                return false
+              } else {
+                return true
+              }
+            }}
+          />
+        )}
       </View>
       <ConfirmWalletConnectModal
         open={isConfirming}
