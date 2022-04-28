@@ -42,7 +42,7 @@ const ConfirmWalletConnectModal: React.FC<ConfirmWalletConnectModalProps> = ({
         theme.baseSpace * 104 + Object.keys(fee).length * 2 * theme.baseSpace + theme.bottomSpace
       }
     >
-      <ScrollView style={{ height: theme.baseSpace * 60, paddingRight: theme.baseSpace * 20 }}>
+      <ScrollView style={{ height: theme.baseSpace * 60 }}>
         <JSONTree
           data={msgs.map((m) => JSON.parse(m))}
           hideRoot

@@ -88,7 +88,7 @@ const Delegate: React.FC<DelegateProps> = () => {
                 </Typography>
                 <Button
                   style={styles.validatorButton}
-                  bgColor={theme.palette.grey[1]}
+                  bgColor={theme.palette.altBackground}
                   onPress={() =>
                     Actions.SelectValidator({
                       onSelect: (v: Validator) => {

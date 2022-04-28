@@ -24,6 +24,7 @@ export default (theme: Theme) => ({
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   validatorContainer: {
     marginTop: theme.baseSpace,

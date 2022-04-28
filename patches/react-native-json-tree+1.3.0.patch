@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-json-tree/src/createStylingFromTheme.js b/node_modules/react-native-json-tree/src/createStylingFromTheme.js
+index aea79a5..e3b509d 100644
+--- a/node_modules/react-native-json-tree/src/createStylingFromTheme.js
++++ b/node_modules/react-native-json-tree/src/createStylingFromTheme.js
+@@ -36,6 +36,7 @@ const getStylingFromBase16 = (base16Theme) => {
+     tree: {
+       backgroundColor: colors.BACKGROUND_COLOR,
+       padding: 5,
++      paddingRight: 80,
+     },
+ 
+     value: ({ style }) => ({

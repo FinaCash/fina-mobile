@@ -165,7 +165,7 @@ export const nonUstFarms = [
   },
 ]
 
-export const defaultValidatorAddress = 'terravaloper1jkqr2vfg4krfd4zwmsf7elfj07cjuzss30ux8g'
+export const defaultValidatorAddress = ''
 
 export const getTransakUrl = (address: string) =>
   `https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra&walletAddress=${address}`
@@ -187,6 +187,16 @@ export const dapps: Dapp[] = [
     image: 'https://app.astroport.fi/tokens/astro.png',
   },
   {
+    name: 'TerraSwap',
+    url: 'https://app.terraswap.io/',
+    image: 'https://icons.llama.fi/terraswap.png',
+  },
+  {
+    name: 'TerraDrops',
+    url: 'https://www.terradrops.io/',
+    image: 'https://pbs.twimg.com/profile_images/1412417940356538378/JYg2tN2U_400x400.jpg',
+  },
+  {
     name: 'Mars Protocol',
     url: 'https://app.marsprotocol.io/',
     image: 'https://app.astroport.fi/tokens/mars.png',
@@ -200,5 +210,10 @@ export const dapps: Dapp[] = [
     name: 'Loop DEX',
     url: 'https://dex.loop.markets/',
     image: 'https://dex.loop.markets/log-loop.png',
+  },
+  {
+    name: 'PRISM Protocol',
+    url: 'https://prismprotocol.app/',
+    image: 'https://icodrops.com/wp-content/uploads/2022/01/PrismProtocol_logo.jpeg',
   },
 ]
