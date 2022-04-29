@@ -38,7 +38,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
   const onSubmit = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
       try {
-        await (mode === 'provide' ? provideCollateral : withdrawCollateral)(
+        const tx = await (mode === 'provide' ? provideCollateral : withdrawCollateral)(
           MARKET_DENOMS.UUSD,
           availableAsset.symbol,
           Number(amount),
@@ -51,6 +51,7 @@ const ProvideCollateral: React.FC<ProvideCollateralProps> = ({ asset, availableA
             availableAsset,
             amount: Number(amount),
           },
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Loan'),
         })
       } catch (err: any) {

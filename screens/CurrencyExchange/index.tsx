@@ -106,7 +106,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
     async (password?: string, terraApp?: TerraApp) => {
       if (from && to) {
         try {
-          await swap(
+          const tx = await swap(
             { denom: from, amount: Number(fromAmount) },
             { denom: to, amount: Number(toAmount) },
             password,
@@ -118,6 +118,7 @@ const CurrencyExchange: React.FC<CurrencyExchangeProps> = ({
               from: fromAssetWithAmount,
               to: toAsset,
             },
+            txHash: tx.txhash,
             onClose: () => Actions.jump('Home'),
           })
         } catch (err: any) {

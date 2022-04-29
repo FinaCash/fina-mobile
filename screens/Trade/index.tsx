@@ -14,7 +14,7 @@ import { useLocalesContext } from '../../contexts/LocalesContext'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { getMAssetDetail } from '../../utils/transformAssets'
 import { AssetTypes } from '../../types/assets'
-import { colleteralsInfo } from '../../utils/terraConfig'
+import { colleteralsInfo, supportedTokens } from '../../utils/terraConfig'
 
 const Trade: React.FC = () => {
   const { t } = useLocalesContext()
@@ -32,7 +32,11 @@ const Trade: React.FC = () => {
   const sections = Object.keys(groupedAssets).map((k) => ({
     title: t(k),
     data: groupedAssets[k].filter((a) =>
-      k === AssetTypes.Collaterals ? (colleteralsInfo as any)[a.coin.denom]?.tradeable : true
+      k === AssetTypes.Collaterals
+        ? (colleteralsInfo as any)[a.coin.denom]?.tradeable
+        : k === AssetTypes.Tokens
+        ? !!(supportedTokens as any)[a.coin.denom]?.addresses.pair
+        : true
     ),
   }))
 

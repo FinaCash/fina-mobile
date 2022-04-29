@@ -47,7 +47,7 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
         price: availableAsset.price,
       }
       try {
-        await redelegate(
+        const tx = await redelegate(
           { denom: 'uluna', amount: Number(amount) },
           validator!.address,
           toValidator!.address,
@@ -56,6 +56,7 @@ const Redelegate: React.FC<RedelegateProps> = ({ validator, amount: totalAmount 
         )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {

@@ -439,7 +439,10 @@ const AssetsProvider: React.FC = ({ children }) => {
           to.denom
         )
         // Buy Other Token
-      } else if (from.denom === 'uusd' && Object.keys(supportedTokens).includes(to.denom)) {
+      } else if (
+        (from.denom === 'uusd' || from.denom === 'uluna') &&
+        Object.keys(supportedTokens).includes(to.denom)
+      ) {
         msg = new MsgExecuteContract(
           address,
           get(supportedTokens, [to.denom, 'addresses', 'pair'], ''),
@@ -451,16 +454,19 @@ const AssetsProvider: React.FC = ({ children }) => {
                 amount: (Number(from.amount) * 10 ** 6).toFixed(0),
                 info: {
                   native_token: {
-                    denom: 'uusd',
+                    denom: from.denom,
                   },
                 },
               },
             },
           },
-          [new Coin('uusd', new Int((from.amount * 10 ** 6).toFixed(0)))]
+          [new Coin(from.denom, new Int((from.amount * 10 ** 6).toFixed(0)))]
         )
         // Sell Other Token
-      } else if (to.denom === 'uusd' && Object.keys(supportedTokens).includes(from.denom)) {
+      } else if (
+        (from.denom === 'uusd' || from.denom === 'uluna') &&
+        Object.keys(supportedTokens).includes(from.denom)
+      ) {
         msg = new MsgExecuteContract(
           address,
           get(supportedTokens, [from.denom, 'addresses', 'token'], ''),

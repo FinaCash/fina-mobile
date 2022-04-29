@@ -13,7 +13,7 @@ export const formatCurrency = (
     style: withSymbol ? 'currency' : undefined,
     currency: withSymbol ? getCurrencyFromDenom(denom) : undefined,
     notation: (Number(amount) || 0) > 10 ** 12 ? 'compact' : undefined,
-  }).format((Number(amount) || 0) / 10 ** (digits || 6))
+  }).format(((Number(amount) || 0) / 10 ** (digits || 6)).toFixed(6))
   return hideAmount ? result.replace(/[0-9,.]/g, '') + '****' : result
 }
 

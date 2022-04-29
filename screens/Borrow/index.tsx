@@ -37,7 +37,7 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
         asset: getCurrentAssetDetail({ denom, amount: String(Number(amount) * 10 ** 6) }),
       }
       try {
-        await (mode === 'borrow' ? borrow : repay)(
+        const tx = await (mode === 'borrow' ? borrow : repay)(
           MARKET_DENOMS.UUSD,
           Number(amount),
           password,
@@ -45,6 +45,7 @@ const Borrow: React.FC<BorrowProps> = ({ mode }) => {
         )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Loan'),
         })
       } catch (err: any) {

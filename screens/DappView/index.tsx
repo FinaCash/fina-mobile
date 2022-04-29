@@ -48,7 +48,7 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
         fee: txParams?.fee || '',
       }
       try {
-        await sendRawTx(
+        const tx = await sendRawTx(
           message.msgs.map((m) => JSON.parse(m)),
           JSON.parse(message.fee),
           password,
@@ -56,6 +56,7 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
         )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.popTo('DappView'),
         })
       } catch (err: any) {

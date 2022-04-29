@@ -24,7 +24,13 @@ const useSendToken = () => {
         onSubmit: (address: string, memo: string) =>
           getPasswordOrLedgerApp(async (password?: string, terraApp?: TerraApp) => {
             try {
-              await send({ denom: asset.coin.denom, amount }, address, memo, password, terraApp)
+              const tx = await send(
+                { denom: asset.coin.denom, amount },
+                address,
+                memo,
+                password,
+                terraApp
+              )
               Actions.Success({
                 message: {
                   type: 'send',
@@ -33,6 +39,7 @@ const useSendToken = () => {
                   address,
                   memo,
                 },
+                txHash: tx.txhash,
                 onClose: () => Actions.jump('Home'),
               })
             } catch (err: any) {

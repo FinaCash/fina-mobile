@@ -54,6 +54,7 @@ export interface Theme {
 
 export interface Dapp {
   name: string
+  description: string
   image: string
   url: string
 }

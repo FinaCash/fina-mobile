@@ -76,7 +76,7 @@ const Loan: React.FC = () => {
   const onClaim = React.useCallback(
     async (password?: string, terraApp?: TerraApp) => {
       try {
-        await claimBorrowRewards(MARKET_DENOMS.UUSD, password, terraApp)
+        const tx = await claimBorrowRewards(MARKET_DENOMS.UUSD, password, terraApp)
         Actions.Success({
           message: {
             type: 'claim',
@@ -84,6 +84,7 @@ const Loan: React.FC = () => {
             rewards: borrowInfo.pendingRewards,
             apr: borrowInfo.rewardsRate,
           },
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Loan'),
         })
       } catch (err: any) {

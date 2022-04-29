@@ -68,9 +68,16 @@ const ProvideLiquidity: React.FC<ProvideLiquidityProps> = ({ farm }) => {
         },
       }
       try {
-        await provideLiquidity(farm, Number(amount), Number(pairAmount), password, terraApp)
+        const tx = await provideLiquidity(
+          farm,
+          Number(amount),
+          Number(pairAmount),
+          password,
+          terraApp
+        )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {

@@ -1,6 +1,7 @@
 import React from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 import get from 'lodash/get'
+import lodashSortBy from 'lodash/sortBy'
 import { Feather as Icon } from '@expo/vector-icons'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import useStyles from '../../theme/useStyles'
@@ -95,9 +96,10 @@ const FarmTab: React.FC = () => {
         farms: farmInfo,
       }
       try {
-        await claimFarmRewards(farmInfo, password, terraApp)
+        const tx = await claimFarmRewards(farmInfo, password, terraApp)
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {
@@ -110,6 +112,16 @@ const FarmTab: React.FC = () => {
     },
     [claimFarmRewards, farmInfo]
   )
+
+  const sortedData = React.useMemo(() => {
+    const temp = lodashSortBy(
+      farmInfo.filter(
+        (f) => f.type === farmType && f.symbol.toLowerCase().includes(search.toLowerCase())
+      ),
+      sortBy === 'symbol' ? ['dex', 'symbol'] : [sortBy]
+    )
+    return sortOrder === 1 ? temp.reverse() : temp
+  }, [farmInfo, farmType, search, sortBy, sortOrder])
 
   return (
     <>
@@ -137,11 +149,8 @@ const FarmTab: React.FC = () => {
           />
         }
         keyExtractor={(item) => item.symbol}
-        data={farmInfo
-          .filter(
-            (f) => f.type === farmType && f.symbol.toLowerCase().includes(search.toLowerCase())
-          )
-          .sort((a: any, b: any) => (a[sortBy] > b[sortBy] ? -1 : 1) * sortOrder)}
+        data={sortedData}
+        // .sort((a: any, b: any) => (a[sortBy] > b[sortBy] ? -1 : 1) * sortOrder)}
         ListHeaderComponent={
           <>
             <View style={styles.buttonsRow}>

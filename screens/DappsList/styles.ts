@@ -34,4 +34,7 @@ export default (theme: Theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  gutterBottom: {
+    marginBottom: theme.baseSpace,
+  },
 })

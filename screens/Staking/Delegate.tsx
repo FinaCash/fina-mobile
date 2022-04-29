@@ -43,7 +43,7 @@ const Delegate: React.FC<DelegateProps> = () => {
         price: asset.price,
       }
       try {
-        await stake(
+        const tx = await stake(
           { denom: 'uluna', amount: Number(amount) },
           validator!.address,
           password,
@@ -51,6 +51,7 @@ const Delegate: React.FC<DelegateProps> = () => {
         )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {

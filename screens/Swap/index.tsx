@@ -20,6 +20,7 @@ import {
   mirrorOptions,
   supportedTokens,
   terraLCDClient,
+  lunaBasePair,
 } from '../../utils/terraConfig'
 import {
   getCurrentAssetDetail,
@@ -76,9 +77,9 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
 
   const [isConfirming, setIsConfirming] = React.useState(false)
 
-  // TODO: currently non current assets can only be traded with UST (except LUNA for bLUNA pair)
+  // TODO: currently non current assets can only be traded with UST (except bLUNA, stLUNA)
   const currentAsset = React.useMemo(() => {
-    const denom = asset.symbol === 'BLUNA' ? 'uluna' : 'uusd'
+    const denom = lunaBasePair.includes(asset.symbol) ? 'uluna' : 'uusd'
     return (
       assets.find((a) => a.coin.denom === denom) || {
         ...(denom === 'uluna' ? getTokenAssetDetail : getCurrentAssetDetail)({
@@ -111,7 +112,9 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
         } else if (
           (defaultSymbol || asset.symbol) === 'ANC' ||
           !!(colleteralsInfo as any)[defaultSymbol || asset.symbol] ||
-          (defaultSymbol || asset.symbol) === 'ASTRO'
+          Object.keys(supportedTokens)
+            .filter((t) => t !== 'uluna' && t !== 'MIR')
+            .includes(defaultSymbol || asset.symbol)
         ) {
           let pairContract = ''
           let contract = ''
@@ -216,7 +219,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
     async (password?: string, terraApp?: TerraApp) => {
       if (fromAmount) {
         try {
-          await swap(
+          const tx = await swap(
             {
               denom: mode === 'buy' ? currentAsset.coin.denom : asset.coin.denom,
               amount: Number(fromAmount),
@@ -233,6 +236,7 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
               from: fromAsset,
               to: toAsset,
             },
+            txHash: tx.txhash,
             onClose: () => Actions.jump('Home'),
           })
         } catch (err: any) {

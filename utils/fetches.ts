@@ -393,7 +393,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     body: JSON.stringify({
       query: `
         {
-          ${[...Object.values(supportedTokens), ...nonUstFarms]
+          ${[...Object.values(supportedTokens).filter((t) => !!t.addresses.lpToken), ...nonUstFarms]
             .map(
               (t) => `
             ${t.addresses.lpToken}: wasm {
@@ -422,7 +422,7 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     body: JSON.stringify({
       query: `
         {
-          ${[...Object.values(supportedTokens), ...nonUstFarms]
+          ${[...Object.values(supportedTokens).filter((t) => !!t.addresses.lpToken), ...nonUstFarms]
             .map(
               (t) => `
                 ${t.addresses.lpToken}: wasm {
@@ -479,7 +479,12 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
     .filter((a: any) => a.symbol !== 'MIR')
     .sort((a: any, b: any) => (a.symbol > b.symbol ? 1 : -1))
   const farms = [
-    ...[...Object.values(supportedTokens), ...nonUstFarms].map((a: any) => ({
+    ...[
+      ...Object.values(supportedTokens).filter(
+        (s) => !nonUstFarms.find((n) => n.symbol === s.symbol) && !!s.addresses.lpToken
+      ),
+      ...nonUstFarms,
+    ].map((a: any) => ({
       type: FarmType.Long,
       symbol: a.symbol,
       dex: 'Astroport',
@@ -506,10 +511,12 @@ export const fetchFarmingInfo = async (address: string): Promise<Farm[]> => {
       balance: Number(get(tokensInfo, [a.addresses.lpToken, 'contractQuery'], 0)),
       rewards: [
         {
-          denom: a.denom,
-          amount: Number(
-            get(tokenRewardsInfo, [a.addresses.lpToken, 'contractQuery', 'pending_on_proxy'], '0')
-          ),
+          denom: a.proxyRewardTokenDenom || a.denom,
+          amount:
+            Number(
+              get(tokenRewardsInfo, [a.addresses.lpToken, 'contractQuery', 'pending_on_proxy'], '0')
+            ) *
+            10 ** (6 - (supportedTokens[a.proxyRewardTokenDenom || a.denom]?.digits || 6)),
         },
         {
           denom: 'ASTRO',
@@ -578,7 +585,7 @@ export const fetchOtherTokensBalance = async (address: string) => {
   return otherTokens
     .map((o, i) => ({
       denom: o.denom,
-      amount: get(otherTokensBalances, [i, 'result', 'balance'], '0'),
+      amount: get(otherTokensBalances, [i, 'result', 'balance'], '0') * 10 ** (6 - (o.digits || 6)),
     }))
     .filter((o) => Number(o.amount) > 0)
 }

@@ -31,14 +31,23 @@ const DappsList: React.FC = () => {
         style={styles.list}
         contentContainerStyle={styles.container}
         keyExtractor={(item) => item.name}
-        data={dapps.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))}
+        data={dapps.filter((a) =>
+          (a.name + a.description).toLowerCase().includes(search.toLowerCase())
+        )}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => Actions.DappView({ dapp: item })}>
             <View style={styles.innerContainer}>
               <View style={styles.topContainer}>
                 <View style={styles.row}>
                   <Image source={{ uri: item.image }} style={styles.avatar} />
-                  <Typography type="H6">{item.name}</Typography>
+                  <View>
+                    <Typography style={styles.gutterBottom} type="H6">
+                      {item.name}
+                    </Typography>
+                    <Typography type="Small" color={theme.palette.grey[7]}>
+                      {item.description}
+                    </Typography>
+                  </View>
                 </View>
                 <Icon
                   style={styles.arrow}

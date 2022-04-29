@@ -39,7 +39,7 @@ const Undelegate: React.FC<UndelegateProps> = ({ validator, amount: totalAmount 
         price: availableAsset.price,
       }
       try {
-        await unstake(
+        const tx = await unstake(
           { denom: 'uluna', amount: Number(amount) },
           validator!.address,
           password,
@@ -47,6 +47,7 @@ const Undelegate: React.FC<UndelegateProps> = ({ validator, amount: totalAmount 
         )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {

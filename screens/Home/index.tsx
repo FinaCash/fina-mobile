@@ -33,7 +33,7 @@ import { formatCurrency, formatPercentage } from '../../utils/formatNumbers'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import AssetFilter from '../../components/AssetFilter'
-import { colleteralsInfo, getTransakUrl } from '../../utils/terraConfig'
+import { colleteralsInfo, getTransakUrl, supportedTokens } from '../../utils/terraConfig'
 import { useAccountsContext } from '../../contexts/AccountsContext'
 import useSendToken from '../../utils/useSendToken'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -105,7 +105,9 @@ const Home: React.FC = () => {
           options =
             asset.symbol === 'LUNA'
               ? [t('buy'), t('sell'), t('stake'), t('cancel')]
-              : [t('buy'), t('sell'), t('cancel')]
+              : supportedTokens[asset.coin.denom]?.addresses.pair
+              ? [t('buy'), t('sell'), t('cancel')]
+              : []
           break
         case AssetTypes.Collaterals:
           options = (colleteralsInfo as any)[asset.symbol].tradeable
@@ -115,6 +117,9 @@ const Home: React.FC = () => {
         case AssetTypes.Farms:
           options = [t('provide liquidity'), t('withdraw liquidity'), t('cancel')]
           break
+      }
+      if (!options.length) {
+        return
       }
       showActionSheetWithOptions(
         {

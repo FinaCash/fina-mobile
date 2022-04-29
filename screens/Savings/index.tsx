@@ -80,7 +80,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
         ),
       }
       try {
-        await (mode === 'deposit' ? depositSavings : withdrawSavings)(
+        const tx = await (mode === 'deposit' ? depositSavings : withdrawSavings)(
           MARKET_DENOMS.UUSD,
           Number(amount),
           password,
@@ -88,6 +88,7 @@ const Savings: React.FC<SavingsProps> = ({ mode, denom = MARKET_DENOMS.UUSD }) =
         )
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Home'),
         })
       } catch (err: any) {

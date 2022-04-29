@@ -1,14 +1,16 @@
 import React from 'react'
 import { Feather as Icon } from '@expo/vector-icons'
+import * as WebBrowser from 'expo-web-browser'
 import getStyles from './styles'
 import CheckIcon from '../../assets/images/icons/check.svg'
 import { Asset, AvailableAsset, Farm, Validator } from '../../types/assets'
 import useStyles from '../../theme/useStyles'
-import { View } from 'react-native'
+import { View, TouchableOpacity, ScrollView } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import AssetItem from '../../components/AssetItem'
 import Typography from '../../components/Typography'
 import { formatCurrency } from '../../utils/formatNumbers'
+import { terraScopeUrl } from '../../utils/terraConfig'
 import Button from '../../components/Button'
 import { useRecipientsContext } from '../../contexts/RecipientsContext'
 import { useLocalesContext } from '../../contexts/LocalesContext'
@@ -18,7 +20,6 @@ import StakingItem from '../../components/StakingItem'
 import { getTokenAssetDetail } from '../../utils/transformAssets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
 import FarmItem from '../../components/FarmItem'
-import { ScrollView } from 'react-native-gesture-handler'
 import JSONTree from 'react-native-json-tree'
 import jsonTree from '../../theme/jsonTree'
 import { useSettingsContext } from '../../contexts/SettingsContext'
@@ -91,10 +92,11 @@ interface SuccessProps {
         fee: string
       }
   error?: string
+  txHash?: string
   onClose(): void
 }
 
-const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
+const Success: React.FC<SuccessProps> = ({ message, error, txHash, onClose }) => {
   const { styles, theme } = useStyles(getStyles)
   const { t } = useLocalesContext()
   const { availableAssets } = useAssetsContext()
@@ -320,6 +322,20 @@ const Success: React.FC<SuccessProps> = ({ message, error, onClose }) => {
         <Typography style={styles.title} type="H6">
           {error || t('transaction sent')}
         </Typography>
+        {txHash ? (
+          <TouchableOpacity
+            onPress={() => {
+              WebBrowser.openBrowserAsync(`${terraScopeUrl}/tx/${txHash}`)
+            }}
+          >
+            <Typography
+              style={{ textAlign: 'center', marginTop: theme.baseSpace * 8 }}
+              color={theme.palette.lightPrimary}
+            >
+              {txHash}
+            </Typography>
+          </TouchableOpacity>
+        ) : null}
       </View>
       <Button onPress={onClose} size="Large">
         {t('close')}

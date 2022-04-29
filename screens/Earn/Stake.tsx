@@ -147,9 +147,10 @@ const Stake: React.FC = () => {
         rewardsValue: stakingInfo.totalRewards,
       }
       try {
-        await claimStakingRewards(password, terraApp)
+        const tx = await claimStakingRewards(password, terraApp)
         Actions.Success({
           message,
+          txHash: tx.txhash,
           onClose: () => Actions.jump('Earn'),
         })
       } catch (err: any) {
