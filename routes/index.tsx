@@ -46,6 +46,7 @@ import LockScreen from '../screens/LockScreen'
 import SelectAccounts from '../screens/SelectAccounts'
 import DappView from '../screens/DappView'
 import DappsList from '../screens/DappsList'
+import SpecialThanks from '../screens/SpecialThanks'
 
 const Tab: React.FC<{
   sceneKey: string
@@ -166,6 +167,7 @@ const Routes: React.FC<{ address: string }> = ({ address }) => {
               <Scene key="SelectAccounts" hideNavBar component={SelectAccounts} />
               <Scene key="DappsList" hideNavBar component={DappsList} />
               <Scene key="DappView" hideNavBar component={DappView} />
+              <Scene key="SpecialThanks" hideNavBar component={SpecialThanks} />
             </Stack>
             <Scene key="Password" hideNavBar component={Password} />
             <Scene key="ConnectLedger" hideNavBar component={ConnectLedger} />

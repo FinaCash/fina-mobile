@@ -89,7 +89,10 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
             originWhitelist={['*']}
             source={{ uri: dapp.url }}
             onShouldStartLoadWithRequest={(e) => {
-              if (e.url.includes('https://preview.page.link/')) {
+              if (
+                e.url.includes('https://preview.page.link/') ||
+                e.url.includes('intent://terrastation.page.link/')
+              ) {
                 const uri = e.url
                   .split('payload%3D')[1]
                   .split('&apn=')[0]
@@ -97,6 +100,9 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
                   .replace(/%3D/g, '=')
                   .replace(/%25/g, '%')
                   .replace(/%26/g, '&')
+                  .replace(/%3A/, ':')
+                  .replace(/%3F/, '?')
+                  .replace(/%40/, '@')
                 connector = new WalletConnect({
                   uri,
                   clientMeta: {
@@ -106,9 +112,6 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
                     name: 'Fina',
                   },
                 })
-                if (!connector.connected) {
-                  connector.createSession()
-                }
                 connector.on('session_request', (error, payload) => {
                   if (!error) {
                     connector.approveSession({
@@ -117,6 +120,9 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
                     })
                   }
                 })
+                if (!connector.connected) {
+                  connector.createSession()
+                }
                 return false
               } else if (e.url.includes('terrastation://')) {
                 const payload = JSON.parse(

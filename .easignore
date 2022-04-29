@@ -73,4 +73,3 @@ dist/
 
 # @end expo-cli
 .env
-sentry.properties

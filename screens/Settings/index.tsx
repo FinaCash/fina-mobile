@@ -223,6 +223,16 @@ const Settings: React.FC = () => {
         },
       ].filter((a) => a),
     },
+    {
+      title: t('other'),
+      data: [
+        {
+          icon: 'award',
+          title: t('special thanks'),
+          onPress: () => Actions.SpecialThanks(),
+        },
+      ],
+    },
   ]
 
   return (
