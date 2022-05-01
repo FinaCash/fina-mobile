@@ -295,7 +295,7 @@ const AssetsProvider: React.FC = ({ children }) => {
     }
 
     const availableResult = sortBy(
-      [...tokenAssets, ...mAssets, ...availableCollaterals],
+      [...(tokenAssets || []), ...(mAssets || []), ...(availableCollaterals || [])],
       ['-type', 'symbol']
     )
     setAvailableAssets(availableResult)
@@ -317,10 +317,10 @@ const AssetsProvider: React.FC = ({ children }) => {
     setRawAssets((a) => {
       return uniqBy(
         [
-          ...nativeBalances,
-          ...anchorBalances,
-          ...mAssetsBalances,
-          ...otherBalance,
+          ...(nativeBalances || []),
+          ...(anchorBalances || []),
+          ...(mAssetsBalances || []),
+          ...(otherBalance || []),
           ...a.filter((aa) => !!(colleteralsInfo as any)[aa.denom]), // Do not replace collaterals
         ].filter((b) => b),
         'denom'

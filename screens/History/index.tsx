@@ -17,18 +17,9 @@ import { useAccountsContext } from '../../contexts/AccountsContext'
 import { ActivityIndicator, View } from 'react-native'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 
-const History: React.FC = () => {
-  const webview = React.useRef<WebView>(null)
-  const { theme, styles } = useStyles(getStyles)
-  const { t, locale } = useLocalesContext()
-  const { address } = useAccountsContext()
-  const { currency, theme: uiTheme } = useSettingsContext()
+const uri = `${terraStationUrl}/history`
 
-  const [loading, setLoading] = React.useState(true)
-
-  const uri = `${terraStationUrl}/history`
-
-  const style = `
+const style = `
     <style>
       .Layout_layout__3qLmz {
         grid-template-rows: none;
@@ -40,6 +31,15 @@ const History: React.FC = () => {
       }
     </style>
   `
+
+const History: React.FC = () => {
+  const webview = React.useRef<WebView>(null)
+  const { theme, styles } = useStyles(getStyles)
+  const { t, locale } = useLocalesContext()
+  const { address } = useAccountsContext()
+  const { currency, theme: uiTheme } = useSettingsContext()
+
+  const [loading, setLoading] = React.useState(true)
 
   return (
     <>
@@ -56,18 +56,19 @@ const History: React.FC = () => {
         }}
       />
       <View style={styles.webview}>
-        <View style={{ flex: loading ? 0 : 1 }}>
-          <WebView
-            ref={webview}
-            source={{ uri }}
-            injectedJavaScriptBeforeContentLoaded={`
+        <WebView
+          ref={webview}
+          source={{ uri }}
+          injectedJavaScriptBeforeContentLoaded={
+            `
               localStorage.setItem('__terra-readonly-wallet-storage-key__', '{"network":{"name":"${networkName}","chainID":"${chainID}","lcd":"${terraLCDUrl}","mantle":"${terraMantleUrl}","walletconnectID":1},"terraAddress":"${address}"}')
               localStorage.setItem('Currency', '${currency}')
               localStorage.setItem('i18nextLng', '${locale}')
               localStorage.setItem('Theme', '${uiTheme}')
-            `}
-            injectedJavaScript={
-              `
+            ` as string
+          }
+          injectedJavaScript={
+            `
               document.head.innerHTML += '${style.replace(/(?:\r\n|\r|\n)/g, '')}'
               document.querySelector('body').style.opacity = 0
               const interval = setInterval(() => {
@@ -76,23 +77,30 @@ const History: React.FC = () => {
                   window.ReactNativeWebView.postMessage("loaded")
                   clearInterval(interval)
                 }
-              }, 100)
+              }, 500)
             ` as string
+          }
+          onMessage={(e) => {
+            if (e.nativeEvent.data === 'loaded') {
+              setLoading(false)
             }
-            onMessage={(e) => {
-              if (e.nativeEvent.data === 'loaded') {
-                setLoading(false)
-              }
-            }}
-            onNavigationStateChange={(e) => {
-              if (!e.url.includes(uri) && !e.loading) {
-                WebBrowser.openBrowserAsync(e.url)
-                webview.current?.goBack()
-              }
-            }}
+          }}
+          onShouldStartLoadWithRequest={(e) => {
+            if (!e.url.includes(uri) && !e.loading) {
+              WebBrowser.openBrowserAsync(e.url)
+              return false
+            } else {
+              return true
+            }
+          }}
+        />
+        {loading ? (
+          <ActivityIndicator
+            style={styles.loader}
+            size={8 * theme.baseSpace}
+            color={theme.fonts.H1.color}
           />
-        </View>
-        {loading ? <ActivityIndicator style={styles.loader} color={theme.fonts.H1.color} /> : null}
+        ) : null}
       </View>
     </>
   )

@@ -80,13 +80,6 @@ const SettingsProvider: React.FC = ({ children }) => {
     }
   }, [systemDefaultTheme, colorScheme, setTheme])
 
-  React.useEffect(() => {
-    if (systemDefaultTheme) {
-      const themeNow = Appearance.getColorScheme()
-      setTheme((themeNow as any) || 'light')
-    }
-  }, [systemDefaultTheme, setTheme])
-
   return (
     <SettingsContext.Provider
       value={{

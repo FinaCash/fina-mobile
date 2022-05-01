@@ -6,6 +6,8 @@ export default (theme: Theme) => ({
     flex: 1,
   },
   loader: {
-    marginTop: 50 * theme.baseSpace,
+    position: 'absolute',
+    top: 50 * theme.baseSpace,
+    left: theme.screenWidth * 0.5 - 4 * theme.baseSpace,
   },
 })
