@@ -2,6 +2,7 @@ import { Camera } from 'expo-camera'
 import React from 'react'
 import { Actions } from 'react-native-router-flux'
 import get from 'lodash/get'
+import BarcodeMask from 'react-native-barcode-mask'
 import HeaderBar from '../../components/HeaderBar'
 import { useLocalesContext } from '../../contexts/LocalesContext'
 import useSendToken from '../../utils/useSendToken'
@@ -9,10 +10,12 @@ import isAddressValid from '../../utils/isAddressValid'
 import { Alert } from 'react-native'
 import { getCurrentAssetDetail } from '../../utils/transformAssets'
 import { useAssetsContext } from '../../contexts/AssetsContext'
+import useStyles from '../../theme/useStyles'
 
 const ScanQRCode: React.FC<{ onScan: (code: string) => void }> = ({ onScan }) => {
   const { t } = useLocalesContext()
   const { assets } = useAssetsContext()
+  const { theme } = useStyles()
   const [hasPermission, setHasPermission] = React.useState(false)
   const [prevData, setPrevData] = React.useState('')
   const sendToken = useSendToken()
@@ -77,7 +80,13 @@ const ScanQRCode: React.FC<{ onScan: (code: string) => void }> = ({ onScan }) =>
               }
             }
           }}
-        />
+        >
+          <BarcodeMask
+            width={theme.screenWidth * 0.7}
+            height={theme.screenWidth * 0.7}
+            showAnimatedLine={false}
+          />
+        </Camera>
       ) : null}
     </>
   )
