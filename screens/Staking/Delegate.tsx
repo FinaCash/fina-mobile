@@ -111,11 +111,11 @@ const Delegate: React.FC<DelegateProps> = () => {
                       />
                     )}
                     <View>
-                      <Typography type="H6" color={theme.palette.grey[10]}>
+                      <Typography type="H6" color={theme.fonts.H1.color}>
                         {validator ? validator.name : t('validator')}
                       </Typography>
                       {validator ? (
-                        <Typography type="Small" color={theme.palette.grey[9]} numberOfLines={2}>
+                        <Typography type="Small" color={theme.palette.grey[7]} numberOfLines={2}>
                           {t('validator commission and vp', {
                             commission: formatPercentage(validator.commission),
                             votingPower: formatPercentage(validator.votingPower),

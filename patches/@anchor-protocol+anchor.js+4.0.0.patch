@@ -241,7 +241,7 @@ index a9f9f24..5c50b4b 100644
              }))
                  .filter(Boolean));
 diff --git a/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js b/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
-index cbecd95..dd8ba0e 100644
+index cbecd95..8b42c5d 100644
 --- a/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
 +++ b/node_modules/@anchor-protocol/anchor.js/dist/facade/earn/earn.js
 @@ -37,7 +37,7 @@ class Earn {
@@ -253,6 +253,21 @@ index cbecd95..dd8ba0e 100644
                  .div(1000000)
                  .toString();
          });
+@@ -45,7 +45,13 @@ class Earn {
+     getAPY(getAPYOption) {
+         return __awaiter(this, void 0, void 0, function* () {
+             const epochState = yield (0, queries_1.queryOverseerEpochState)(Object.assign({ lcd: this._lcd }, getAPYOption))(this._addressProvider);
+-            return new terra_js_1.Dec(epochState.deposit_rate).mul(constants_1.BLOCKS_PER_YEAR).toNumber();
++            const epochConfig = yield (0, queries_1.queryOverseerConfig)({lcd: this._lcd, overseer: getAPYOption.market })(this._addressProvider);
++            return new terra_js_1.Dec(epochState.deposit_rate)
++                .mul(epochConfig.epoch_period)
++                .add(1)
++                .pow(constants_1.BLOCKS_PER_YEAR / epochConfig.epoch_period)
++                .sub(1)
++                .toNumber();
+         });
+     }
+ }
 diff --git a/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js b/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js
 index b064bb6..3016503 100644
 --- a/node_modules/@anchor-protocol/anchor.js/dist/queries/exchange/reverse-token-simulation.js
