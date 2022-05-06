@@ -1038,20 +1038,27 @@ const AssetsProvider: React.FC = ({ children }) => {
   )
 
   const sendRawTx = React.useCallback(
-    async (msgs: any, fee: any, password?: string, terraApp?: TerraApp, simulate?: boolean) => {
+    async (rawMsgs: any, fee: any, password?: string, terraApp?: TerraApp, simulate?: boolean) => {
+      const msgs = rawMsgs.map((m: any) =>
+        m.type === 'wasm/MsgExecuteContract'
+          ? MsgExecuteContract.fromAmino(m)
+          : MsgExecuteContract.fromData(m)
+      )
       const result = await signAndBroadcastTx(
         decryptSeedPhrase(password),
         terraApp,
         hdPath,
-        {
-          msgs: msgs.map((m: any) => MsgExecuteContract.fromData(m)),
-          fee: new Fee(
-            Number(fee.gas_limit),
-            fee.amount.map((a: any) => new Coin(a.denom, a.amount)),
-            fee.payer,
-            fee.granter
-          ),
-        },
+        fee
+          ? {
+              msgs,
+              fee: new Fee(
+                Number(fee.gas_limit),
+                fee.amount.map((a: any) => new Coin(a.denom, a.amount)),
+                fee.payer,
+                fee.granter
+              ),
+            }
+          : { msgs },
         address,
         simulate,
         () => {

@@ -48,9 +48,9 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
         fee: txParams?.fee || '',
       }
       try {
-        const tx = await sendRawTx(
+        const tx: any = await sendRawTx(
           message.msgs.map((m) => JSON.parse(m)),
-          JSON.parse(message.fee),
+          message.fee ? JSON.parse(message.fee) : undefined,
           password,
           terraApp
         )

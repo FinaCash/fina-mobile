@@ -238,6 +238,12 @@ export const dapps: Dapp[] = [
     image: 'https://icons.llama.fi/terraswap.png',
   },
   {
+    name: 'TFM',
+    description: 'DEX Aggregator',
+    url: 'https://tfm.com/',
+    image: 'https://miro.medium.com/fit/c/176/176/1*H0EiwGiIytDHAt39szhBkw.png',
+  },
+  {
     name: 'TerraDrops',
     description: 'Airdrop hub for Terra projects',
     url: 'https://www.terradrops.io/',

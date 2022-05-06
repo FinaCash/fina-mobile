@@ -12,6 +12,8 @@ import JSONTree from 'react-native-json-tree'
 import BottomModal from '../BottomModal'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import jsonTree from '../../theme/jsonTree'
+import { useAssetsContext } from '../../contexts/AssetsContext'
+import { Tx } from '@terra-money/terra.js'
 
 interface ConfirmWalletConnectModalProps {
   open: boolean
@@ -31,7 +33,50 @@ const ConfirmWalletConnectModal: React.FC<ConfirmWalletConnectModalProps> = ({
   const { styles, theme } = useStyles(getStyles)
   const { theme: themeType } = useSettingsContext()
   const { t } = useLocalesContext()
-  const fee = defaultFee ? keyBy(JSON.parse(defaultFee).amount, 'denom') : {}
+  const { sendRawTx } = useAssetsContext()
+  const [fee, setFee] = React.useState(
+    defaultFee ? keyBy(JSON.parse(defaultFee).amount, 'denom') : {}
+  )
+
+  const estimateGasFee = React.useCallback(async () => {
+    if (defaultFee || !msgs.length) {
+      return
+    }
+    try {
+      const tx = await sendRawTx(
+        msgs.map((m) => JSON.parse(m)),
+        undefined,
+        '',
+        undefined,
+        true
+      )
+      setFee(
+        keyBy(
+          JSON.parse((tx as unknown as Tx).auth_info.fee.amount.toJSON()).map((f: any) => ({
+            ...f,
+            amount: Number(f.amount),
+          })),
+          'denom'
+        )
+      )
+    } catch (err: any) {
+      console.log(err)
+    }
+  }, [sendRawTx, msgs, defaultFee])
+
+  React.useEffect(() => {
+    if (!open) {
+      setFee({})
+    }
+  }, [open])
+
+  React.useEffect(() => {
+    if (defaultFee && msgs.length) {
+      setFee(keyBy(JSON.parse(defaultFee).amount, 'denom'))
+    } else {
+      estimateGasFee()
+    }
+  }, [defaultFee, msgs, estimateGasFee])
 
   return (
     <BottomModal

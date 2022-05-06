@@ -4,7 +4,7 @@ export default {
   name: 'Fina',
   slug: 'fina',
   owner: 'fina-cash',
-  version: '1.5.2',
+  version: '1.5.3',
   runtimeVersion: '44',
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
