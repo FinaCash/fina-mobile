@@ -88,6 +88,7 @@ const DappView: React.FC<{ dapp: Dapp }> = ({ dapp }) => {
             ref={webview}
             originWhitelist={['*']}
             source={{ uri: dapp.url }}
+            setSupportMultipleWindows={false}
             onShouldStartLoadWithRequest={(e) => {
               if (
                 e.url.includes('https://preview.page.link/') ||

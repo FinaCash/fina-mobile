@@ -12,7 +12,7 @@ export default (theme: Theme) => ({
     marginBottom: 6 * theme.baseSpace,
   },
   seedInput: {
-    height: 32 * theme.baseSpace,
+    height: 36 * theme.baseSpace,
     marginBottom: 6 * theme.baseSpace,
   },
   label: {

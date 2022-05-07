@@ -14,6 +14,8 @@ import { defaultPrefix } from '../../utils/terraConfig'
 import { useSettingsContext } from '../../contexts/SettingsContext'
 import { MnemonicKey } from '@terra-money/terra.js'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import appConfig from '../../app.config'
+import get from 'lodash/get'
 
 const Logo = require('../../assets/images/logo.png')
 const LogoWhite = require('../../assets/images/logo_white.png')
@@ -147,6 +149,9 @@ const Login: React.FC<LoginProps> = ({ back }) => {
             >
               {t('connect ledger')}
             </Button>
+            <Typography style={{ textAlign: 'center' }}>
+              v{get(appConfig, 'version', '1.0.0')}
+            </Typography>
           </View>
         </View>
         {back ? (
