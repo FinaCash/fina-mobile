@@ -169,6 +169,7 @@ export const colleteralsInfo = {
     image: 'https://app.astroport.fi/tokens/wasAVAX.png',
     token: 'terra1z3e2e4jpk4n0xzzwlkgcfvc95pc5ldq0xcny58',
     custody: 'terra1t4x4393l2kx8e5rpdkjkmt8c4ghkkpak6mdwxn',
+    tradeable: false,
     digits: 8,
   },
   bATOM: {
@@ -177,6 +178,16 @@ export const colleteralsInfo = {
       'https://firebasestorage.googleapis.com/v0/b/thinka-v2.appspot.com/o/bATOM.png?alt=media&token=c566fcd5-28e1-4315-a076-4aaed5e82de2',
     token: 'terra18zqcnl83z98tf6lly37gghm7238k7lh79u4z9a',
     custody: 'terra1zdxlrtyu74gf6pvjkg9t22hentflmfcs86llva',
+    tradeable: false,
+    digits: 6,
+  },
+  bSOL: {
+    symbol: 'bSOL',
+    image:
+      'https://firebasestorage.googleapis.com/v0/b/thinka-v2.appspot.com/o/bSOL.png?alt=media&token=60abaafc-4daf-4358-a534-0515640bd156',
+    token: 'terra1c00vskhyzdv0z63z2tyetzx2qma67n2z3vzyn0',
+    custody: 'terra1fqgqs2j27qryd4wrdk6vplvhajywdmmr5cjs58',
+    tradeable: false,
     digits: 6,
   },
 }

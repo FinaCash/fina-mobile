@@ -323,7 +323,12 @@ const Swap: React.FC<SwapProps> = ({ asset: defaultAsset, mode: defaultMode }) =
               availableAssetItemProps={{
                 onPress: () => {
                   Actions.SelectAsset({
-                    availableAssets,
+                    availableAssets: availableAssets.filter((a) =>
+                      a.type === AssetTypes.Collaterals
+                        ? Object.values(colleteralsInfo).find((c) => c.symbol === a.symbol)
+                            ?.tradeable
+                        : true
+                    ),
                     onSelect: (a: AvailableAsset) => {
                       setAsset(assets.find((aa) => aa.symbol === a.symbol) || a)
                       changeAmount(fromAmount, 'from', a.symbol)
